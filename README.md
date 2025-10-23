@@ -32,7 +32,7 @@ Now open the .env file and fill in the Firebase credentials.
 
 Where to get the credentials:
 (Contact Karina)
-They will share the Firebase configuration values via Slack/Discord/Email
+They will share the Firebase configuration values via Discord/Email
 Paste them into your .env file
 
 Your .env file should look like this (with actual values):
