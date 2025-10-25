@@ -6,7 +6,7 @@ const Footer = () => (
               <a href="https://ets.hawaii.gov/" className="flex items-center">
                   <img src="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png" className="h-8 me-3" alt="ETS logo" />
                   <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">State of Hawaii</span>
-                    </a>
+             </a>
             <a className="flex items-center">
                 Office of Enterprise Technology Services
             </a>

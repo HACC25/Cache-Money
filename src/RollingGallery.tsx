@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useAnimation, useTransform, type PanInfo, type ResolvedValues } from 'motion/react';
 
 const IMGS: string[] = [
-  'https://images.unsplash.com/photo-1528181304800-259b08848526?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=3456&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1495103033382-fe343886b671?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F1dEJZflzpKA6Olgu7W8ooZ%2Fa889ea2f674c4ee5eb9e5022a0b879a9%2FTraffic-KPIs-by-channel-and-device.png&w=3840&q=75',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F5IxWIoy1Icou2d9mYKUBYU%2F250ba9491800517927458b57a6692cdc%2FWeb-Analytics-Dashboard-Traffic-Sources-Pie-Chart-Example.png&w=3840&q=75',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F78tO7sIchAYNe8cUVQuyc9%2F0f5531769d48012ced35ee5b44028c47%2FGoogle-Analytics-4-Engagement-Rate__1_.png&w=3840&q=75',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2FjRJ5mOXNt7KLTOaBhxbr6%2F30169584ad7dd3ac297cc96e6e734268%2FMonthly-Client-Report-Template-Example.png&w=3840&q=75',
   'https://images.unsplash.com/photo-1506781961370-37a89d6b3095?q=80&w=3264&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   'https://images.unsplash.com/photo-1599576838688-8a6c11263108?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1494094892896-7f14a4433b7a?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://plus.unsplash.com/premium_photo-1664910706524-e783eed89e71?q=80&w=3869&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1503788311183-fa3bf9c4bc32?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  'https://images.unsplash.com/photo-1585970480901-90d6bb2a48b5?q=80&w=3774&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F65zlZbdv2RAd3PvfUyQHv1%2F8cf4dca62266ce12fe6f59bab040e6ce%2Fagencyanalytics-web-analytics-report-template.png&w=3840&q=75',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F6WNSyi78vsS3XODsiQoatw%2F04f8eaeac148c8bd5635fded5798eb2e%2FGoogle-Analytics-4-Report-Template-Example__1_.png&w=3840&q=75',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F32bwweINITzwXptD1jK1aV%2F0c63ab5bb5e871132dfe0e1789665986%2FSEO-Report-Template-Example.png&w=3840&q=75',
+  'https://agencyanalytics.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fdfcvkz6j859j%2F7f48bDZWjFCCQH45AUKbUN%2F096b9bbfbb64c3f7fb42e67eefed8620%2FKeyword-Ranking-Report-Template-Example.png&w=3840&q=75'
 ];
 
 interface RollingGalleryProps {
