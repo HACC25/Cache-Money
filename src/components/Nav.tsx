@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import "./Navbar.css";
 import React from "react";
+import "./Navbar.css";
 
 const Header = () => {
   return (
@@ -15,31 +15,29 @@ const Header = () => {
             <span>State of Hawaii</span>
           </a>
 
-          <div className="header-login-container">
-            <Link to="/login">
-              <button type="button" className="header-login-btn">
-                Log In
-              </button>
-            </Link>
-          </div>
+          {/* Nav menu and login grouped together */}
+          <div className="header-right">
+            <div className="header-nav-menu">
+              <ul className="header-nav-list">
+                <li>
+                  <Link to="/">Our ETS Project</Link>
+                </li>
+                <li>
+                  <a href="/overview">Site Overview</a>
+                </li>
+                <li>
+                  <Link to="/projects">View All Projects</Link>
+                </li>
+              </ul>
+            </div>
 
-          <div className="header-nav-menu">
-            <ul className="header-nav-list">
-              <li>
-                <a href="#" className="active">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="#">About</a>
-              </li>
-              <li>
-                <a href="#">Services</a>
-              </li>
-              <li>
-                <a href="#">Contact</a>
-              </li>
-            </ul>
+            <div className="header-login-container">
+              <Link to="/login">
+                <button type="button" className="header-login-btn">
+                  Log In
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </nav>

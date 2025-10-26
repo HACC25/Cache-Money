@@ -5,7 +5,8 @@ import React from "react";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
-import AllReports from "./pages/AllReports";
+import Overview from "./pages/Overview";
+import AllReports from "./pages/AllProjects";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 
@@ -18,7 +19,9 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LogIn />} />
-        <Route path="/reports" element={<AllReports />} />
+        <Route path="/overview" element={<Overview />} />
+
+        <Route path="/projects" element={<AllReports />} />
       </Routes>
       <Footer />
     </BrowserRouter>

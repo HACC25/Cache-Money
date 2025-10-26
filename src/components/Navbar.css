@@ -128,4 +128,10 @@
   .header-login-container {
     order: 2;
   }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Space between nav and login button */
+  }
 }
