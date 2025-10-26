@@ -1,36 +1,24 @@
+import { Container } from "react-bootstrap";
 import LandingNav from "../components/LandingNav";
+
 function Landing() {
   return (
-    <div
-      style={{
-        margin: 0,
-        minHeight: "100vh",
-        backgroundColor: "white",
-      }}
-    >
-      <nav>
-        <LandingNav />
-      </nav>
+    <div style={{ minHeight: "100vh", backgroundColor: "white" }}>
+      <LandingNav />
+
       {/* Main Content */}
-      <main
+      <Container
+        fluid
         style={{
-          padding: "100px 24px 24px 24px",
+          paddingTop: "100px",
+          paddingBottom: "24px",
           maxWidth: "1400px",
-          margin: "0 auto",
-          backgroundColor: "white",
         }}
       >
-        <h2
-          style={{
-            fontSize: "32px",
-            marginBottom: "16px",
-            fontFamily: "Arial, sans-serif",
-            textAlign: "center",
-          }}
-        >
+        <h2 className="text-center mb-4" style={{ fontSize: "32px" }}>
           Welcome to the Landing Page
         </h2>
-      </main>
+      </Container>
     </div>
   );
 }

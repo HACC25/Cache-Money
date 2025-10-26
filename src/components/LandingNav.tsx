@@ -1,39 +1,54 @@
-function Nav() {
+import React from "react";
+import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Search } from "lucide-react";
+
+function LandingNav() {
   return (
-    <div
-      style={{
-        margin: 0,
-        padding: 0,
-        backgroundColor: "white",
-      }}
+    <Navbar
+      bg="white"
+      expand="lg"
+      fixed="top"
+      className="shadow-sm"
+      style={{ padding: "16px 48px" }}
     >
-      {/* Sticky Navbar */}
-      <nav
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "#3B82F6", // Blue color
-          padding: "16px 24px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          zIndex: 1000,
-        }}
-      >
-        <h1
-          style={{
-            color: "white",
-            margin: 0,
-            fontSize: "24px",
-            fontWeight: "bold",
-            fontFamily: "Arial, sans-serif",
-          }}
-        >
-          Create Landing Navbar
-        </h1>
-      </nav>
-    </div>
+      <Container fluid>
+        <Navbar.Brand href="#" className="text-dark fw-medium">
+          Site name
+        </Navbar.Brand>
+
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+          <Nav className="align-items-center" style={{ gap: "32px" }}>
+            <Nav.Link href="#" className="text-dark">
+              ABOUT
+            </Nav.Link>
+            <Nav.Link href="#" className="text-dark">
+              VIEW ALL PROJECTS
+            </Nav.Link>
+            <i
+              className="bi bi-search"
+              style={{
+                fontSize: "20px",
+                color: "black",
+                cursor: "pointer",
+              }}
+            ></i>
+            <Button
+              variant="dark"
+              style={{
+                padding: "10px 24px",
+                borderRadius: "8px",
+                fontWeight: 500,
+              }}
+            >
+              LOGIN PORTAL
+            </Button>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
 
-export default Nav;
+export default LandingNav;
