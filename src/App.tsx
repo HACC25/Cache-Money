@@ -1,7 +1,7 @@
 import './App.css';
 import { Link } from 'react-router-dom';
-import GridDistortion from './GridDistortion.tsx';
-import RollingGallery from './RollingGallery.tsx';
+import GridDistortion from './components/GridDistortion.tsx';
+import RollingGallery from './components/RollingGallery.tsx';
 
 function App() {
   return (
