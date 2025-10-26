@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar, Container, Nav, Button } from "react-bootstrap";
 
-function LandingNav() {
+function PublicNav() {
   return (
     <Navbar
       bg="white"
@@ -50,4 +50,4 @@ function LandingNav() {
   );
 }
 
-export default LandingNav;
+export default PublicNav;

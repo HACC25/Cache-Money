@@ -1,0 +1,16 @@
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  padding: 10px 10px;
+}
+
+.carousel-wrapper {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.carousel-image {
+  width: 100%; /* Custom width */
+  height: 500px; /* Custom height */
+  object-fit: cover; /* or 'cover' */
+}

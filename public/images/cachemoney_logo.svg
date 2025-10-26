@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- Background -->
+  <rect width="400" height="400" fill="#1a1a1a"/>
+  
+  <!-- Graffiti-style background splatter -->
+  <circle cx="100" cy="100" r="40" fill="#16C172" opacity="0.2"/>
+  <circle cx="320" cy="120" r="50" fill="#FFD700" opacity="0.2"/>
+  <circle cx="80" cy="320" r="45" fill="#00BCD4" opacity="0.2"/>
+  <circle cx="340" cy="300" r="35" fill="#E91E63" opacity="0.2"/>
+  
+  <!-- Main text CACHE - graffiti style -->
+  <text x="200" y="180" font-family="Impact, Arial Black, sans-serif" font-size="72" font-weight="bold" fill="none" stroke="#00BCD4" stroke-width="3" text-anchor="middle" letter-spacing="2">CACHE</text>
+  <text x="200" y="180" font-family="Impact, Arial Black, sans-serif" font-size="72" font-weight="bold" fill="#16C172" text-anchor="middle" letter-spacing="2">CACHE</text>
+  
+  <!-- Shadow effect for CACHE -->
+  <text x="203" y="183" font-family="Impact, Arial Black, sans-serif" font-size="72" font-weight="bold" fill="#000" text-anchor="middle" letter-spacing="2" opacity="0.3">CACHE</text>
+  
+  <!-- Main text MONEY - graffiti style -->
+  <text x="200" y="260" font-family="Impact, Arial Black, sans-serif" font-size="72" font-weight="bold" fill="none" stroke="#E91E63" stroke-width="3" text-anchor="middle" letter-spacing="2">MONEY</text>
+  <text x="200" y="260" font-family="Impact, Arial Black, sans-serif" font-size="72" font-weight="bold" fill="#FFD700" text-anchor="middle" letter-spacing="2">MONEY</text>
+  
+  <!-- Shadow effect for MONEY -->
+  <text x="203" y="263" font-family="Impact, Arial Black, sans-serif" font-size="72" font-weight="bold" fill="#000" text-anchor="middle" letter-spacing="2" opacity="0.3">MONEY</text>
+  
+  <!-- Dollar signs decoration -->
+  <text x="80" y="220" font-family="Arial Black, sans-serif" font-size="48" font-weight="bold" fill="#FFD700" opacity="0.6" transform="rotate(-15 80 220)">$</text>
+  <text x="320" y="220" font-family="Arial Black, sans-serif" font-size="48" font-weight="bold" fill="#FFD700" opacity="0.6" transform="rotate(15 320 220)">$</text>
+  
+  <!-- CPU/Chip icon integrated -->
+  <rect x="180" y="100" width="40" height="30" rx="3" fill="#00BCD4" opacity="0.8"/>
+  <rect x="185" y="105" width="30" height="20" rx="2" fill="#1a1a1a"/>
+  <line x1="180" y1="110" x2="175" y2="110" stroke="#00BCD4" stroke-width="2"/>
+  <line x1="180" y1="120" x2="175" y2="120" stroke="#00BCD4" stroke-width="2"/>
+  <line x1="220" y1="110" x2="225" y2="110" stroke="#00BCD4" stroke-width="2"/>
+  <line x1="220" y1="120" x2="225" y2="120" stroke="#00BCD4" stroke-width="2"/>
+  
+  <!-- Underline effects -->
+  <line x1="80" y1="195" x2="320" y2="195" stroke="#00BCD4" stroke-width="4" opacity="0.6"/>
+  <line x1="80" y1="275" x2="320" y2="275" stroke="#E91E63" stroke-width="4" opacity="0.6"/>
+  
+  <!-- Hashtag style decoration -->
+  <text x="200" y="320" font-family="Courier New, monospace" font-size="14" fill="#888" text-anchor="middle">#HACC2025</text>
+  
+  <!-- Corner brackets -->
+  <path d="M 30,30 L 30,60 M 30,30 L 60,30" stroke="#16C172" stroke-width="4" fill="none"/>
+  <path d="M 370,30 L 370,60 M 370,30 L 340,30" stroke="#FFD700" stroke-width="4" fill="none"/>
+  <path d="M 30,370 L 30,340 M 30,370 L 60,370" stroke="#00BCD4" stroke-width="4" fill="none"/>
+  <path d="M 370,370 L 370,340 M 370,370 L 340,370" stroke="#E91E63" stroke-width="4" fill="none"/>
+</svg>
