@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from "react";
+
 // Public components
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
@@ -9,6 +10,7 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 
 function App() {
+  // If user is NOT logged in, show public layout
   return (
     <BrowserRouter>
       <Nav />
