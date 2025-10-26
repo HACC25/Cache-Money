@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
+import React from "react";
+// Public components
+import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import AllReports from "./pages/AllReports";
@@ -9,7 +11,7 @@ import SignUp from "./pages/SignUp";
 function App() {
   return (
     <BrowserRouter>
-      <Header />
+      <Nav />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
