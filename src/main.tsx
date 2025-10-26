@@ -10,3 +10,15 @@ createRoot(document.getElementById("root")!).render(
     <App />
   </StrictMode>
 );
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<LogIn />} />
+        <Route path="/reports" element={<AllReports />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
+  </StrictMode>,
+)

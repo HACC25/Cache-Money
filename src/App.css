@@ -8,4 +8,83 @@ body {
   font-family: "Hanken Grotesk", Arial, sans-serif;
   margin: 0;
   padding: 0;
+@import "tailwindcss"; 
+
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist/Geist-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono/GeistMono-Regular.ttf") format("truetype");
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Geist", monospace;
+  color: #18828C;
+}
+
+p {
+  font-family: "Geist", monospace;
+  color: black;
+}
+
+/* Override for glassmorphism box - make text white */
+.backdrop-blur-lg p,
+[class*="backdrop-blur"] p {
+  color: white !important;
+}
+
+a {
+  font-family: "Geist", monospace;
+  color: #18828C;
+}
+
+div a {
+  color: black;
+}
+
+a span {
+  color: #18828C;
+}
+
+a:hover {
+  color: #0f7a7c;
+}
+
+li a {
+  color: black;
+}
+
+li a:hover {
+  color: #18828C;
+}
+
+a[class*="bg-slate"],
+a[class*="bg-green"] {
+  color: white !important;
+}
+
+a[class*="bg-slate"]:hover,
+a[class*="bg-green"]:hover {
+  color: white !important;
+}
+
+button {
+  font-family: "Geist", monospace;
+  color: #18828C;
+}
+
+button:hover {
+  color: #0f7a7c;
+}
+
+@media (min-width: 768px) {
+    body {
+        background-color: white;
+        font-size: 16px;
+    }
 }
