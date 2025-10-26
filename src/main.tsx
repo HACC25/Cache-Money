@@ -1,15 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
-import Header from './components/Header.tsx'
-import App from './App.tsx'
-import AllReports from './components/AllReports.tsx'
-import Footer from './components/Footer.tsx'
-import LogIn from './components/LogIn.tsx'
-import SignUp from './components/SignUp.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./index.css";
+import Header from "./components/Header";
+import App from "./App";
+import AllReports from "./pages/AllReports";
+import Footer from "./components/Footer";
+import LogIn from "./pages/LogIn";
+import SignUp from "./pages/SignUp";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <Header />
@@ -21,5 +21,5 @@ createRoot(document.getElementById('root')!).render(
       </Routes>
       <Footer />
     </BrowserRouter>
-  </StrictMode>,
-)
+  </StrictMode>
+);

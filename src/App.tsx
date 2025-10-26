@@ -1,7 +1,7 @@
-import './App.css';
-import { Link } from 'react-router-dom';
-import GridDistortion from './components/GridDistortion.tsx';
-import RollingGallery from './components/RollingGallery.tsx';
+import "./App.css";
+import { Link } from "react-router-dom";
+import GridDistortion from "./components/GridDistortion";
+import RollingGallery from "./components/RollingGallery";
 
 function App() {
   return (
@@ -23,38 +23,27 @@ function App() {
 
         <div className="absolute inset-0 z-5 flex items-center justify-center pointer-events-none px-4">
           <div className="text-center max-w-6xl">
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-white mb-8 leading-tight"
-            >
-              <span
-                className="inline-block bg-gradient-to-r from-white via-green-100 to-white bg-clip-text text-transparent drop-shadow-2xl"
-              >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-white mb-8 leading-tight">
+              <span className="inline-block bg-gradient-to-r from-white via-green-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
                 IV&V Project
               </span>
               <br />
-              <span
-                className="inline-block bg-gradient-to-r from-green-200 via-white to-green-200 bg-clip-text text-transparent drop-shadow-2xl"
-              >
+              <span className="inline-block bg-gradient-to-r from-green-200 via-white to-green-200 bg-clip-text text-transparent drop-shadow-2xl">
                 Management
               </span>
             </h1>
 
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-8"
-            >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-8">
               <span className="text-sm font-semibold text-white/90 tracking-wide">
                 State of Hawaii • Enterprise Technology Services
               </span>
             </div>
 
-            <div
-              className="max-w-4xl mx-auto mb-12 bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 shadow-2xl"
-            >
-              <p
-                className="text-lg sm:text-xl md:text-2xl text-white leading-relaxed font-medium"
-              >
-                A comprehensive web application for managing and displaying project review reports and dashboards –
-                provided by the state's Independent Verification and Validation (IV&V) vendors.
+            <div className="max-w-4xl mx-auto mb-12 bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 shadow-2xl">
+              <p className="text-lg sm:text-xl md:text-2xl text-white leading-relaxed font-medium">
+                A comprehensive web application for managing and displaying
+                project review reports and dashboards – provided by the state's
+                Independent Verification and Validation (IV&V) vendors.
               </p>
             </div>
           </div>
@@ -87,16 +76,12 @@ function App() {
         role="main"
       >
         <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 py-16 md:py-20">
-          
           {/* Primary Section*/}
           <section className="mb-20" aria-labelledby="primary-heading">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-
               {/* Left Column - IV&V Reports Card */}
               <article className="flex items-stretch order-2 lg:order-1">
-                <div
-                  className="w-full bg-white rounded-xl shadow-lg p-8 lg:p-10 hover:shadow-xl transition-shadow border border-gray-200"
-                >
+                <div className="w-full bg-white rounded-xl shadow-lg p-8 lg:p-10 hover:shadow-xl transition-shadow border border-gray-200">
                   <div className="flex items-center gap-3 mb-4">
                     <div
                       className="w-1 h-12 bg-green-600 rounded-full"
@@ -115,8 +100,9 @@ function App() {
                   </h2>
 
                   <p className="text-base lg:text-lg text-gray-700 mb-8 leading-relaxed">
-                    Manage project review reports effectively. Access comprehensive IV&V reports to ensure your
-                    projects meet quality and compliance standards.
+                    Manage project review reports effectively. Access
+                    comprehensive IV&V reports to ensure your projects meet
+                    quality and compliance standards.
                   </p>
 
                   <a
@@ -125,8 +111,18 @@ function App() {
                     aria-label="View all IV&V reports"
                   >
                     View Reports
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </a>
                 </div>
@@ -148,15 +144,14 @@ function App() {
                 Key Features
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Explore our comprehensive dashboard capabilities designed for efficient project management
+                Explore our comprehensive dashboard capabilities designed for
+                efficient project management
               </p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
               {/* Feature Card 1 */}
-              <article
-                className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-green-300"
-              >
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-green-300">
                 <div
                   className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors"
                   aria-hidden="true"
@@ -179,14 +174,13 @@ function App() {
                   Report Management
                 </h3>
                 <p className="text-base text-gray-700 leading-relaxed mb-6">
-                  Access and manage all IV&V reports in one centralized location with advanced search and filtering.
+                  Access and manage all IV&V reports in one centralized location
+                  with advanced search and filtering.
                 </p>
               </article>
 
               {/* Feature Card 2 */}
-              <article
-                className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-green-300"
-              >
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-green-300">
                 <div
                   className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors"
                   aria-hidden="true"
@@ -209,14 +203,13 @@ function App() {
                   Dashboard Analytics
                 </h3>
                 <p className="text-base text-gray-700 leading-relaxed mb-6">
-                  View comprehensive analytics and insights from your project data with real-time visualizations.
+                  View comprehensive analytics and insights from your project
+                  data with real-time visualizations.
                 </p>
               </article>
 
               {/* Feature Card 3 */}
-              <article
-                className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-green-300"
-              >
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-green-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-green-300">
                 <div
                   className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-green-200 transition-colors"
                   aria-hidden="true"
@@ -239,7 +232,8 @@ function App() {
                   Vendor Integration
                 </h3>
                 <p className="text-base text-gray-700 leading-relaxed mb-6">
-                  Seamlessly integrate with state IV&V vendor systems and workflows for streamlined operations.
+                  Seamlessly integrate with state IV&V vendor systems and
+                  workflows for streamlined operations.
                 </p>
               </article>
             </div>
@@ -267,9 +261,7 @@ function App() {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div
-                      className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors"
-                    >
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                       <svg
                         className="w-6 h-6 text-green-700"
                         fill="none"
@@ -295,13 +287,19 @@ function App() {
                 </h3>
 
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Comprehensive IV&V assessment of the state portal modernization project, covering security,
-                  scalability, and user experience improvements.
+                  Comprehensive IV&V assessment of the state portal
+                  modernization project, covering security, scalability, and
+                  user experience improvements.
                 </p>
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -317,13 +315,21 @@ function App() {
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </a>
 
               {/* Report Card 2 */}
-              <a href="#" className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all">
+              <a
+                href="#"
+                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -331,13 +337,14 @@ function App() {
                         className="w-6 h-6 text-green-700"
                         fill="none"
                         stroke="currentColor"
-                        viewBox="0 0 24 24">
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">                       
-                        </path>
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -346,7 +353,9 @@ function App() {
                   Healthcare Systems Integration Assessment
                 </h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Independent verification of healthcare data integration systems, ensuring HIPAA compliance and data integrity across platforms.
+                  Independent verification of healthcare data integration
+                  systems, ensuring HIPAA compliance and data integrity across
+                  platforms.
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -360,8 +369,8 @@ function App() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                      </path>
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      ></path>
                     </svg>
                     <span>October 15, 2025</span>
                   </div>
@@ -375,14 +384,17 @@ function App() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M9 5l7 7-7 7">
-                    </path>
+                      d="M9 5l7 7-7 7"
+                    ></path>
                   </svg>
                 </div>
               </a>
 
               {/* Report Card 3 */}
-              <a href="#" className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all">
+              <a
+                href="#"
+                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -396,8 +408,8 @@ function App() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">                         
-                        </path>
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -406,7 +418,9 @@ function App() {
                   Tax Management System Validation Q3 2025
                 </h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Quarterly validation report for the state tax management system, evaluating performance, security measures, and compliance standards.
+                  Quarterly validation report for the state tax management
+                  system, evaluating performance, security measures, and
+                  compliance standards.
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -420,24 +434,32 @@ function App() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">                       
-                      </path>
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      ></path>
                     </svg>
                     <span>October 10, 2025</span>
                   </div>
-                  <svg className="w-5 h-5 text-green-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5 text-green-600 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M9 5l7 7-7 7">                    
-                    </path>
+                      d="M9 5l7 7-7 7"
+                    ></path>
                   </svg>
                 </div>
               </a>
 
               {/* Report Card 4 */}
-              <a href="#" className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all">
+              <a
+                href="#"
+                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -451,8 +473,8 @@ function App() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">                        
-                        </path>
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -461,7 +483,9 @@ function App() {
                   Education Data Platform - Security Audit
                 </h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Comprehensive security audit of the statewide education data platform, covering data protection, access controls, and encryption protocols.
+                  Comprehensive security audit of the statewide education data
+                  platform, covering data protection, access controls, and
+                  encryption protocols.
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -475,8 +499,8 @@ function App() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">             
-                      </path>
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      ></path>
                     </svg>
                     <span>October 5, 2025</span>
                   </div>
@@ -490,14 +514,17 @@ function App() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M9 5l7 7-7 7">                     
-                    </path>
+                      d="M9 5l7 7-7 7"
+                    ></path>
                   </svg>
                 </div>
               </a>
 
               {/* Report Card 5 */}
-              <a href="#" className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all">
+              <a
+                href="#"
+                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -505,14 +532,14 @@ function App() {
                         className="w-6 h-6 text-green-700"
                         fill="none"
                         stroke="currentColor"
-                        viewBox="0 0 24 24">
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        >                          
-                        </path>
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -521,17 +548,24 @@ function App() {
                   E-Permitting System Implementation Review
                 </h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Review of the electronic permitting system implementation, assessing workflow efficiency, user interface design, and regulatory compliance.
+                  Review of the electronic permitting system implementation,
+                  assessing workflow efficiency, user interface design, and
+                  regulatory compliance.
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                      </path>
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      ></path>
                     </svg>
                     <span>September 28, 2025</span>
                   </div>
@@ -545,19 +579,32 @@ function App() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M9 5l7 7-7 7">                   
-                    </path>
+                      d="M9 5l7 7-7 7"
+                    ></path>
                   </svg>
                 </div>
               </a>
 
               {/* Report Card 6 */}
-              <a href="#" className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all">
+              <a
+                href="#"
+                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-green-500 transition-all"
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                      <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      <svg
+                        className="w-6 h-6 text-green-700"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -566,12 +613,24 @@ function App() {
                   Disaster Recovery System - Annual Validation
                 </h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Annual validation of the state disaster recovery and business continuity systems, testing failover procedures and data backup integrity.
+                  Annual validation of the state disaster recovery and business
+                  continuity systems, testing failover procedures and data
+                  backup integrity.
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      ></path>
                     </svg>
                     <span>September 22, 2025</span>
                   </div>
@@ -582,11 +641,11 @@ function App() {
                     viewBox="0 0 24 24"
                   >
                     <path
-                      strokeLinecap="round" 
+                      strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M9 5l7 7-7 7">                    
-                    </path>
+                      d="M9 5l7 7-7 7"
+                    ></path>
                   </svg>
                 </div>
               </a>
@@ -594,8 +653,10 @@ function App() {
 
             {/* View All Reports Button */}
             <div className="text-center mt-12">
-              <Link to="/reports" 
-                 className="inline-flex items-center gap-2 px-8 py-4 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 focus:outline-none transition-all hover:scale-105 shadow-lg">
+              <Link
+                to="/reports"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 focus:outline-none transition-all hover:scale-105 shadow-lg"
+              >
                 View All Reports
                 <svg
                   className="w-5 h-5"
@@ -607,13 +668,12 @@ function App() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="M13 7l5 5m0 0l-5 5m5-5H6">                   
-                  </path>
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  ></path>
                 </svg>
               </Link>
             </div>
           </section>
-
         </div>
       </main>
     </div>

@@ -1,4 +1,4 @@
-@import "tailwindcss"; 
+@import "tailwindcss";
 
 @font-face {
   font-family: "Geist";
@@ -12,9 +12,14 @@
   src: url("/fonts/GeistMono/GeistMono-Regular.ttf") format("truetype");
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Geist", monospace;
-  color: #18828C;
+  color: #18828c;
 }
 
 p {
@@ -30,7 +35,7 @@ p {
 
 a {
   font-family: "Geist", monospace;
-  color: #18828C;
+  color: #18828c;
 }
 
 div a {
@@ -38,7 +43,7 @@ div a {
 }
 
 a span {
-  color: #18828C;
+  color: #18828c;
 }
 
 a:hover {
@@ -50,7 +55,7 @@ li a {
 }
 
 li a:hover {
-  color: #18828C;
+  color: #18828c;
 }
 
 a[class*="bg-slate"],
@@ -65,7 +70,7 @@ a[class*="bg-green"]:hover {
 
 button {
   font-family: "Geist", monospace;
-  color: #18828C;
+  color: #18828c;
 }
 
 button:hover {
@@ -73,8 +78,8 @@ button:hover {
 }
 
 @media (min-width: 768px) {
-    body {
-        background-color: white;
-        font-size: 16px;
-    }
+  body {
+    background-color: white;
+    font-size: 16px;
+  }
 }
