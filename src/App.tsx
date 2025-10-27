@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Overview from "./pages/Overview";
 import AllReports from "./pages/AllProjects";
-import LogIn from "./pages/LogIn";
+import LogIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
 function App() {

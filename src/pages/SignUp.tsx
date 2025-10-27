@@ -1,9 +1,38 @@
+import { useState } from 'react';
+import { createUserWithEmailAndPassword } from "firebase/auth"; 
+import { auth } from "../services/firebase-config";
+import { useNavigate } from 'react-router-dom';
+
+
 const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    await createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed up
+        const user = userCredential.user;
+        console.log('User created:', user);
+        alert('Sign up successful! You can now log in.');
+        navigate('/login');
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error('Error signing up:', errorCode, errorMessage);
+        alert(`Error: ${errorMessage}`);
+      });
+  };
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          src="/public/favicon.png"
           alt="Your Company"
           className="mx-auto h-10 w-auto"
         />
@@ -13,7 +42,12 @@ const SignUp = () => {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6">
+        <form 
+          action="#" 
+          method="POST" 
+          className="space-y-6"
+          onSubmit={handleSignUp}
+        >
           <div>
             <label
               htmlFor="email"
@@ -28,7 +62,10 @@ const SignUp = () => {
                 name="email"
                 required
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                placeholder='example@example.com'
               />
             </div>
           </div>
@@ -48,8 +85,11 @@ const SignUp = () => {
                 type="password"
                 name="password"
                 required
-                autoComplete="current-password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                placeholder='••••••••'
               />
             </div>
           </div>
