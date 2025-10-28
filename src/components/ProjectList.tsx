@@ -20,10 +20,9 @@ interface Props {
     | "light"
     | "dark";
   projects: Project[];
-  onClick?: () => void;
 }
 
-const ProjectList = ({ type, projects, onClick }: Props) => {
+const ProjectList = ({ type, projects }: Props) => {
   return (
     <div className="container text-center">
       <div className="row">
