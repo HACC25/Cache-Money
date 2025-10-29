@@ -1,0 +1,17 @@
+.custom-metric {
+    max-width: 33vw;
+}
+
+.value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10vw;
+    font-weight: bolder;
+}
+
+.metric-name {
+    text-align: center;
+    font-size: 2vw;
+    font-weight: bold;
+}
