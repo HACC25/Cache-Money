@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
-import { sampleProjects, ProjectData } from "../components/sampleData";
+import { sampleProjects, ProjectData } from "../components/SampleData";
 
 const AllProjects = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
