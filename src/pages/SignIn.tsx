@@ -1,4 +1,32 @@
+import { auth } from "../services/firebase-config";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const SignIn = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log('User signed in:', user);
+        alert('Sign in successful!');
+        navigate('/');
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log('Error signing in:', errorCode, errorMessage);
+        alert(`Error: ${errorMessage}`);
+      });
+  };
+    
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -13,7 +41,12 @@ const SignIn = () => {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="#" method="POST" className="space-y-6">
+        <form
+          action="#"
+          method="POST"
+          className="space-y-6"
+          onSubmit={handleSignIn}
+        >
           <div>
             <label
               htmlFor="email"
@@ -28,6 +61,7 @@ const SignIn = () => {
                 name="email"
                 required
                 autoComplete="email"
+                onChange={e => setEmail(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
             </div>
@@ -57,6 +91,7 @@ const SignIn = () => {
                 name="password"
                 required
                 autoComplete="current-password"
+                onChange={e => setPassword(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
             </div>
@@ -84,6 +119,6 @@ const SignIn = () => {
       </div>
     </div>
   );
-};
+  };
 
-export default SignIn;
+  export default SignIn;

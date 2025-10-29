@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Overview from "./pages/Overview";
 import AllReports from "./pages/AllProjects";
-import LogIn from "./pages/SignIn";
+import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<LogIn />} />
+        <Route path="/login" element={<SignIn />} />
         <Route path="/overview" element={<Overview />} />
 
         <Route path="/projects" element={<AllReports />} />
