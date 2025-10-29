@@ -1,6 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ProjectData } from "./sampleData";
+import { ProjectData } from "./SampleData";
 
 interface ProjectCardProps {
   project: ProjectData;
