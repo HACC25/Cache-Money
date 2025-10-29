@@ -1,6 +1,5 @@
 import Carousel from "../components/Carousel";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
 import "./Overview.css";
 import Metrics from "../components/Metrics";
 import ProjectList from "../components/ProjectList";
@@ -20,24 +19,27 @@ const data = [
 const Overview = () => {
   return (
     <div className="top-pad">
-      <h1 className="header">Office of Enterprise Technology Services</h1>
-      <h6>ABOUT US</h6>
+      <h1 className="p-1 p-md-2 py-lg-4 container">
+        Office of Enterprise Technology Services
+      </h1>
+      <h5 className="container">ABOUT US</h5>
       {/* Carousle */}
-      <Carousel></Carousel>
+      <div className="p-1 p-md-2 py-lg-4 container">
+        <Carousel></Carousel>
+      </div>
 
       {/* View all projects button */}
-      <Link
-        to="/projects"
-        className="text-decoration-none d-flex justify-content-end"
-      >
-        <Button>VIEW ALL ETS PROJECTS</Button>
-      </Link>
+      <div className="p-1 p-md-2 py-lg-4 text-decoration-none d-flex justify-content-end container">
+        <Button link="/projects">VIEW ALL ETS PROJECTS</Button>
+      </div>
 
-      <h1 className="header">ETS PROJECT METRIC OVERVIEW</h1>
+      <h1 className="p-1 p-md-2 py-lg-4 container">
+        ETS PROJECT METRIC OVERVIEW
+      </h1>
 
       {/* Metrics */}
-      <div className="container">
-        <div className="row">
+      <div className="p-1 p-md-2 py-lg-4 container">
+        <div className="row width">
           <div className="col">
             <Metrics value={20} metric="ACTIVE PROJECTS"></Metrics>
           </div>
@@ -50,18 +52,19 @@ const Overview = () => {
         </div>
       </div>
 
-      <h1 className="header">ETS PROJECT METRIC QUICK DASHBOARD</h1>
+      <h1 className="p-1 p-md-2 py-lg-4 container">
+        ETS PROJECT METRIC QUICK DASHBOARD
+      </h1>
 
       {/* List of projects */}
-      <ProjectList projects={data} type="light"></ProjectList>
+      <div className="p-1 p-md-2 py-lg-4">
+        <ProjectList projects={data} type="light"></ProjectList>
+      </div>
 
       {/* View all projects button */}
-      <Link
-        to="/projects"
-        className="text-decoration-none d-flex justify-content-end"
-      >
-        <Button>VIEW ALL ETS PROJECTS</Button>
-      </Link>
+      <div className="p-1 p-md-2 py-lg-4 text-decoration-none d-flex justify-content-end container">
+        <Button link="/projects">VIEW ALL ETS PROJECTS</Button>
+      </div>
     </div>
   );
 };

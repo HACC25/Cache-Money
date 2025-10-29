@@ -9,12 +9,12 @@
 }
 
 .name {
-    font-size: 2.5vw;
+    font-size: 2.1vw;
     text-align: left !important;
 }
 
 .rating {
-    font-size: 2.5vw;
+    font-size: 2.1vw;
     text-align: right !important;
-    font-weight: 600;
+    font-weight: 400;
 }

@@ -33,7 +33,7 @@ const ProjectList = ({ type, projects }: Props) => {
                 "text-dark list-group-item grid-design list-group-item-" + type
               }
             >
-              <div className="row">
+              <div className="row p-1 p-md-2 p-lg-3">
                 {projects.link ? (
                   <Link
                     to={projects.link}
@@ -45,18 +45,21 @@ const ProjectList = ({ type, projects }: Props) => {
                   <div className="name col-md-auto">{projects.name}</div>
                 )}
 
-                <div
-                  className={
-                    projects.rating === "Low"
-                      ? "rating col-sm text-success"
-                      : projects.rating === "Medium"
-                      ? "rating col-sm text-warning"
-                      : projects.rating === "High"
-                      ? "rating col-sm text-danger"
-                      : "rating col-sm"
-                  }
-                >
-                  {projects.rating}
+                <div className="rating col-sm">
+                  Criticality Rating:{" "}
+                  <span
+                    className={
+                      projects.rating === "Low"
+                        ? "text-success"
+                        : projects.rating === "Medium"
+                        ? "text-warning"
+                        : projects.rating === "High"
+                        ? "text-danger"
+                        : "text-primary"
+                    }
+                  >
+                    {projects.rating}
+                  </span>
                 </div>
               </div>
             </li>
