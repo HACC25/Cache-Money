@@ -1,7 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
+  const { currentUser, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      alert('Successfully signed out!');
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      alert('Error signing out. Please try again.');
+    }
+  };
+
   return (
     <header>
       <nav className="header-nav">
@@ -31,11 +46,21 @@ const Header = () => {
             </div>
 
             <div className="header-login-container">
-              <Link to="/login">
-                <button type="button" className="header-login-btn">
-                  Log In
+              {currentUser ? (
+                <button 
+                  type="button" 
+                  className="header-login-btn"
+                  onClick={handleSignOut}
+                >
+                  Log Out
                 </button>
-              </Link>
+              ) : (
+                <Link to="/login">
+                  <button type="button" className="header-login-btn">
+                    Log In
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

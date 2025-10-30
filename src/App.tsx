@@ -7,22 +7,25 @@ import Overview from "./pages/Overview";
 import AllReports from "./pages/AllProjects";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   // If user is NOT logged in, show public layout
   return (
-    <BrowserRouter>
-      <Nav />
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/overview" element={<Overview />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Nav />
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/overview" element={<Overview />} />
 
-        <Route path="/projects" element={<AllReports />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+          <Route path="/projects" element={<AllReports />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
