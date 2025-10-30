@@ -12,6 +12,6 @@
 
 .metric-name {
     text-align: center;
-    font-size: 1.9vw;
+    font-size: clamp(0.65rem, 1.6vw, 3rem);
     font-weight: bold;
 }

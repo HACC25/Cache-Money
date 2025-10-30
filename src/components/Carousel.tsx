@@ -6,6 +6,7 @@ const Carousel = () => {
       id="projectCarousel"
       className="carousel slide custom-carousel"
       data-bs-ride="carousel"
+      style={{ border: "3px solid black" }}
     >
       {/* Indicators. Need to be dynamically changed based on number of reports passed in */}
       <div className="carousel-indicators">
