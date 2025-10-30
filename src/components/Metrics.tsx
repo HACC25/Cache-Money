@@ -1,5 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./Metrics.css";
 
 interface Props {
@@ -24,9 +22,9 @@ const Metrics = ({ type = "light", value, metric }: Props) => {
         rel="stylesheet"
       ></link>
       <div className="card-body">
-        <h1 className="value">{value}</h1>
+        <h1 className="value p-2 p-md-4 p-lg-5">{value}</h1>
       </div>
-      <div className="card-header metric-name">{metric}</div>
+      <div className="card-header metric-name p-1 p-md-2 p-lg-3">{metric}</div>
     </div>
   );
 };

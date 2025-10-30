@@ -7,6 +7,8 @@ import Overview from "./pages/Overview";
 import AllReports from "./pages/AllProjects";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function App() {
   // If user is NOT logged in, show public layout

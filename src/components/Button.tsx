@@ -1,6 +1,5 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import "./Button.css";
 
 interface Props {
@@ -14,13 +13,30 @@ interface Props {
     | "light"
     | "dark";
   children: ReactNode;
+  link?: string;
 }
 
-const Button = ({ type = "dark", children }: Props) => {
+const Button = ({ type = "dark", children, link }: Props) => {
   return (
-    <button type="button" className={"custom-button btn btn-outline-" + type}>
-      {children}
-    </button>
+    <div>
+      {link ? (
+        <Link to={link}>
+          <button
+            type="button"
+            className={"custom-button btn btn-outline-" + type}
+          >
+            {children}
+          </button>
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className={"custom-button btn btn-outline-" + type}
+        >
+          {children}
+        </button>
+      )}
+    </div>
   );
 };
 
