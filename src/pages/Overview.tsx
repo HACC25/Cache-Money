@@ -18,11 +18,11 @@ const data = [
 //This page will follow the figma mockup of "Public: landing page displaying: project highlight cart, metrics & more"
 const Overview = () => {
   return (
-    <div className="container top-pad">
+    <div className="container">
       <div className="container">
         <div className="row">
           <h1
-            className="pt-1 py-md-2 py-lg-4"
+            className="pb-1 pb-md-2 pb-lg-4 top-pad"
             style={{ fontSize: "clamp(1rem, 2vw + 1rem, 4rem)" }}
           >
             Office of Enterprise Technology Services
@@ -56,7 +56,7 @@ const Overview = () => {
         <div className="row">
           <h1
             className="pt-1 pt-md-2 pt-lg-4"
-            style={{ fontSize: "clamp(1rem, 2vw + 1rem, 4rem)" }}
+            style={{ fontSize: "clamp(1rem, 2vw + 1rem, 2.5rem)" }}
           >
             ETS PROJECT METRIC OVERVIEW
           </h1>
@@ -94,7 +94,7 @@ const Overview = () => {
         <div className="row">
           <h1
             className="py-1 pt-md-3 py-lg-4"
-            style={{ fontSize: "clamp(1rem, 2vw + 1rem, 4rem)" }}
+            style={{ fontSize: "clamp(1rem, 2vw + 1rem, 2.5rem)" }}
           >
             ETS PROJECT METRIC QUICK DASHBOARD
           </h1>
