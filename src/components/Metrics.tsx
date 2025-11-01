@@ -1,6 +1,5 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./Metrics.css";
+import CountUp from "./CountUp";
 
 interface Props {
   type?:
@@ -18,15 +17,22 @@ interface Props {
 
 const Metrics = ({ type = "light", value, metric }: Props) => {
   return (
-    <div className={"card mb-3 custom-metric text-bg-" + type}>
+    <div
+      className={"card mb-3 custom-metric text-bg-" + type}
+      style={{ border: "3px solid black" }}
+    >
       <link
         href="https://fonts.googleapis.com/css2?family=Jomhuria&display=swap"
         rel="stylesheet"
       ></link>
       <div className="card-body">
-        <h1 className="value">{value}</h1>
+        <h1 className="value px-1 pt-1 px-md-3 pt-md-3 px-lg-4 pt-lg-4 text-white">
+          <CountUp to={value} />
+        </h1>
       </div>
-      <div className="card-header metric-name">{metric}</div>
+      <div className="card-header metric-name p-1 p-md-2 p-lg-3 text-white">
+        {metric}
+      </div>
     </div>
   );
 };
