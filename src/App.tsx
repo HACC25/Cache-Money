@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Public components
-import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Overview from "./pages/Overview";
