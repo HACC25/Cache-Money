@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from "react";
 // Public components
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
