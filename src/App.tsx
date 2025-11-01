@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react";
 // Public components
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
@@ -6,6 +7,8 @@ import Overview from "./pages/Overview";
 import AllReports from "./pages/AllProjects";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
+import ReportDetailPage from "./pages/ReportDetailPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import StaggeredMenu from "./components/StaggeredMenu";
@@ -55,6 +58,11 @@ function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/overview" element={<Overview />} />
           <Route path="/projects" element={<AllReports />} />
+          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route
+            path="/project/:projectId/report/:reportId"
+            element={<ReportDetailPage />}
+          />
         </Routes>
         <Footer />
       </BrowserRouter>
