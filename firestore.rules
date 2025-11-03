@@ -1,18 +1,89 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Get the current user's role from Firestore
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Check if user is ETS employee
+    function isETSEmployee() {
+      return isSignedIn() && getUserRole() == 'ets';
+    }
+    
+    // Check if user is vendor
+    function isVendor() {
+      return isSignedIn() && getUserRole() == 'vendor';
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Users collection rules
+    match /users/{userId} {
+      // Users can read their own document
+      allow read: if isOwner(userId);
+      
+      // Only allow user creation during sign-up
+      // The role will be validated by a Cloud Function if needed
+      allow create: if isOwner(userId) && 
+                      request.resource.data.keys().hasAll(['email', 'role', 'createdAt']) &&
+                      request.resource.data.role in ['public', 'vendor', 'ets'];
+      
+      // Users cannot update their own role (prevent privilege escalation)
+      // Only admins should update roles via Firebase Admin SDK
+      allow update: if false;
+      
+      // Users cannot delete their own account via Firestore
+      allow delete: if false;
+    }
+    
+    // Projects collection rules
+    match /projects/{projectId} {
+      // Anyone can read projects (public access)
+      allow read: if true;
+      
+      // Only ETS employees can create new projects
+      allow create: if isETSEmployee() &&
+                      request.resource.data.keys().hasAll(['name', 'description', 'status', 'createdBy', 'createdAt']) &&
+                      request.resource.data.createdBy == request.auth.uid;
+      
+      // Only ETS employees can update projects
+      allow update: if isETSEmployee();
+      
+      // Only ETS employees can delete projects
+      allow delete: if isETSEmployee();
+      
+      // Reports subcollection rules
+      match /reports/{reportId} {
+        // Anyone can read reports (public access)
+        allow read: if true;
+        
+        // Only vendors can create new reports
+        allow create: if isVendor() &&
+                        request.resource.data.keys().hasAll(['month', 'summary', 'createdBy', 'createdAt']) &&
+                        request.resource.data.createdBy == request.auth.uid;
+        
+        // Only vendors can update reports (optionally restrict to report owner)
+        allow update: if isVendor();
+        
+        // Only vendors can delete reports (optionally restrict to report owner)
+        allow delete: if isVendor();
+      }
+    }
+    
+    // Deny access to all other collections
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 11, 21);
+      allow read, write: if false;
     }
   }
 }
