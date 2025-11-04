@@ -4,6 +4,7 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 
 const AllProjects = () => {
+  // @ts-ignore -- will use projects later
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -3,8 +3,9 @@ import { sampleProjects, ProjectData } from "../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 
-const AllProjects = () => {
-  const [setProjects] = useState<ProjectData[]>([]);
+const ETSDashboard = () => {
+  // @ts-ignore -- will use projects later
+  const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,11 +67,9 @@ const AllProjects = () => {
       <h1 className="mb-4" style={{ fontWeight: "800" }}>
         ETS DASHBOARD ETS DASHBOARD
       </h1>
-      <h1>Project Management</h1>
-
-      <h1>This page will display the ETS Dashboard!</h1>
+      <h1>All Projects</h1>
     </div>
   );
 };
 
-export default AllProjects;
+export default ETSDashboard;
