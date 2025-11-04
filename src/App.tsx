@@ -16,6 +16,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import StaggeredMenu from "./components/StaggeredMenu";
 
+// Vendor components
+import VendorDashboard from "./pages/VendorDashboard";
+// ETS components
+import ETSDashboard from "./pages/ETSDashboard";
+
 function AppContent() {
   const { currentUser, signOut, userRole, isETSEmployee } = useAuth();
   const navigate = useNavigate();
@@ -23,49 +28,87 @@ function AppContent() {
   const handleLogout = async () => {
     try {
       await signOut();
-      alert('Successfully logged out!');
-      navigate('/');
+      alert("Successfully logged out!");
+      navigate("/");
     } catch (error) {
-      console.error('Error signing out:', error);
-      alert('Error signing out. Please try again.');
+      console.error("Error signing out:", error);
+      alert("Error signing out. Please try again.");
     }
   };
 
   const getRoleLabel = () => {
-    if (!userRole) return '';
+    if (!userRole) return "";
     switch (userRole) {
-      case 'ets':
-        return 'ETS Employee';
-      case 'vendor':
-        return 'IV&V Vendor';
-      case 'public':
-        return 'Public User';
+      case "ets":
+        return "ETS Employee";
+      case "vendor":
+        return "IV&V Vendor";
+      case "public":
+        return "Public User";
       default:
-        return 'User';
+        return "User";
     }
   };
 
   const menuItems = currentUser
     ? [
-        { 
+        {
           label: "Logged in as: " + getRoleLabel(),
           ariaLabel: "User Role",
         },
-        { 
-          label: "Log Out", 
-          ariaLabel: "Log Out", 
-          onClick: handleLogout
+        {
+          label: "Log Out",
+          ariaLabel: "Log Out",
+          onClick: handleLogout,
         },
         { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
-        { label: "Site Overview", ariaLabel: "Overview Page", link: "/overview" },
-        { label: "View All Projects", ariaLabel: "All Projects Page", link: "/projects" },
-        ...(isETSEmployee ? [{ label: "Create New Project", ariaLabel: "Create Project", link: "/projects/new" }] : []),
+        {
+          label: "Site Overview",
+          ariaLabel: "Overview Page",
+          link: "/overview",
+        },
+        {
+          label: "View All Projects",
+          ariaLabel: "All Projects Page",
+          link: "/projects",
+        },
+        ...(isETSEmployee
+          ? [
+              {
+                label: "ETS Dashboard",
+                ariaLabel: "ETS Dashboard",
+                link: "/ets/dashboard",
+              },
+              {
+                label: "Create New Project",
+                ariaLabel: "Create Project",
+                link: "/projects/new",
+              },
+            ]
+          : []),
+        ...(userRole === "vendor"
+          ? [
+              {
+                label: "Vendor Dashboard",
+                ariaLabel: "Vendor Dashboard",
+                link: "/vendor/dashboard",
+              },
+            ]
+          : []),
       ]
     : [
         { label: "Log In", ariaLabel: "Login Page", link: "/login" },
         { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
-        { label: "Site Overview", ariaLabel: "Overview Page", link: "/overview" },
-        { label: "View All Projects", ariaLabel: "All Projects Page", link: "/projects" },
+        {
+          label: "Site Overview",
+          ariaLabel: "Overview Page",
+          link: "/overview",
+        },
+        {
+          label: "View All Projects",
+          ariaLabel: "All Projects Page",
+          link: "/projects",
+        },
       ];
 
   return (
@@ -105,7 +148,7 @@ function AppContent() {
           path="/project/:projectId/report/:reportId"
           element={<ReportDetailPage />}
         />
-        
+
         <Route
           path="/projects/new"
           element={
@@ -119,6 +162,24 @@ function AppContent() {
           element={
             <RequireRole allowedRoles={["ets"]}>
               <EditProject />
+            </RequireRole>
+          }
+        />
+        {/* Vendor Dashboard */}
+        <Route
+          path="/vendor/dashboard"
+          element={
+            <RequireRole allowedRoles={["vendor"]}>
+              <VendorDashboard />
+            </RequireRole>
+          }
+        />
+        {/* ETS Dashboard */}
+        <Route
+          path="/ets/dashboard"
+          element={
+            <RequireRole allowedRoles={["ets"]}>
+              <ETSDashboard />
             </RequireRole>
           }
         />
