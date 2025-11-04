@@ -67,6 +67,7 @@ export interface ProjectData {
   budget: number;
   spent: number;
   vendor: string;
+  vendorId?: string;
   reports: ProjectReport[];
 }
 
@@ -85,6 +86,7 @@ export const sampleProjects: ProjectData[] = [
     budget: 10000000,
     spent: 3000000,
     vendor: "Health Systems Technology Partners",
+    vendorId: "vendor1",
     reports: [
       {
         id: "report-1-1",
@@ -268,6 +270,7 @@ export const sampleProjects: ProjectData[] = [
     budget: 8700000,
     spent: 3450000,
     vendor: "Hawaiian Systems Integration",
+    vendorId: "vendor1",
     reports: [
       {
         id: "report-2-1",

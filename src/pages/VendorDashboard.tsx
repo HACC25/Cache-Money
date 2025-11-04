@@ -1,53 +1,31 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import ProjectCard from "../components/VendorProjectCard";
 import { sampleProjects, ProjectData } from "../components/SampleData";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase-config";
 
-const AllProjects = () => {
-  // @ts-ignore -- will use projects later
-  const [projects, setProjects] = useState<ProjectData[]>([]);
+const VendorDashboard = () => {
+  const [activeTab, setActiveTab] = useState("assigned"); // "assigned" or "reports"
+  const [assignedProjects, setAssignedProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useAuth();
+
+  // Mock the current vendor ID - in a real app, this would come from auth system
+  const currentVendorId = "vendor1";
 
   useEffect(() => {
-    // Load from Firestore with real-time updates
-    const unsubscribe = onSnapshot(
-      collection(db, "projects"),
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            description: data.description || "",
-            status: data.status || "Active",
-            statusColor: data.statusColor || "#28a745",
-            metric1: data.metric1 || "",
-            metric2: data.metric2 || "",
-            startDate: data.startDate || "",
-            department: data.department || "",
-            budget: data.budget || "",
-            spent: data.spent || "",
-            vendor: data.vendor || "",
-            reports: data.reports || [],
-          } as ProjectData;
-        });
+    // Simulate fetching data from backend
+    const fetchAssignedProjects = () => {
+      // Filter projects assigned to the current vendor
+      const filteredProjects = sampleProjects.filter(
+        (project) => project.vendorId === currentVendorId
+      );
 
-        // Combine Firestore projects with sample projects
-        // Firestore projects first, then sample projects
-        const allProjects = [...firestoreProjects, ...sampleProjects];
-        setProjects(allProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        // Fallback to sample projects if Firestore fails
-        setProjects(sampleProjects);
-        setLoading(false);
-      }
-    );
+      setAssignedProjects(filteredProjects);
+      setLoading(false);
+    };
 
-    return () => unsubscribe();
-  }, []);
+    fetchAssignedProjects();
+  }, [currentVendorId]);
 
   if (loading) {
     return (
@@ -65,11 +43,35 @@ const AllProjects = () => {
     <div className="container mt-5">
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
       <h1 className="mb-4" style={{ fontWeight: "800" }}>
-        VENDOR DASHBOARD VENDOR DASHBOARD
+        VENDOR DASHBOARD
       </h1>
-      <h1>Assigned Projects</h1>
+
+      {activeTab === "assigned" && (
+        <>
+          <h2 className="mb-3">Projects assigned to you</h2>
+
+          {assignedProjects.length === 0 ? (
+            <div className="alert alert-info">
+              No projects have been assigned to your vendor account yet.
+            </div>
+          ) : (
+            assignedProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))
+          )}
+        </>
+      )}
+
+      {activeTab === "reports" && (
+        <>
+          <h2 className="mb-3">My Reports</h2>
+          <div className="alert alert-info">
+            This tab will show all reports you've created across all projects.
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default AllProjects;
+export default VendorDashboard;
