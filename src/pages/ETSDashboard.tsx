@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import ProjectCard from "../components/ProjectCard";
 import { sampleProjects, ProjectData } from "../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 
 const AllProjects = () => {
-  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
