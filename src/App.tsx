@@ -48,14 +48,12 @@ function AppContent() {
   const menuItems = currentUser
     ? [
         { 
-          label: getRoleLabel(),
+          label: "Logged in as: " + getRoleLabel(),
           ariaLabel: "User Role",
-          link: "#",
         },
         { 
           label: "Log Out", 
           ariaLabel: "Log Out", 
-          link: "#",
           onClick: handleLogout
         },
         { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },

@@ -171,6 +171,11 @@ const ProjectDetailPage: React.FC = () => {
           {isVendor && " Click 'Add Report' to create the first report."}
         </div>
       )}
+      <div>
+          <Link to="/projects" className="btn btn-secondary me-8 mb-8">
+            Back to All Projects
+          </Link>
+        </div>
     </div>
   );
 };
