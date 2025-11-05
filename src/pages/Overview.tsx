@@ -121,19 +121,18 @@ const Overview = () => {
       </div>
 
       {/* Follow ETS */}
-      <div style={{ backgroundColor: "lightgray" }}>
-        <div className="container">
-          <div className="row">
-            <div className="col-6">
-              <h1>Want to follow the ETS Projects?</h1>
-              <p>
-                Provide your email to receive notifications for new projects and
-                reports
-              </p>
-            </div>
-            <div className="col-5 offset-1">
-              <Follow></Follow>
-            </div>
+      <hr></hr>
+      <div className="container">
+        <div className="row pt-4">
+          <h1 style={{ fontSize: "clamp(1rem, 2vw + 1rem, 3rem)" }}>
+            Want to follow the ETS Projects?
+          </h1>
+          <p style={{ fontSize: "clamp(1rem, 2.8vw, 2rem)" }}>
+            Provide your email to receive notifications for new projects and
+            reports
+          </p>
+          <div className="pb-5">
+            <Follow></Follow>
           </div>
         </div>
       </div>
