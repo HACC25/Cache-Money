@@ -1,31 +1,48 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createUserWithEmailAndPassword } from "firebase/auth"; 
-import { auth } from "../services/firebase-config";
+import { auth, db } from "../services/firebase-config";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../contexts/AuthContext";
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'public' | 'vendor' | 'ets'>('public');
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/');
+    }
+  }, [currentUser, navigate]);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed up
-        const user = userCredential.user;
-        console.log('User created:', user);
-        alert('Sign up successful! You can now log in.');
-        navigate('/login');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error('Error signing up:', errorCode, errorMessage);
-        alert(`Error: ${errorMessage}`);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Create user document in Firestore with selected role
+      await setDoc(doc(db, 'users', user.uid), {
+        email: email,
+        role: role,
+        createdAt: serverTimestamp(),
       });
+      
+      console.log('User created with role:', role);
+      alert(`Sign up successful! You have been assigned the role: ${role.toUpperCase()}`);
+      navigate('/login');
+    } catch (error: unknown) {
+      const errorCode = (error as { code: string }).code;
+      const errorMessage = (error as { message: string }).message;
+      console.error('Error signing up:', errorCode, errorMessage);
+      alert(`Error: ${errorMessage}`);
+    }
   };
 
   return (
@@ -92,6 +109,31 @@ const SignUp = () => {
                 placeholder='••••••••'
               />
             </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="role"
+              className="block text-sm/6 font-medium text-gray-900"
+            >
+              Select Your Role
+            </label>
+            <div className="mt-2">
+              <select
+                id="role"
+                name="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as 'public' | 'vendor' | 'ets')}
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              >
+                <option value="public">Public User (Read-only)</option>
+                <option value="vendor">IV&V Vendor (Create/Edit Reports)</option>
+                <option value="ets">ETS Employee (Manage Projects)</option>
+              </select>
+            </div>
+            <p className="mt-2 text-sm text-gray-500">
+              Choose your role based on your access needs
+            </p>
           </div>
 
           <div>

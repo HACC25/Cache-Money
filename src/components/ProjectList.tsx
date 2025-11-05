@@ -31,19 +31,19 @@ const ProjectList = ({ type, projects }: Props) => {
                 "text-dark list-group-item grid-design list-group-item-" + type
               }
             >
-              <div className="row p-1 p-md-2 p-lg-3">
+              <div className="row p-1 p-md-2 p-lg-3 align-items-center">
                 {projects.link ? (
                   <Link
                     to={projects.link}
-                    className="text-decoration-none name col-md-auto"
+                    className="text-decoration-none name col-8"
                   >
                     <div>{projects.name}</div>
                   </Link>
                 ) : (
-                  <div className="name col-md-auto">{projects.name}</div>
+                  <div className="name col-8">{projects.name}</div>
                 )}
 
-                <div className="rating col-sm">
+                <div className="rating col-4">
                   Criticality Rating:{" "}
                   <span
                     className={

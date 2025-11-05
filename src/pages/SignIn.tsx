@@ -1,32 +1,68 @@
-import { auth } from "../services/firebase-config";
+import { auth, db } from "../services/firebase-config";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { doc, getDoc } from "firebase/firestore";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { refreshUserRole } = useAuth();
 
-  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log('User signed in:', user);
-        alert('Sign in successful!');
-        navigate('/');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log('Error signing in:', errorCode, errorMessage);
-        alert(`Error: ${errorMessage}`);
-      });
+    try {
+      // 1. Sign in with Firebase
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      console.log("User signed in:", user.uid);
+
+      // 2. Directly fetch role from Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userDocRef);
+
+      // 3. Refresh role in AuthContext to ensure consistency
+      await refreshUserRole();
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const userRole = userData.role;
+        console.log("User role fetched:", userRole);
+
+        // 4. Navigate based on role
+        if (userRole === "vendor") {
+          console.log("Navigating to vendor dashboard");
+          navigate("/vendor/dashboard");
+        } else if (userRole === "ets") {
+          console.log("Navigating to vendor dashboard (for ETS)");
+          navigate("/ets/dashboard");
+        } else {
+          console.log("Navigating to home");
+          navigate("/");
+        }
+      } else {
+        console.log("No user data found, navigating to home");
+        navigate("/");
+      }
+
+      alert("Sign in successful!");
+    } catch (error: any) {
+      console.error("Error signing in:", error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
-    
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -61,7 +97,7 @@ const SignIn = () => {
                 name="email"
                 required
                 autoComplete="email"
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
             </div>
@@ -91,7 +127,7 @@ const SignIn = () => {
                 name="password"
                 required
                 autoComplete="current-password"
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               />
             </div>
@@ -100,9 +136,10 @@ const SignIn = () => {
           <div>
             <button
               type="submit"
+              disabled={isLoading}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>
@@ -119,6 +156,6 @@ const SignIn = () => {
       </div>
     </div>
   );
-  };
+};
 
-  export default SignIn;
+export default SignIn;
