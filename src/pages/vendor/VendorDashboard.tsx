@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import ProjectCard from "../components/VendorProjectCard";
-import { sampleProjects, ProjectData } from "../components/SampleData";
+import { useAuth } from "../../contexts/AuthContext";
+import ProjectCard from "../../components/VendorProjectCard";
+import { sampleProjects, ProjectData } from "../../components/SampleData";
 
 const VendorDashboard = () => {
   const [activeTab] = useState("assigned"); // "assigned" or "reports"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { sampleProjects, ProjectData } from "../components/SampleData";
+import { sampleProjects, ProjectData } from "../../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase-config";
+import { db } from "../../services/firebase-config";
 
 const ETSDashboard = () => {
   // @ts-ignore -- will use projects later
