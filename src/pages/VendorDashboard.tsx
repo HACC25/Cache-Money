@@ -4,10 +4,12 @@ import ProjectCard from "../components/VendorProjectCard";
 import { sampleProjects, ProjectData } from "../components/SampleData";
 
 const VendorDashboard = () => {
-  const [activeTab, setActiveTab] = useState("assigned"); // "assigned" or "reports"
+  const [activeTab] = useState("assigned"); // "assigned" or "reports"
   const [assignedProjects, setAssignedProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
-  const { currentUser } = useAuth();
+  const {
+    /*currentUser */
+  } = useAuth();
 
   // Mock the current vendor ID - in a real app, this would come from auth system
   const currentVendorId = "vendor1";
