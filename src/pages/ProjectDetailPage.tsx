@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ProjectDetail from "../components/ProjectDetail";
-import { sampleProjects, ProjectData, ProjectReport } from "../components/SampleData";
+import {
+  sampleProjects,
+  ProjectData,
+  ProjectReport,
+} from "../components/SampleData";
 import { useAuth } from "../contexts/AuthContext";
 import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
@@ -18,7 +22,10 @@ const ProjectDetailPage: React.FC = () => {
   const [reports, setReports] = useState<ReportData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFirestoreProject, setIsFirestoreProject] = useState(false);
-  const { isETSEmployee, isVendor } = useAuth();
+  const { isETSEmployee, isVendor, vendorId } = useAuth();
+
+  // Check if the current vendor is assigned to this project
+  // const isAssignedVendor = isVendor && project?.vendorId === vendorId;
 
   useEffect(() => {
     if (!projectId) return;
@@ -28,38 +35,42 @@ const ProjectDetailPage: React.FC = () => {
 
       // First, try to load from Firestore
       try {
-        const projectRef = doc(db, 'projects', projectId);
+        const projectRef = doc(db, "projects", projectId);
         const projectSnap = await getDoc(projectRef);
 
         if (projectSnap.exists()) {
           const data = projectSnap.data();
           console.log("Found project in Firestore:", data.name);
           setIsFirestoreProject(true);
-          
+
           setProject({
             id: projectId,
-            name: data.name || 'Unnamed Project',
-            description: data.description || '',
-            status: data.status || 'Active',
-            statusColor: data.statusColor || '#28a745',
-            metric1: data.metric1 || '',
-            metric2: data.metric2 || '',
-            startDate: data.startDate || '',
-            department: data.department || '',
-            budget: data.budget || '',
-            spent: data.spent || '',
-            vendor: data.vendor || '',
+            name: data.name || "Unnamed Project",
+            description: data.description || "",
+            status: data.status || "Active",
+            statusColor: data.statusColor || "#28a745",
+            metric1: data.metric1 || "",
+            metric2: data.metric2 || "",
+            startDate: data.startDate || "",
+            department: data.department || "",
+            budget: data.budget || "",
+            spent: data.spent || "",
+            vendor: data.vendor || "",
+            vendorId: data.vendorId || "",
             reports: [],
           } as ProjectData);
 
           // Set up real-time listener for reports
-          const reportsRef = collection(db, 'projects', projectId, 'reports');
+          const reportsRef = collection(db, "projects", projectId, "reports");
           const unsubscribe = onSnapshot(reportsRef, (snapshot) => {
-            const reportsList = snapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data(),
-              date: doc.data().createdAt?.toDate?.() || new Date(),
-            } as ReportData));
+            const reportsList = snapshot.docs.map(
+              (doc) =>
+                ({
+                  id: doc.id,
+                  ...doc.data(),
+                  date: doc.data().createdAt?.toDate?.() || new Date(),
+                } as ReportData)
+            );
             console.log("Loaded reports from Firestore:", reportsList.length);
             setReports(reportsList);
           });
@@ -87,7 +98,7 @@ const ProjectDetailPage: React.FC = () => {
     const unsubscribe = loadProject();
     return () => {
       if (unsubscribe instanceof Promise) {
-        unsubscribe.then(unsub => unsub?.());
+        unsubscribe.then((unsub) => unsub?.());
       }
     };
   }, [projectId]);
@@ -115,28 +126,49 @@ const ProjectDetailPage: React.FC = () => {
     );
   }
 
+  // Check if the current vendor is assigned to this project after project is loaded
+  const isVendorAssignedToProject = isVendor && project.vendorId === vendorId;
+
   return (
     <div className="container mt-5">
+      <div>
+        <Link
+          to={isVendor ? "/vendor/dashboard" : "/projects"}
+          className="btn btn-secondary me-8 mb-8"
+        >
+          Back to {isVendor ? "Vendor Dashboard" : "All Projects"}
+        </Link>
+      </div>
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
-      
+
       <div className="d-flex justify-content-between align-items-start mb-4">
-        <h1 style={{ fontWeight: "800" }}>
-          {project.name}
-        </h1>
+        <h1 style={{ fontWeight: "800" }}>{project.name}</h1>
         <div>
           {isFirestoreProject && isETSEmployee && (
-            <Link to={`/project/${projectId}/edit`} className="btn btn-secondary me-2">
+            <Link
+              to={`/project/${projectId}/edit`}
+              className="btn btn-secondary me-2"
+            >
               Edit Project
             </Link>
           )}
-          {isFirestoreProject && isVendor && (
-            <Link to={`/project/${projectId}/report/new`} className="btn btn-primary">
+          {isFirestoreProject && isVendorAssignedToProject ? (
+            <Link
+              to={`/project/${projectId}/report/new`}
+              className="btn btn-primary"
+            >
               <i className="bi bi-plus-circle me-2"></i>
               Add Monthly Report
             </Link>
-          )}
+          ) : isFirestoreProject && isVendor && !isVendorAssignedToProject ? (
+            <span className="badge bg-warning text-dark">
+              Not Assigned to Your Vendor Account
+            </span>
+          ) : null}
           {!isFirestoreProject && (
-            <span className="badge bg-info text-dark">Sample Project (Read-Only)</span>
+            <span className="badge bg-info text-dark">
+              Sample Project (Read-Only)
+            </span>
           )}
         </div>
       </div>
@@ -168,14 +200,10 @@ const ProjectDetailPage: React.FC = () => {
       ) : (
         <div className="alert alert-info">
           No reports available for this project yet.
-          {isVendor && " Click 'Add Report' to create the first report."}
+          {isVendorAssignedToProject &&
+            " Click 'Add Report' to create the first report."}
         </div>
       )}
-      <div>
-          <Link to="/projects" className="btn btn-secondary me-8 mb-8">
-            Back to All Projects
-          </Link>
-        </div>
     </div>
   );
 };
