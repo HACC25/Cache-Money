@@ -17,9 +17,11 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import StaggeredMenu from "./components/StaggeredMenu";
 
 // Vendor components
-import VendorDashboard from "./pages/VendorDashboard";
+import VendorDashboard from "./pages/vendor/VendorDashboard";
+// Add : import CreateReport from "./pages/vendor/VendorDashboard";
+
 // ETS components
-import ETSDashboard from "./pages/ETSDashboard";
+import ETSDashboard from "./pages/ets/ETSDashboard";
 
 function AppContent() {
   const { currentUser, signOut, userRole, isETSEmployee } = useAuth();
@@ -92,6 +94,11 @@ function AppContent() {
                 label: "Vendor Dashboard",
                 ariaLabel: "Vendor Dashboard",
                 link: "/vendor/dashboard",
+              },
+              {
+                label: "Create Report",
+                ariaLabel: "Vendor Report",
+                link: "/vendor/create-report",
               },
             ]
           : []),
