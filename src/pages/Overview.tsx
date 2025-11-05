@@ -3,12 +3,13 @@ import Button from "../components/Button";
 import "./Overview.css";
 import Metrics from "../components/Metrics";
 import ProjectList from "../components/ProjectList";
+import Follow from "../components/Follow";
 
 const data = [
   {
     name: "Keiki Replatform Off Mainframe Project",
     rating: "Low",
-    link: "./projects",
+    link: "/projects",
   },
   { name: "Business Registration Modernization", rating: "Medium" },
   { name: "Integrated Case Management System", rating: "High" },
@@ -18,7 +19,7 @@ const data = [
 //This page will follow the figma mockup of "Public: landing page displaying: project highlight cart, metrics & more"
 const Overview = () => {
   return (
-    <div className="container">
+    <div className="">
       <div className="container">
         <div className="row">
           <h1
@@ -67,7 +68,7 @@ const Overview = () => {
       <div className="container">
         <div className="row">
           <div className="py-1 py-md-2 py-lg-4">
-            <div className="row width">
+            <div className="row">
               <div className="col">
                 <Metrics
                   value={20}
@@ -115,6 +116,24 @@ const Overview = () => {
         <div className="row">
           <div className="py-1 py-md-2 py-lg-4 text-decoration-none d-flex justify-content-end">
             <Button link="/projects">VIEW ALL ETS PROJECTS</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Follow ETS */}
+      <div style={{ backgroundColor: "lightgray" }}>
+        <div className="container">
+          <div className="row">
+            <div className="col-6">
+              <h1>Want to follow the ETS Projects?</h1>
+              <p>
+                Provide your email to receive notifications for new projects and
+                reports
+              </p>
+            </div>
+            <div className="col-5 offset-1">
+              <Follow></Follow>
+            </div>
           </div>
         </div>
       </div>
