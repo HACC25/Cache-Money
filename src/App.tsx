@@ -104,7 +104,6 @@ function AppContent() {
           : []),
       ]
     : [
-        { label: "Log In", ariaLabel: "Login Page", link: "/login" },
         { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
