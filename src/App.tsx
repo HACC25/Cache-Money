@@ -18,7 +18,7 @@ import StaggeredMenu from "./components/StaggeredMenu";
 
 // Vendor components
 import VendorDashboard from "./pages/vendor/VendorDashboard";
-// Add : import CreateReport from "./pages/vendor/VendorDashboard";
+import ReportForm from "./components/forms/ReportForm";
 
 // ETS components
 import ETSDashboard from "./pages/ets/ETSDashboard";
@@ -98,7 +98,7 @@ function AppContent() {
               {
                 label: "Create Report",
                 ariaLabel: "Vendor Report",
-                link: "/vendor/create-report",
+                link: "/vendor/dashboard",
               },
             ]
           : []),
@@ -178,6 +178,14 @@ function AppContent() {
           element={
             <RequireRole allowedRoles={["vendor"]}>
               <VendorDashboard />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/add-report/:projectId"
+          element={
+            <RequireRole allowedRoles={["vendor"]}>
+              <ReportForm />
             </RequireRole>
           }
         />
