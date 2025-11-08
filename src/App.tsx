@@ -22,6 +22,7 @@ import VendorDashboard from "./pages/vendor/VendorDashboard";
 
 // ETS components
 import ETSDashboard from "./pages/ets/ETSDashboard";
+import ETSStatistics from "./pages/ets/ETSStatistics";
 
 function AppContent() {
   const { currentUser, signOut, userRole, isETSEmployee } = useAuth();
@@ -186,6 +187,15 @@ function AppContent() {
           element={
             <RequireRole allowedRoles={["ets"]}>
               <ETSDashboard />
+            </RequireRole>
+          }
+        />
+        {/* ETS Statistics*/}
+        <Route
+          path="/ets/statistics"
+          element={
+            <RequireRole allowedRoles={["ets"]}>
+              <ETSStatistics />
             </RequireRole>
           }
         />
