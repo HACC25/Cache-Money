@@ -17,7 +17,9 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import StaggeredMenu from "./components/StaggeredMenu";
 
 // Vendor components
-import VendorDashboard from "./pages/VendorDashboard";
+import VendorDashboard from "./pages/vendor/VendorDashboard";
+// Add : import CreateReport from "./pages/vendor/VendorDashboard";
+
 // ETS components
 import ETSDashboard from "./pages/ets/ETSDashboard";
 import ETSStatistics from "./pages/ets/ETSStatistics";
@@ -37,32 +39,8 @@ function AppContent() {
     }
   };
 
-  const getRoleLabel = () => {
-    if (!userRole) return "";
-    switch (userRole) {
-      case "ets":
-        return "ETS Employee";
-      case "vendor":
-        return "IV&V Vendor";
-      case "public":
-        return "Public User";
-      default:
-        return "User";
-    }
-  };
-
   const menuItems = currentUser
     ? [
-        {
-          label: "Logged in as: " + getRoleLabel(),
-          ariaLabel: "User Role",
-        },
-        {
-          label: "Log Out",
-          ariaLabel: "Log Out",
-          onClick: handleLogout,
-        },
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -94,12 +72,15 @@ function AppContent() {
                 ariaLabel: "Vendor Dashboard",
                 link: "/vendor/dashboard",
               },
+              {
+                label: "Create Report",
+                ariaLabel: "Vendor Report",
+                link: "/vendor/create-report",
+              },
             ]
           : []),
       ]
     : [
-        { label: "Log In", ariaLabel: "Login Page", link: "/login" },
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -113,7 +94,7 @@ function AppContent() {
       ];
 
   return (
-    <div style={{ paddingTop: "100px" }}>
+    <div className="app-root">
       <div
         style={{
           position: "fixed",
@@ -128,6 +109,10 @@ function AppContent() {
         <StaggeredMenu
           position="right"
           items={menuItems}
+          authAction={handleLogout}
+          currentUser={currentUser}
+          userRole={userRole}
+          isETSEmployee={isETSEmployee}
           displaySocials={false}
           displayItemNumbering={false}
           menuButtonColor="#000"

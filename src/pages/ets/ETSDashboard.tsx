@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { sampleProjects, ProjectData } from "../../components/SampleData";
+import { sampleProjects, ProjectData } from "../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";

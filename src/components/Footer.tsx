@@ -78,11 +78,11 @@ const Footer = () => (
         </span>
 
         <div className="footer-social">
-          <a href="#" aria-label="Facebook page">
+          <a href="https://www.facebook.com/ETSHawaii" target="_blank" rel="noopener noreferrer" aria-label="Facebook page">
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
+              className="fill-blue-600"
               viewBox="0 0 8 19"
             >
               <path
@@ -93,11 +93,11 @@ const Footer = () => (
             </svg>
             <span className="sr-only">Facebook page</span>
           </a>
-          <a href="#" aria-label="Twitter page">
+          <a href="https://x.com/ETSHIgov/" target="_blank" rel="noopener noreferrer" aria-label="Twitter page">
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
+              className="fill-blue-400"
               viewBox="0 0 20 17"
             >
               <path
