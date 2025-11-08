@@ -41,7 +41,6 @@ function AppContent() {
 
   const menuItems = currentUser
     ? [
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -82,7 +81,6 @@ function AppContent() {
           : []),
       ]
     : [
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -96,7 +94,7 @@ function AppContent() {
       ];
 
   return (
-    <div style={{ paddingTop: "100px" }}>
+    <div className="app-root">
       <div
         style={{
           position: "fixed",
