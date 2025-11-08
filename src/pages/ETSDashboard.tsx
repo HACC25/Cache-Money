@@ -1,7 +1,68 @@
 import { useEffect, useState } from "react";
 import { sampleProjects, ProjectData } from "../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase-config";
+import { db } from "../../services/firebase-config";
+import ButtonGroup from "../../components/ButtonGroup";
+import AllProjectsTable from "../../components/AllProjectsTable";
+
+const sample_data = [
+  {
+    vendor_name: "Health Systems Technology Partners",
+    vendor_projects: [
+      {
+        name: "BHA System Modernization",
+        calculated_risk: "Low",
+        schedule: 50,
+        total_reports: 10,
+        description:
+          "Modernization of behavioral health management systems to improve service delivery and patient outcomes across Hawaii.",
+        startDate: "2023-06-15",
+        endDate: "Ongoing",
+        budget: 10000000,
+        spent: 3000000,
+      },
+      {
+        name: "Test 2",
+        calculated_risk: "High",
+        schedule: 10,
+        total_reports: 2,
+        description: "blah blah blah blah bleh bleh bleh",
+        startDate: "2023-06-15",
+        endDate: "2024-08-09",
+        budget: 95000000,
+        spent: 83888111,
+      },
+    ],
+  },
+  {
+    vendor_name: "Test Vendor",
+    vendor_projects: [
+      {
+        name: "BHA System Modernization",
+        calculated_risk: "Low",
+        schedule: 50,
+        total_reports: 10,
+        description:
+          "Modernization of behavioral health management systems to improve service delivery and patient outcomes across Hawaii.",
+        startDate: "2023-06-15",
+        endDate: "Ongoing",
+        budget: 10000000,
+        spent: 3000000,
+      },
+      {
+        name: "Test 2",
+        calculated_risk: "High",
+        schedule: 10,
+        total_reports: 2,
+        description: "blah blah blah blah bleh bleh bleh",
+        startDate: "2023-06-15",
+        endDate: "2024-08-09",
+        budget: 95000000,
+        spent: 238881,
+      },
+    ],
+  },
+];
 
 const ETSDashboard = () => {
   // @ts-ignore -- will use projects later
@@ -64,10 +125,20 @@ const ETSDashboard = () => {
   return (
     <div className="container mt-5">
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
-      <h1 className="mb-4" style={{ fontWeight: "800" }}>
+      <h1 className="" style={{ fontWeight: "800" }}>
         ETS DASHBOARD ETS DASHBOARD
       </h1>
-      <h1>All Projects</h1>
+      <div className="row">
+        <ButtonGroup
+          content={[
+            { name: "Projects", link: "/ets/dashboard" },
+            { name: "Statistics", link: "/ets/statistics" },
+          ]}
+        ></ButtonGroup>
+      </div>
+      <h1>Project Management</h1>
+      <h5>Create, edit, delete, and assign projects to vendors</h5>
+      <AllProjectsTable vendors={sample_data}></AllProjectsTable>
     </div>
   );
 };
