@@ -38,31 +38,8 @@ function AppContent() {
     }
   };
 
-  const getRoleLabel = () => {
-    if (!userRole) return "";
-    switch (userRole) {
-      case "ets":
-        return "ETS Employee";
-      case "vendor":
-        return "IV&V Vendor";
-      case "public":
-        return "Public User";
-      default:
-        return "User";
-    }
-  };
-
   const menuItems = currentUser
     ? [
-        {
-          label: "Logged in as: " + getRoleLabel(),
-          ariaLabel: "User Role",
-        },
-        {
-          label: "Log Out",
-          ariaLabel: "Log Out",
-          onClick: handleLogout,
-        },
         { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
@@ -133,6 +110,10 @@ function AppContent() {
         <StaggeredMenu
           position="right"
           items={menuItems}
+          authAction={handleLogout}
+          currentUser={currentUser}
+          userRole={userRole}
+          isETSEmployee={isETSEmployee}
           displaySocials={false}
           displayItemNumbering={false}
           menuButtonColor="#000"
