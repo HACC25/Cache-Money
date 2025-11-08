@@ -1,49 +1,88 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { sampleProjects, ProjectData } from "../components/SampleData";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, query, where, getDoc, doc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
+import { useAuth } from "../contexts/AuthContext";
 
 const AllProjects = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    // Load from Firestore with real-time updates
-    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
-      const firestoreProjects = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name || 'Unnamed Project',
-          description: data.description || '',
-          status: data.status || 'Active',
-          statusColor: data.statusColor || '#28a745',
-          metric1: data.metric1 || '',
-          metric2: data.metric2 || '',
-          startDate: data.startDate || '',
-          department: data.department || '',
-          budget: data.budget || '',
-          spent: data.spent || '',
-          vendor: data.vendor || '',
-          reports: data.reports || [],
-        } as ProjectData;
-      });
+    if (!currentUser) return;
 
-      // Combine Firestore projects with sample projects
-      // Firestore projects first, then sample projects
-      const allProjects = [...firestoreProjects, ...sampleProjects];
-      setProjects(allProjects);
+    // Step 1: fetch the current user's role from Firestore
+    const fetchRole = async () => {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        setRole(userDoc.data().role);
+      } else {
+        setRole(null);
+      }
+    };
+
+    fetchRole();
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser || !role) return;
+
+    let projectsQuery;
+
+    if (role === "ets") {
+      // ETS employees see all projects
+      projectsQuery = collection(db, "projects");
+    } else if (role === "vendor") {
+      // Vendors only see projects assigned to them
+      projectsQuery = query(
+        collection(db, "projects"),
+        where("vendorId", "==", currentUser.uid)
+      );
+    } else {
+      setProjects([]);
       setLoading(false);
-    }, (error) => {
-      console.error("Error fetching projects:", error);
-      // Fallback to sample projects if Firestore fails
-      setProjects(sampleProjects);
-      setLoading(false);
-    });
+      return;
+    }
+
+    const unsubscribe = onSnapshot(
+      projectsQuery,
+      (snapshot) => {
+        const firestoreProjects = snapshot.docs.map((doc) => {
+          console.log(snapshot.docs.map(doc => doc.data()));
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "Unnamed Project",
+            description: data.description || "",
+            status: data.status || "Active",
+            statusColor: data.statusColor || "#28a745",
+            metric1: data.metric1 || "",
+            metric2: data.metric2 || "",
+            startDate: data.startDate || "",
+            department: data.department || "",
+            budget: data.budget || "",
+            spent: data.spent || "",
+            vendor: data.vendor || "",
+            reports: data.reports || [],
+          } as ProjectData;
+        });
+
+        const allProjects = [...firestoreProjects, ...sampleProjects];
+        setProjects(allProjects);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching projects:", error);
+        setProjects(sampleProjects);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
-  }, []);
+  }, [currentUser, role]);
 
   if (loading) {
     return (
@@ -63,7 +102,7 @@ const AllProjects = () => {
       <h1 className="mb-4" style={{ fontWeight: "800" }}>
         CURRENT ETS PROJECTS
       </h1>
-      
+
       {projects.length === 0 ? (
         <div className="alert alert-info">
           No projects available yet. ETS employees can create new projects.
@@ -71,11 +110,7 @@ const AllProjects = () => {
       ) : (
         <div className="row">
           {projects.map((project) => (
-            <div
-              key={project.id}
-              className="col-md-6 mb-4"
-              style={{ paddingTop: "10px" }}
-            >
+            <div key={project.id} className="col-md-6 mb-4" style={{ paddingTop: "10px" }}>
               <ProjectCard project={project} />
             </div>
           ))}

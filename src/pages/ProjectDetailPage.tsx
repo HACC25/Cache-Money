@@ -127,7 +127,8 @@ const ProjectDetailPage: React.FC = () => {
   }
 
   // Check if the current vendor is assigned to this project after project is loaded
-  const isVendorAssignedToProject = isVendor && project.vendorId === vendorId;
+  const { currentUser } = useAuth();
+  const isVendorAssignedToProject = isVendor && project.vendorId === currentUser?.uid;
 
   return (
     <div className="container mt-5">

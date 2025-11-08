@@ -2,32 +2,64 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ProjectCard from "../../components/VendorProjectCard";
 import { sampleProjects, ProjectData } from "../../components/SampleData";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../services/firebase-config";
 
 const VendorDashboard = () => {
   const [activeTab] = useState("assigned"); // "assigned" or "reports"
   const [assignedProjects, setAssignedProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
-  const {
-    /*currentUser */
-  } = useAuth();
-
-  // Mock the current vendor ID - in a real app, this would come from auth system
-  const currentVendorId = "vendor1";
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    // Simulate fetching data from backend
-    const fetchAssignedProjects = () => {
-      // Filter projects assigned to the current vendor
-      const filteredProjects = sampleProjects.filter(
-        (project) => project.vendorId === currentVendorId
-      );
+    if (!currentUser) return;
 
-      setAssignedProjects(filteredProjects);
-      setLoading(false);
-    };
+    // Firestore query: only projects where vendorId == currentUser.uid
+    const projectsQuery = query(
+      collection(db, "projects"),
+      where("vendorId", "==", currentUser.uid)
+    );
 
-    fetchAssignedProjects();
-  }, [currentVendorId]);
+    const unsubscribe = onSnapshot(
+      projectsQuery,
+      (snapshot) => {
+        const firestoreProjects = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "Unnamed Project",
+            description: data.description || "",
+            status: data.status || "Active",
+            statusColor: data.statusColor || "#28a745",
+            metric1: data.metric1 || "",
+            metric2: data.metric2 || "",
+            startDate: data.startDate || "",
+            department: data.department || "",
+            budget: data.budget || "",
+            spent: data.spent || "",
+            vendor: data.vendor || "",
+            vendorId: data.vendorId || "",
+            reports: data.reports || [],
+          } as ProjectData;
+        });
+
+        setAssignedProjects(firestoreProjects);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching assigned projects:", error);
+
+        // Fallback to sample projects if Firestore fails
+        const filteredProjects = sampleProjects.filter(
+          (project) => project.vendorId === currentUser.uid
+        );
+        setAssignedProjects(filteredProjects);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   if (loading) {
     return (
