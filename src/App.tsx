@@ -38,32 +38,8 @@ function AppContent() {
     }
   };
 
-  const getRoleLabel = () => {
-    if (!userRole) return "";
-    switch (userRole) {
-      case "ets":
-        return "ETS Employee";
-      case "vendor":
-        return "IV&V Vendor";
-      case "public":
-        return "Public User";
-      default:
-        return "User";
-    }
-  };
-
   const menuItems = currentUser
     ? [
-        {
-          label: "Logged in as: " + getRoleLabel(),
-          ariaLabel: "User Role",
-        },
-        {
-          label: "Log Out",
-          ariaLabel: "Log Out",
-          onClick: handleLogout,
-        },
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -104,8 +80,6 @@ function AppContent() {
           : []),
       ]
     : [
-        { label: "Log In", ariaLabel: "Login Page", link: "/login" },
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -119,7 +93,7 @@ function AppContent() {
       ];
 
   return (
-    <div style={{ paddingTop: "100px" }}>
+    <div className="app-root">
       <div
         style={{
           position: "fixed",
@@ -134,6 +108,10 @@ function AppContent() {
         <StaggeredMenu
           position="right"
           items={menuItems}
+          authAction={handleLogout}
+          currentUser={currentUser}
+          userRole={userRole}
+          isETSEmployee={isETSEmployee}
           displaySocials={false}
           displayItemNumbering={false}
           menuButtonColor="#000"
@@ -144,53 +122,54 @@ function AppContent() {
           accentColor="#4169E1"
         />
       </div>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/overview" element={<Overview />} />
-        <Route path="/projects" element={<AllReports />} />
-        <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-        <Route
-          path="/project/:projectId/report/:reportId"
-          element={<ReportDetailPage />}
-        />
-
-        <Route
-          path="/projects/new"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <NewProject />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/project/:projectId/edit"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <EditProject />
-            </RequireRole>
-          }
-        />
-        {/* Vendor Dashboard */}
-        <Route
-          path="/vendor/dashboard"
-          element={
-            <RequireRole allowedRoles={["vendor"]}>
-              <VendorDashboard />
-            </RequireRole>
-          }
-        />
-        {/* ETS Dashboard */}
-        <Route
-          path="/ets/dashboard"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <ETSDashboard />
-            </RequireRole>
-          }
-        />
-      </Routes>
+      <main className="app-main" style={{ paddingTop: "100px" }}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/overview" element={<Overview />} />
+          <Route path="/projects" element={<AllReports />} />
+          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route
+            path="/project/:projectId/report/:reportId"
+            element={<ReportDetailPage />}
+          />
+          <Route
+            path="/projects/new"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <NewProject />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/project/:projectId/edit"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <EditProject />
+              </RequireRole>
+            }
+          />
+          {/* Vendor Dashboard */}
+          <Route
+            path="/vendor/dashboard"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <VendorDashboard />
+              </RequireRole>
+            }
+          />
+          {/* ETS Dashboard */}
+          <Route
+            path="/ets/dashboard"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <ETSDashboard />
+              </RequireRole>
+            }
+          />
+        </Routes>
+      </main>
       <Footer />
     </div>
   );

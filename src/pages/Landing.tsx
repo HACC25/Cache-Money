@@ -1,7 +1,6 @@
 import "./Landing.css";
 import { Link } from "react-router-dom";
 import GridDistortion from "../components/GridDistortion";
-import RollingGallery from "../components/RollingGallery";
 
 function Landing() {
   return (
@@ -48,25 +47,6 @@ function Landing() {
             </div>
           </div>
         </div>
-
-        <div
-          className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-5 pointer-events-none"
-          aria-hidden="true"
-        >
-          <div className="flex flex-col items-center gap-2 animate-bounce">
-            <svg
-              className="w-6 h-6 text-white/80"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </div>
-        </div>
       </section>
 
       {/* Main Content Area */}
@@ -76,65 +56,8 @@ function Landing() {
         role="main"
       >
         <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 py-16 md:py-20">
-          {/* Primary Section*/}
-          <section className="mb-20" aria-labelledby="primary-heading">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-              {/* Left Column - IV&V Reports Card */}
-              <article className="flex items-stretch order-2 lg:order-1">
-                <div className="w-full bg-white rounded-xl shadow-lg p-8 lg:p-10 hover:shadow-xl transition-shadow border border-gray-200">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div
-                      className="w-1 h-12 bg-blue-600 rounded-full"
-                      aria-hidden="true"
-                    />
-                    <span className="text-sm font-bold tracking-wide text-blue-700 uppercase">
-                      Office of Enterprise Technology Services
-                    </span>
-                  </div>
 
-                  <h2
-                    id="primary-heading"
-                    className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 leading-tight"
-                  >
-                    Independent Verification and Validation Reports
-                  </h2>
-
-                  <p className="text-base lg:text-lg text-gray-700 mb-8 leading-relaxed">
-                    Manage project review reports effectively. Access
-                    comprehensive IV&V reports to ensure your projects meet
-                    quality and compliance standards.
-                  </p>
-
-                  <a
-                    href="#reports"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-700 !text-white font-semibold rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none transition-colors"
-                    aria-label="View all IV&V reports"
-                  >
-                    View Reports
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </a>
-                </div>
-              </article>
-
-              <div className="flex items-center justify-center order-1 lg:order-2">
-                <RollingGallery autoplay={true} pauseOnHover={true} />
-              </div>
-            </div>
-          </section>
-
-          {/* Secondary Section - Feature Cards */}
+          {/* Section - Feature Cards */}
           <section className="mb-20" aria-labelledby="features-heading">
             <header className="text-center mb-12">
               <h2
@@ -203,7 +126,7 @@ function Landing() {
                   Real-time Analytics
                 </h3>
                 <p className="text-base text-gray-700 leading-relaxed mb-6">
-                  Monitor project metrics and KPIs with interactive dashboards
+                  Monitor project metrics with interactive dashboards
                   providing real-time insights.
                 </p>
               </article>

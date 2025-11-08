@@ -4,6 +4,7 @@ import { auth, db } from "../services/firebase-config";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../contexts/AuthContext";
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import './SignUp.css'
 
 
 const SignUp = () => {
@@ -46,7 +47,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="signup-root flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           src="/public/favicon.png"
@@ -70,7 +71,7 @@ const SignUp = () => {
               htmlFor="email"
               className="block text-sm/6 font-medium text-gray-900"
             >
-              Email address
+              Email address (required)
             </label>
             <div className="mt-2">
               <input
@@ -93,7 +94,7 @@ const SignUp = () => {
                 htmlFor="password"
                 className="block text-sm/6 font-medium text-gray-900"
               >
-                Password
+                Password (required)
               </label>
             </div>
             <div className="mt-2">
@@ -150,9 +151,9 @@ const SignUp = () => {
           Already have an account?
           <a
             href="/login"
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            className="font-semibold text-indigo-600 hover:text-indigo-500 ml-1"
           >
-            &nbsp;Sign In
+          Sign In
           </a>
         </p>
       </div>
