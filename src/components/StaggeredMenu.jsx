@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { useNavigate } from 'react-router-dom';
 import './StaggeredMenu.css';
 
 export const StaggeredMenu = ({
@@ -10,14 +11,17 @@ export const StaggeredMenu = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
+  logoUrl = 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
   changeMenuColorOnOpen = true,
   isFixed = false,
   onMenuOpen,
-  onMenuClose
+  onMenuClose,
+  authAction = undefined,
+  currentUser: injectedCurrentUser = null,
+  userRole: injectedUserRole = undefined,
 }) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -313,6 +317,45 @@ export const StaggeredMenu = ({
     animateText(target);
   }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
 
+  // navigation hook for header auth button
+  const navigate = useNavigate();
+
+  const getRoleLabel = (role) => {
+    if (!role) return '';
+    switch (role) {
+      case 'ets':
+        return 'ETS Employee';
+      case 'vendor':
+        return 'IV&V Vendor';
+      case 'public':
+        return 'Public User';
+      default:
+        return 'User';
+    }
+  };
+
+  const handleAuthHeaderClick = async (e) => {
+    e?.preventDefault();
+    const user = injectedCurrentUser;
+    if (user) {
+      // call the parent-provided authAction (e.g. handleLogout) when available
+      if (typeof authAction === 'function') {
+        try {
+          await authAction();
+        } catch (err) {
+          console.error('Error calling authAction:', err);
+        }
+      } else {
+        // fallback: navigate home
+        navigate('/');
+      }
+      if (open) toggleMenu();
+    } else {
+      navigate('/login');
+      if (open) toggleMenu();
+    }
+  };
+
   return (
     <div
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
@@ -333,26 +376,43 @@ export const StaggeredMenu = ({
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
         <div className="sm-logo" aria-label="Logo">
-          <img
-            src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
-            alt="Logo"
-            className="sm-logo-img"
-            draggable={false}
-            width={110}
-            height={24}
-          />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <a 
-            href="/login" 
+            href="/" 
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/');
+              if (open) toggleMenu();
+            }}
+            aria-label="Go to home page"
+            style={{ cursor: 'pointer', display: 'block' }}
+          >
+            <img
+              src={logoUrl || 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png'}
+              alt="Logo"
+              className="sm-logo-img"
+              draggable={false}
+              width={110}
+              height={24}
+            />
+          </a>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button
             className="sm-login-btn"
+            onClick={handleAuthHeaderClick}
             style={{
               color: menuButtonColor,
-              textDecoration: 'none'
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              fontWeight: 600
             }}
+            aria-label={injectedCurrentUser ? 'Log out' : 'Log in'}
           >
-            Login
-          </a>
+            {injectedCurrentUser ? (`${getRoleLabel(injectedUserRole) || 'User'} (${injectedCurrentUser.email}) — Log Out`) : 'Log In'}
+          </button>
+
           <button
             ref={toggleBtnRef}
             className="sm-toggle"
