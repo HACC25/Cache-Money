@@ -96,7 +96,7 @@ const EditProject: React.FC = () => {
   if (!project) return null;
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h2>Edit Project</h2>
       <p className="text-muted">Project ID: {projectId}</p>
       
