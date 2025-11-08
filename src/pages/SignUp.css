@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist/Geist-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono/GeistMono-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+.signup-root,
+.signup-root h1,
+.signup-root h2,
+.signup-root p,
+.signup-root label,
+.signup-root option {
+  font-family: "Geist", system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
