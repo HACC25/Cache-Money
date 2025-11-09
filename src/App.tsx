@@ -10,11 +10,11 @@ import SignUp from "./pages/SignUp";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import ReportDetailPage from "./pages/ReportDetailPage";
 import RequireRole from "./components/RequireRole";
-import NewProject from "./pages/NewProject";
+import NewProject from "./pages/CreateNewProject";
 import EditProject from "./pages/EditProject";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import StaggeredMenu from "./components/StaggeredMenu";
+import Navbar from "./components/Navbar";
 
 // Vendor components
 import VendorDashboard from "./pages/vendor/VendorDashboard";
@@ -105,12 +105,12 @@ function AppContent() {
           zIndex: 9999,
         }}
       >
-        <StaggeredMenu
+        <Navbar
           position="right"
           items={menuItems}
           authAction={handleLogout}
           currentUser={currentUser}
-          userRole={userRole}
+          userRole={userRole || undefined}
           isETSEmployee={isETSEmployee}
           displaySocials={false}
           displayItemNumbering={false}

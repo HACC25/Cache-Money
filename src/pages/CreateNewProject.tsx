@@ -59,7 +59,7 @@ const NewProject: React.FC = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h2>Create New Project</h2>
       <p className="text-muted">Add a new State of Hawaii IT project for IV&V tracking</p>
       
