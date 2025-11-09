@@ -22,10 +22,7 @@ const ProjectDetailPage: React.FC = () => {
   const [reports, setReports] = useState<ReportData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFirestoreProject, setIsFirestoreProject] = useState(false);
-  const { isETSEmployee, isVendor, vendorId } = useAuth();
-
-  // Check if the current vendor is assigned to this project
-  // const isAssignedVendor = isVendor && project?.vendorId === vendorId;
+  const { isETSEmployee, isVendor, currentUser } = useAuth();
 
   useEffect(() => {
     if (!projectId) return;
@@ -127,7 +124,6 @@ const ProjectDetailPage: React.FC = () => {
   }
 
   // Check if the current vendor is assigned to this project after project is loaded
-  const { currentUser } = useAuth();
   const isVendorAssignedToProject = isVendor && project.vendorId === currentUser?.uid;
 
   return (
