@@ -347,450 +347,469 @@ const ReportForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="report-form">
-      <h2>Add New IV&V Report</h2>
+    <div className="form">
+      <form onSubmit={handleSubmit} className="report-form">
+        <h2>Add New IV&V Report</h2>
 
-      {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
-      <div className="form-section">
-        <h3>Report Information</h3>
-
-        <div className="form-group">
-          <label htmlFor="month">Reporting Month:</label>
-          <select
-            id="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            required
-          >
-            <option value="">Select Month</option>
-            {monthOptions()}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="date">Report Date:</label>
-          <input
-            type="date"
-            id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="background">Project Background:</label>
-          <textarea
-            id="background"
-            value={background}
-            onChange={(e) => setBackground(e.target.value)}
-            rows={5}
-            required
-            placeholder="Provide a summary of the project's current status and recent activities..."
-          />
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Project Assessment</h3>
-
-        <div className="form-group">
-          <label>Sprint Planning:</label>
-          <select
-            value={sprintPlanningRating}
-            onChange={(e) =>
-              setSprintPlanningRating(
-                e.target.value as "Low" | "Medium" | "High"
-              )
-            }
-            required
-          >
-            <option value="Low">Low Risk</option>
-            <option value="Medium">Medium Risk</option>
-            <option value="High">High Risk</option>
-          </select>
-          <textarea
-            value={sprintPlanningDescription}
-            onChange={(e) => setSprintPlanningDescription(e.target.value)}
-            rows={3}
-            required
-            placeholder="Describe the sprint planning assessment..."
-          />
-        </div>
-
-        <div className="form-group">
-          <label>User Story Validation:</label>
-          <select
-            value={userStoryRating}
-            onChange={(e) =>
-              setUserStoryRating(e.target.value as "Low" | "Medium" | "High")
-            }
-            required
-          >
-            <option value="Low">Low Risk</option>
-            <option value="Medium">Medium Risk</option>
-            <option value="High">High Risk</option>
-          </select>
-          <textarea
-            value={userStoryDescription}
-            onChange={(e) => setUserStoryDescription(e.target.value)}
-            rows={3}
-            required
-            placeholder="Describe the user story validation assessment..."
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Test Practice Validation:</label>
-          <select
-            value={testPracticeRating}
-            onChange={(e) =>
-              setTestPracticeRating(e.target.value as "Low" | "Medium" | "High")
-            }
-            required
-          >
-            <option value="Low">Low Risk</option>
-            <option value="Medium">Medium Risk</option>
-            <option value="High">High Risk</option>
-          </select>
-          <textarea
-            value={testPracticeDescription}
-            onChange={(e) => setTestPracticeDescription(e.target.value)}
-            rows={3}
-            required
-            placeholder="Describe the test practice validation assessment..."
-          />
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Project Issues</h3>
-
-        {issues.length > 0 && (
-          <div className="issues-list">
-            <table>
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>Impact</th>
-                  <th>Likelihood</th>
-                  <th>Risk Rating</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {issues.map((issue) => (
-                  <tr key={issue.id}>
-                    <td>{issue.description.substring(0, 50)}...</td>
-                    <td>{issue.impact}</td>
-                    <td>{issue.likelihood}</td>
-                    <td>{issue.riskRating}</td>
-                    <td>{issue.status}</td>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={() => handleEditIssue(issue)}
-                        className="edit-button"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteIssue(issue.id)}
-                        className="delete-button"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="issue-form">
-          <div className="form-group">
-            <label htmlFor="issue-description">Issue Description:</label>
-            <textarea
-              id="issue-description"
-              value={currentIssue.description}
-              onChange={(e) => handleIssueChange("description", e.target.value)}
-              rows={3}
-              placeholder="Describe the issue..."
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="issue-impact">Impact:</label>
-              <select
-                id="issue-impact"
-                value={currentIssue.impact}
-                onChange={(e) => handleIssueChange("impact", e.target.value)}
-              >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="issue-likelihood">Likelihood:</label>
-              <select
-                id="issue-likelihood"
-                value={currentIssue.likelihood}
-                onChange={(e) =>
-                  handleIssueChange("likelihood", e.target.value)
-                }
-              >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="issue-risk-rating">Risk Rating:</label>
-              <input
-                type="number"
-                id="issue-risk-rating"
-                value={currentIssue.riskRating}
-                readOnly
-              />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="issue-date-raised">Date Raised:</label>
-              <input
-                type="date"
-                id="issue-date-raised"
-                value={currentIssue.dateRaised}
-                onChange={(e) =>
-                  handleIssueChange("dateRaised", e.target.value)
-                }
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="issue-status">Status:</label>
-              <select
-                id="issue-status"
-                value={currentIssue.status}
-                onChange={(e) => handleIssueChange("status", e.target.value)}
-              >
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
-              </select>
-            </div>
-          </div>
+        <div className="form-section">
+          <h3>Report Information</h3>
 
           <div className="form-group">
-            <label htmlFor="issue-recommendation">Recommendation:</label>
-            <textarea
-              id="issue-recommendation"
-              value={currentIssue.recommendation}
-              onChange={(e) =>
-                handleIssueChange("recommendation", e.target.value)
-              }
-              rows={3}
-              placeholder="Provide recommendations to address the issue..."
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={handleAddIssue}
-            className="add-button"
-            disabled={!currentIssue.description || !currentIssue.recommendation}
-          >
-            {currentIssue.id ? "Update Issue" : "Add Issue"}
-          </button>
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Schedule Status</h3>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="baseline-end-date">Baseline End Date:</label>
-            <input
-              type="date"
-              id="baseline-end-date"
-              value={baselineEndDate}
-              onChange={(e) => setBaselineEndDate(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="current-end-date">Current End Date:</label>
-            <input
-              type="date"
-              id="current-end-date"
-              value={currentEndDate}
-              onChange={(e) => setCurrentEndDate(e.target.value)}
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Financials</h3>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="original-amount">
-              Original Contract Amount ($):
-            </label>
-            <input
-              type="number"
-              id="original-amount"
-              value={originalAmount}
-              onChange={(e) => setOriginalAmount(Number(e.target.value))}
-              min="0"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="paid-to-date">Paid to Date ($):</label>
-            <input
-              type="number"
-              id="paid-to-date"
-              value={paidToDate}
-              onChange={(e) => setPaidToDate(Number(e.target.value))}
-              min="0"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Scope Status</h3>
-
-        {deliverables.length > 0 && (
-          <div className="deliverables-list">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Description</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {deliverables.map((deliverable) => (
-                  <tr key={deliverable.id}>
-                    <td>{deliverable.name}</td>
-                    <td>{deliverable.status}</td>
-                    <td>{deliverable.description.substring(0, 50)}...</td>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={() => handleEditDeliverable(deliverable)}
-                        className="edit-button"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteDeliverable(deliverable.id)}
-                        className="delete-button"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="deliverable-form">
-          <div className="form-group">
-            <label htmlFor="deliverable-name">Deliverable Name:</label>
-            <input
-              type="text"
-              id="deliverable-name"
-              value={currentDeliverable.name}
-              onChange={(e) => handleDeliverableChange("name", e.target.value)}
-              placeholder="Enter deliverable name..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="deliverable-status">Status:</label>
+            <label htmlFor="month">Reporting Month:</label>
             <select
-              id="deliverable-status"
-              value={currentDeliverable.status}
-              onChange={(e) =>
-                handleDeliverableChange(
-                  "status",
-                  e.target.value as "Not Started" | "In Progress" | "Completed"
-                )
-              }
+              id="month"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+              required
             >
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
+              <option value="">Select Month</option>
+              {monthOptions()}
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="deliverable-description">Description:</label>
-            <textarea
-              id="deliverable-description"
-              value={currentDeliverable.description}
-              onChange={(e) =>
-                handleDeliverableChange("description", e.target.value)
-              }
-              rows={3}
-              placeholder="Describe the deliverable..."
+            <label htmlFor="date">Report Date:</label>
+            <input
+              type="date"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
             />
           </div>
 
+          <div className="form-group">
+            <label htmlFor="background">Project Background:</label>
+            <textarea
+              id="background"
+              value={background}
+              onChange={(e) => setBackground(e.target.value)}
+              rows={5}
+              required
+              placeholder="Provide a summary of the project's current status and recent activities..."
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Project Assessment</h3>
+
+          <div className="form-group">
+            <label>Sprint Planning:</label>
+            <select
+              value={sprintPlanningRating}
+              onChange={(e) =>
+                setSprintPlanningRating(
+                  e.target.value as "Low" | "Medium" | "High"
+                )
+              }
+              required
+            >
+              <option value="Low">Low Risk</option>
+              <option value="Medium">Medium Risk</option>
+              <option value="High">High Risk</option>
+            </select>
+            <textarea
+              value={sprintPlanningDescription}
+              onChange={(e) => setSprintPlanningDescription(e.target.value)}
+              rows={3}
+              required
+              placeholder="Describe the sprint planning assessment..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label>User Story Validation:</label>
+            <select
+              value={userStoryRating}
+              onChange={(e) =>
+                setUserStoryRating(e.target.value as "Low" | "Medium" | "High")
+              }
+              required
+            >
+              <option value="Low">Low Risk</option>
+              <option value="Medium">Medium Risk</option>
+              <option value="High">High Risk</option>
+            </select>
+            <textarea
+              value={userStoryDescription}
+              onChange={(e) => setUserStoryDescription(e.target.value)}
+              rows={3}
+              required
+              placeholder="Describe the user story validation assessment..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Test Practice Validation:</label>
+            <select
+              value={testPracticeRating}
+              onChange={(e) =>
+                setTestPracticeRating(
+                  e.target.value as "Low" | "Medium" | "High"
+                )
+              }
+              required
+            >
+              <option value="Low">Low Risk</option>
+              <option value="Medium">Medium Risk</option>
+              <option value="High">High Risk</option>
+            </select>
+            <textarea
+              value={testPracticeDescription}
+              onChange={(e) => setTestPracticeDescription(e.target.value)}
+              rows={3}
+              required
+              placeholder="Describe the test practice validation assessment..."
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Project Issues</h3>
+
+          {issues.length > 0 && (
+            <div className="issues-list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Impact</th>
+                    <th>Likelihood</th>
+                    <th>Risk Rating</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {issues.map((issue) => (
+                    <tr key={issue.id}>
+                      <td>{issue.description.substring(0, 50)}...</td>
+                      <td>{issue.impact}</td>
+                      <td>{issue.likelihood}</td>
+                      <td>{issue.riskRating}</td>
+                      <td>{issue.status}</td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleEditIssue(issue)}
+                          className="edit-button"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteIssue(issue.id)}
+                          className="delete-button"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="issue-form">
+            <div className="form-group">
+              <label htmlFor="issue-description">Issue Description:</label>
+              <textarea
+                id="issue-description"
+                value={currentIssue.description}
+                onChange={(e) =>
+                  handleIssueChange("description", e.target.value)
+                }
+                rows={3}
+                placeholder="Describe the issue..."
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="issue-impact">Impact:</label>
+                <select
+                  id="issue-impact"
+                  value={currentIssue.impact}
+                  onChange={(e) => handleIssueChange("impact", e.target.value)}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="issue-likelihood">Likelihood:</label>
+                <select
+                  id="issue-likelihood"
+                  value={currentIssue.likelihood}
+                  onChange={(e) =>
+                    handleIssueChange("likelihood", e.target.value)
+                  }
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="issue-risk-rating">Risk Rating:</label>
+                <input
+                  type="number"
+                  id="issue-risk-rating"
+                  value={currentIssue.riskRating}
+                  readOnly
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="issue-date-raised">Date Raised:</label>
+                <input
+                  type="date"
+                  id="issue-date-raised"
+                  value={currentIssue.dateRaised}
+                  onChange={(e) =>
+                    handleIssueChange("dateRaised", e.target.value)
+                  }
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="issue-status">Status:</label>
+                <select
+                  id="issue-status"
+                  value={currentIssue.status}
+                  onChange={(e) => handleIssueChange("status", e.target.value)}
+                >
+                  <option value="Open">Open</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="issue-recommendation">Recommendation:</label>
+              <textarea
+                id="issue-recommendation"
+                value={currentIssue.recommendation}
+                onChange={(e) =>
+                  handleIssueChange("recommendation", e.target.value)
+                }
+                rows={3}
+                placeholder="Provide recommendations to address the issue..."
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddIssue}
+              className="add-button"
+              disabled={
+                !currentIssue.description || !currentIssue.recommendation
+              }
+            >
+              {currentIssue.id ? "Update Issue" : "Add Issue"}
+            </button>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Schedule Status</h3>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="baseline-end-date">Baseline End Date:</label>
+              <input
+                type="date"
+                id="baseline-end-date"
+                value={baselineEndDate}
+                onChange={(e) => setBaselineEndDate(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="current-end-date">Current End Date:</label>
+              <input
+                type="date"
+                id="current-end-date"
+                value={currentEndDate}
+                onChange={(e) => setCurrentEndDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Financials</h3>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="original-amount">
+                Original Contract Amount ($):
+              </label>
+              <input
+                type="number"
+                id="original-amount"
+                value={originalAmount}
+                onChange={(e) => setOriginalAmount(Number(e.target.value))}
+                min="0"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="paid-to-date">Paid to Date ($):</label>
+              <input
+                type="number"
+                id="paid-to-date"
+                value={paidToDate}
+                onChange={(e) => setPaidToDate(Number(e.target.value))}
+                min="0"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Scope Status</h3>
+
+          {deliverables.length > 0 && (
+            <div className="deliverables-list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {deliverables.map((deliverable) => (
+                    <tr key={deliverable.id}>
+                      <td>{deliverable.name}</td>
+                      <td>{deliverable.status}</td>
+                      <td>{deliverable.description.substring(0, 50)}...</td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleEditDeliverable(deliverable)}
+                          className="edit-button"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDeleteDeliverable(deliverable.id)
+                          }
+                          className="delete-button"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="deliverable-form">
+            <div className="form-group">
+              <label htmlFor="deliverable-name">Deliverable Name:</label>
+              <input
+                type="text"
+                id="deliverable-name"
+                value={currentDeliverable.name}
+                onChange={(e) =>
+                  handleDeliverableChange("name", e.target.value)
+                }
+                placeholder="Enter deliverable name..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="deliverable-status">Status:</label>
+              <select
+                id="deliverable-status"
+                value={currentDeliverable.status}
+                onChange={(e) =>
+                  handleDeliverableChange(
+                    "status",
+                    e.target.value as
+                      | "Not Started"
+                      | "In Progress"
+                      | "Completed"
+                  )
+                }
+              >
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="deliverable-description">Description:</label>
+              <textarea
+                id="deliverable-description"
+                value={currentDeliverable.description}
+                onChange={(e) =>
+                  handleDeliverableChange("description", e.target.value)
+                }
+                rows={3}
+                placeholder="Describe the deliverable..."
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddDeliverable}
+              className="add-button"
+              disabled={
+                !currentDeliverable.name || !currentDeliverable.description
+              }
+            >
+              {currentDeliverable.id ? "Update Deliverable" : "Add Deliverable"}
+            </button>
+          </div>
+        </div>
+
+        <div className="form-actions">
           <button
             type="button"
-            onClick={handleAddDeliverable}
-            className="add-button"
+            onClick={handleCancel}
+            className="cancel-button"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="submit-button"
             disabled={
-              !currentDeliverable.name || !currentDeliverable.description
+              isSubmitting ||
+              !month ||
+              !date ||
+              !background ||
+              deliverables.length === 0
             }
           >
-            {currentDeliverable.id ? "Update Deliverable" : "Add Deliverable"}
+            {isSubmitting ? "Submitting..." : "Submit Report"}
           </button>
         </div>
-      </div>
-
-      <div className="form-actions">
-        <button type="button" onClick={handleCancel} className="cancel-button">
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="submit-button"
-          disabled={
-            isSubmitting ||
-            !month ||
-            !date ||
-            !background ||
-            deliverables.length === 0
-          }
-        >
-          {isSubmitting ? "Submitting..." : "Submit Report"}
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

@@ -1,10 +1,17 @@
 /* ReportForm.css */
 
+.form {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
 .report-form {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #fff;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background-color: rgb(255, 255, 255);
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -117,11 +124,11 @@ th {
 }
 
 .add-button:hover {
-  background-color: #0b5ed7;
+  background-color: #0d6efd;
 }
 
 .add-button:disabled {
-  background-color: #6c757d;
+  background-color: #000000;
   cursor: not-allowed;
 }
 
@@ -134,7 +141,7 @@ th {
 }
 
 .edit-button:hover {
-  background-color: #ffca2c;
+  background-color: #ffc107;
 }
 
 .delete-button {
@@ -145,7 +152,7 @@ th {
 }
 
 .delete-button:hover {
-  background-color: #bb2d3b;
+  background-color: #dc3545;
 }
 
 .form-actions {
@@ -156,27 +163,27 @@ th {
 }
 
 .cancel-button {
-  background-color: #6c757d;
+  background-color: #000000;
   color: white;
   padding: 10px 20px;
 }
 
 .cancel-button:hover {
-  background-color: #5c636a;
+  background-color: #000000;
 }
 
 .submit-button {
-  background-color: #198754;
+  background-color: #000000;
   color: white;
   padding: 10px 20px;
 }
 
 .submit-button:hover {
-  background-color: #157347;
+  background-color: #000000;
 }
 
 .submit-button:disabled {
-  background-color: #6c757d;
+  background-color: #5c636a;
   cursor: not-allowed;
 }
 
