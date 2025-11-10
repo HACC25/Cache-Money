@@ -1,0 +1,52 @@
+.customTextbox {
+    width: 100%;
+    max-width: 900px;
+    margin-inline: auto;
+    padding-inline: clamp(12px, 2vw, 24px);
+    box-sizing: border-box;
+}
+
+
+.customTextbox .form-label {
+    font-weight: 600;
+    font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+
+.textbox-control {
+    width: 100%;
+    padding: clamp(10px, 1.8vw, 15px) clamp(12px, 2vw,16px);
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: clamp(1rem, 1.8vw, 1.1rem);
+    box-sizing: border-box;
+    overflow-x: hidden;
+    line-height: 1.5;
+    caret-color: #111827;
+    min-width: 0;
+}
+
+
+html { scrollbar-gutter: stable; }
+
+
+.textbox-control::placeholder {
+    color: #9ca3af;
+    opacity: 1;
+}
+
+
+.textbox-control:focus {
+    border-color: #cbd5e1;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+}
+
+
+textarea.textbox-control {
+    min-height: 110px;
+    resize: vertical;
+    overflow-y: auto;
+}
