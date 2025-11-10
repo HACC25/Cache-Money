@@ -71,7 +71,7 @@ export interface ProjectData {
   reports: ProjectReport[];
 }
 
-export const sampleProjects: ProjectData[] = [
+export const sampleProjects: Array<ProjectData> = [
   {
     id: "1",
     name: "BHA System Modernization",
