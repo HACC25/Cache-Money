@@ -19,7 +19,7 @@ h4,
 h5,
 h6 {
   font-family: "Geist", monospace;
-  color: #18828c !important;
+  color: #197ead !important;
 }
 
 p {
@@ -34,7 +34,7 @@ section .backdrop-blur-lg p {
 
 a {
   font-family: "Geist", monospace;
-  color: #18828c;
+  color: #197ead;
 }
 
 div a {
@@ -42,11 +42,11 @@ div a {
 }
 
 a span {
-  color: #18828c;
+  color: #197ead;
 }
 
 a:hover {
-  color: #0f7a7c;
+  color: #0284c7;
 }
 
 li a {
@@ -54,7 +54,7 @@ li a {
 }
 
 li a:hover {
-  color: #18828c;
+  color: #197ead;
 }
 
 .project-card,
@@ -76,11 +76,11 @@ a[class*="bg-green"]:hover {
 
 button {
   font-family: "Geist", monospace;
-  color: #18828c;
+  color: #197ead;
 }
 
 button:hover {
-  color: #0f7a7c;
+  color: #0284c7;
 }
 
 @media (min-width: 768px) {

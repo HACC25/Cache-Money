@@ -54,7 +54,7 @@ function Landing() {
         <div 
           className="absolute inset-0 opacity-40"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='1440' height='320' viewBox='0 0 1440 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%2318828c' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='1440' height='320' viewBox='0 0 1440 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%2393C5FD' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
             backgroundSize: 'cover',
             backgroundPosition: 'bottom',
             backgroundRepeat: 'no-repeat'
@@ -125,14 +125,14 @@ function Landing() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              {/* Feature Card 1 */}
-              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-teal-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-teal-300">
+              {/* Feature Card 3 */}
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-sky-400 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-sky-200">
                 <div
-                  className="w-14 h-14 bg-teal-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-teal-200 transition-colors"
+                  className="w-14 h-14 bg-sky-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sky-200 transition-colors"
                   aria-hidden="true"
                 >
                   <svg
-                    className="w-7 h-7 text-teal-700"
+                    className="w-7 h-7 text-sky-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -155,13 +155,13 @@ function Landing() {
               </article>
 
               {/* Feature Card 2 */}
-              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-teal-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-teal-300">
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-sky-400 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-sky-200">
                 <div
-                  className="w-14 h-14 bg-teal-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-teal-200 transition-colors"
+                  className="w-14 h-14 bg-sky-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sky-200 transition-colors"
                   aria-hidden="true"
                 >
                   <svg
-                    className="w-7 h-7 text-teal-700"
+                    className="w-7 h-7 text-sky-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -184,13 +184,13 @@ function Landing() {
               </article>
 
               {/* Feature Card 3 */}
-              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-teal-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-teal-300">
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-sky-400 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-sky-200">
                 <div
-                  className="w-14 h-14 bg-teal-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-teal-200 transition-colors"
+                  className="w-14 h-14 bg-sky-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sky-200 transition-colors"
                   aria-hidden="true"
                 >
                   <svg
-                    className="w-7 h-7 text-teal-700"
+                    className="w-7 h-7 text-sky-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -248,13 +248,13 @@ function Landing() {
                   <Link
                     key={project.id}
                     to={`/project/${project.id}`}
-                    className="project-card flex items-center gap-3 px-5 py-4 bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-teal-300 transition-all group focus:outline-none focus:ring-2 focus:ring-teal-500 no-underline"
+                    className="project-card flex items-center gap-3 px-5 py-4 bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-sky-300 transition-all group focus:outline-none focus:ring-2 focus:ring-sky-400 no-underline"
                     aria-label={`View details for ${project.name}`}
                   >
-                    {/* Folder Icon */}
-                    <div className="flex-shrink-0 w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center group-hover:bg-teal-200 transition-colors">
+                    {/* Icon */}
+                    <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-lg flex items-center justify-center group-hover:bg-sky-200 transition-colors">
                       <svg
-                        className="w-5 h-5 text-teal-700"
+                        className="w-5 h-5 text-sky-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -272,7 +272,7 @@ function Landing() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-teal-700 transition-colors truncate">
+                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-sky-600 transition-colors truncate">
                           {project.name}
                         </h3>
                         {project.status && (
@@ -297,7 +297,7 @@ function Landing() {
 
                     {/* Arrow */}
                     <svg
-                      className="flex-shrink-0 w-5 h-5 text-gray-400 group-hover:text-teal-600 group-hover:translate-x-1 transition-all"
+                      className="flex-shrink-0 w-5 h-5 text-gray-400 group-hover:text-sky-500 group-hover:translate-x-1 transition-all"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -319,7 +319,7 @@ function Landing() {
             <div className="text-center mt-12">
               <Link
                 to="/projects"
-                className="view-all-btn inline-flex items-center gap-2 px-8 py-4 bg-teal-700 !text-white font-semibold rounded-lg hover:bg-teal-800 focus:ring-4 focus:ring-teal-300 focus:outline-none transition-all hover:scale-105 shadow-lg"
+                className="view-all-btn inline-flex items-center gap-2 px-8 py-4 bg-sky-600 !text-white font-semibold rounded-lg hover:bg-sky-700 focus:ring-4 focus:ring-sky-200 focus:outline-none transition-all hover:scale-105 shadow-lg"
               >
                 View All Projects
               </Link>
