@@ -12,9 +12,7 @@ const VendorDashboard = () => {
   const { currentUser } = useAuth();
 
   // TODO: Replace with actual vendor ID from auth system
-  // This should come from currentUser.vendorId or similar
-  const currentVendorId = "vendor1";
-
+  const currentVendorId = currentUser?.uid || "";
   useEffect(() => {
     const fetchAssignedProjects = async () => {
       try {

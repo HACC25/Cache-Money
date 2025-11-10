@@ -150,6 +150,15 @@ function AppContent() {
               </RequireRole>
             }
           />
+          {/* Report Form - New Report */}
+          <Route
+            path="/project/:projectId/report/new"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <ReportForm />
+              </RequireRole>
+            }
+          />
           {/* Vendor Dashboard */}
           <Route
             path="/vendor/dashboard"
