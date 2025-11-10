@@ -1,75 +1,9 @@
-export interface ProjectDeliverable {
-  id: string;
-  name: string;
-  status: "Not Started" | "In Progress" | "Completed";
-  description: string;
-}
-
-export interface ProjectAssessment {
-  sprintPlanning: {
-    rating: "Low" | "Medium" | "High";
-    description: string;
-  };
-  userStoryValidation: {
-    rating: "Low" | "Medium" | "High";
-    description: string;
-  };
-  testPracticeValidation: {
-    rating: "Low" | "Medium" | "High";
-    description: string;
-  };
-}
-
-export interface ProjectIssue {
-  id: string;
-  description: string;
-  impact: "High" | "Medium" | "Low";
-  likelihood: "High" | "Medium" | "Low";
-  riskRating: number;
-  dateRaised: string;
-  recommendation: string;
-  status: "Open" | "Closed";
-}
-
-export interface ProjectReport {
-  id: string;
-  projectId: string;
-  month: string;
-  date: string;
-  background: string;
-  assessment: ProjectAssessment;
-  issues: ProjectIssue[];
-  scheduleStatus: {
-    baselineEndDate: string;
-    currentEndDate: string;
-  };
-  financials: {
-    originalAmount: number;
-    paidToDate: number;
-  };
-  scopeStatus: {
-    completedDeliverables: number;
-    totalDeliverables: number;
-    deliverables: ProjectDeliverable[];
-  };
-}
-
-export interface ProjectData {
-  id: string;
-  name: string;
-  status: "On Track" | "At Risk" | "Critical";
-  statusColor: string;
-  metric1: string;
-  metric2: string;
-  description: string;
-  department: string;
-  startDate: string;
-  budget: number;
-  spent: number;
-  vendor: string;
-  vendorId?: string;
-  reports: ProjectReport[];
-}
+export {
+  ProjectData,
+  ProjectReport,
+  ProjectAssessment,
+  ProjectIssue,
+} from "../types/projectTypes";
 
 export const sampleProjects: ProjectData[] = [
   {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ProjectCard from "../../components/VendorProjectCard";
-import { ProjectData } from "../../components/SampleData";
+import { ProjectData } from "../../types/projectTypes";
 import { fetchProjectsByVendor } from "../../services/firebaseDataService";
 
 const VendorDashboard = () => {

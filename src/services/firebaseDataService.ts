@@ -9,13 +9,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "./firebase-config";
-import type {
-  ProjectData,
-  ProjectReport,
-  ProjectIssue,
-  ProjectDeliverable,
-  ProjectAssessment,
-} from "../components/sampleData"; // Adjust path as needed
+import type { ProjectData, ProjectReport } from "../types/projectTypes";
 
 // ============================================
 // HELPER FUNCTIONS
