@@ -31,7 +31,8 @@ service cloud.firestore {
     // Users collection rules
     match /users/{userId} {
       // Users can read their own document
-      allow read: if isOwner(userId);
+      // ETS employees can read all user documents (to assign vendors)
+      allow read: if isOwner(userId) || isETSEmployee();
       
       // Only allow user creation during sign-up
       // The role will be validated by a Cloud Function if needed
