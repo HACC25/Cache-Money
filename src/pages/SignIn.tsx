@@ -54,7 +54,7 @@ const SignIn = () => {
         navigate("/");
       }
 
-  alert("Sign in successful!");
+  console.log("Sign in successful!");
     } catch (error: FirebaseError | unknown) {
       console.error("Error signing in:", error);
       alert(`Error: ${(error as FirebaseError).message}`);

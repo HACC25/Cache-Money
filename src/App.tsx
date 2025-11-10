@@ -30,7 +30,7 @@ function AppContent() {
   const handleLogout = async () => {
     try {
       await signOut();
-      alert("Successfully logged out!");
+      console.log("Successfully logged out!");
       navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -117,7 +117,7 @@ function AppContent() {
           menuButtonColor="#000"
           openMenuButtonColor="#000"
           changeMenuColorOnOpen={true}
-          colors={["#4169E1", "#031273"]}
+          colors={["#4169E1", "#3171e0ff"]}
           logoUrl="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
           accentColor="#4169E1"
         />

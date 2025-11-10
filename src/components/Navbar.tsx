@@ -431,21 +431,57 @@ export const Navbar = ({
           </a>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button
-            className="sm-login-btn"
-            onClick={handleAuthHeaderClick}
-            style={{
-              color: menuButtonColor,
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              fontWeight: 600
-            }}
-            aria-label={injectedCurrentUser ? 'Log out' : 'Log in'}
-          >
-            {injectedCurrentUser ? (`${getRoleLabel(injectedUserRole) || 'User'} (${injectedCurrentUser.email}) — Log Out`) : 'Log In'}
-          </button>
+          {injectedCurrentUser ? (
+            <>
+              <span
+                style={{
+                  color: menuButtonColor
+                }}
+              >
+                {getRoleLabel(injectedUserRole) || 'User'} ({injectedCurrentUser.email})
+              </span>
+              <button
+                className="sm-login-btn"
+                onClick={handleAuthHeaderClick}
+                style={{
+                  color: menuButtonColor,
+                  background: 'transparent',
+                  border: `1px solid ${menuButtonColor}`,
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  padding: '0.375rem 0.75rem',
+                  transition: 'all 0.1s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = menuButtonColor;
+                  e.currentTarget.style.color = '#FFFF';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = menuButtonColor;
+                }}
+                aria-label="Sign out"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <button
+              className="sm-login-btn"
+              onClick={handleAuthHeaderClick}
+              style={{
+                color: menuButtonColor,
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                fontWeight: 600
+              }}
+              aria-label="Sign In"
+            >
+              Sign In
+            </button>
+          )}
 
           <button
             ref={toggleBtnRef}
