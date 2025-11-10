@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ProjectData, ProjectReport } from "../components/SampleData";
+import {
+  ProjectData,
+  ProjectReport,
+  ProjectIssue,
+} from "../components/SampleData";
 import { sampleProjects } from "../components/SampleData";
+import { Deliverable } from "../types/projectTypes";
 
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
@@ -214,7 +219,7 @@ const ReportDetailPage: React.FC = () => {
         </div>
         <div className="card-body">
           {report.issues && report.issues.length > 0 ? (
-            report.issues.map((issue) => (
+            report.issues.map((issue: ProjectIssue) => (
               <div key={issue.id} className="card mb-3">
                 <div className="card-header">
                   <div className="d-flex justify-content-between align-items-center">
@@ -476,7 +481,7 @@ const ReportDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {report.scopeStatus.deliverables.map((deliverable) => (
+          {report.scopeStatus.deliverables.map((deliverable: Deliverable) => (
             <div key={deliverable.id} className="card mb-3">
               <div className="card-header d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">{deliverable.name}</h5>

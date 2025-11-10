@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
-import { ProjectData } from "../components/SampleData";
+import { ProjectData } from "../types/projectTypes";
 import { fetchAllProjects } from "../services/firebaseDataService";
 
 const AllProjects = () => {
