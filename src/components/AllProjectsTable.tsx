@@ -1,6 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "../services/firebase-config";
+import "./AllProjectsTable.css";
 
 interface ProjectData {
+  id: string;
   name: string;
   calculated_risk: string;
   schedule: number;
@@ -23,51 +28,42 @@ interface Props {
 
 const AllProjectsTable = ({ vendors }: Props) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  return (
-    <div className=" mt-3">
-      <style>{`
-        .accordion-content {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-        }
-        
-        .accordion-content.open {
-          max-height: 2000px;
-          padding: 1rem;
-        }
-        
-        .accordion-header {
-          transition: background-color 0.2s ease;
-        }
-        
-        .accordion-header:hover {
-          background-color: #e9ecef !important;
-        }
-        
-        .progress-wrapper {
-          position: relative;
-          height: 25px;
-        }
-        
-        .progress-text {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          color: #000;
-          font-weight: 600;
-          font-size: 14px;
-          z-index: 10;
-          text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
-        }
-      `}</style>
+  const handleView = (project: ProjectData) => {
+    navigate(`/project/${project.id}`);
+  };
 
+  const handleEdit = (project: ProjectData) => {
+    navigate(`/project/${project.id}}/edit`);
+  };
+
+  const handleDelete = async (project: ProjectData) => {
+    if (!project.id) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this project? This will also delete all associated reports."
+      )
+    )
+      return;
+
+    try {
+      const docRef = doc(db, "projects", project.id);
+      await deleteDoc(docRef);
+      alert("Project deleted successfully");
+      navigate("/projects");
+    } catch (err) {
+      console.error("Error deleting project:", err);
+      alert("Error deleting project");
+    }
+  };
+
+  return (
+    <div className="mt-3">
       {vendors.map((vendor, index) => {
         const isOpen = openIndex === index;
 
@@ -82,7 +78,7 @@ const AllProjectsTable = ({ vendors }: Props) => {
                 <h5 className="mb-0">{vendor.vendor_name}</h5>
                 <span
                   style={{
-                    transition: "transform 0.3s ease",
+                    transition: "transform 0.4s ease",
                     transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
                     display: "inline-block",
                   }}
@@ -125,7 +121,56 @@ const AllProjectsTable = ({ vendors }: Props) => {
                             {project.total_reports}
                           </p>
                         </div>
-                        <div className="col-md-8">
+                        <div className="col-md-8 position-relative">
+                          {/* Three-dot menu */}
+                          <div
+                            className="dropdown position-absolute"
+                            style={{ top: "-13px", right: "5px" }}
+                          >
+                            <button
+                              className="btn btn-link text-dark p-0 text-decoration-none"
+                              type="button"
+                              id={`dropdownMenu${index}-${projectIndex}`}
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                              style={{
+                                fontSize: "1.5rem",
+                                lineHeight: 1,
+                              }}
+                            >
+                              ⋮
+                            </button>
+                            <ul
+                              className="dropdown-menu"
+                              aria-labelledby={`dropdownMenu${index}-${projectIndex}`}
+                            >
+                              <li>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={() => handleView(project)}
+                                >
+                                  View
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={() => handleEdit(project)}
+                                >
+                                  Edit
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="dropdown-item text-danger"
+                                  onClick={() => handleDelete(project)}
+                                >
+                                  Remove
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
+
                           <p className="mb-2">
                             <strong>Schedule Status</strong>
                           </p>

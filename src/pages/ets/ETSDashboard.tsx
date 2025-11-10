@@ -4,12 +4,14 @@ import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";
 import AllProjectsTable from "../../components/AllProjectsTable";
+import Button from "../../components/Button";
 
 const sample_data = [
   {
     vendor_name: "Health Systems Technology Partners",
     vendor_projects: [
       {
+        id: "1",
         name: "BHA System Modernization",
         calculated_risk: "Low",
         schedule: 50,
@@ -22,6 +24,7 @@ const sample_data = [
         spent: 3000000,
       },
       {
+        id: "2",
         name: "Test 2",
         calculated_risk: "High",
         schedule: 10,
@@ -38,6 +41,7 @@ const sample_data = [
     vendor_name: "Test Vendor",
     vendor_projects: [
       {
+        id: "1",
         name: "BHA System Modernization",
         calculated_risk: "Low",
         schedule: 50,
@@ -50,6 +54,7 @@ const sample_data = [
         spent: 3000000,
       },
       {
+        id: "2",
         name: "Test 2",
         calculated_risk: "High",
         schedule: 10,
@@ -134,8 +139,16 @@ const ETSDashboard = () => {
           ]}
         ></ButtonGroup>
       </div>
-      <h1 className="py-1 pb-md-3 pb-lg-4">Project Management</h1>
+      <div className="row py-1">
+        <div className="col">
+          <h1 className="pt-md-2">Project Management</h1>
+        </div>
+        <div className="col-md-auto">
+          <Button link="/projects/new">Create New Project</Button>
+        </div>
+      </div>
       <h5>Create, edit, delete, and assign projects to vendors</h5>
+
       <div className="pb-4 pb-md-5 pb-lg-5">
         <AllProjectsTable vendors={sample_data}></AllProjectsTable>
       </div>

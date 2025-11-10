@@ -45,7 +45,7 @@ const ButtonGroup = ({ type = "primary", content, onSelect }: Props) => {
   return (
     <div className="btn-group" role="group">
       {content.map((item, index) => (
-        <Link to={item.link}>
+        <Link to={item.link} className="pe-2">
           <input
             type="radio"
             className="btn-check"
