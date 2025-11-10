@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 // Public components
+import Header from "./components/Navbar-reference";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Overview from "./pages/Overview";
@@ -118,88 +119,91 @@ function AppContent() {
       ];
 
   return (
-    <div style={{ paddingTop: "100px" }}>
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100vh",
-          pointerEvents: "none",
-          zIndex: 9999,
-        }}
-      >
-        <StaggeredMenu
-          position="right"
-          items={menuItems}
-          displaySocials={false}
-          displayItemNumbering={false}
-          menuButtonColor="#000"
-          openMenuButtonColor="#000"
-          changeMenuColorOnOpen={true}
-          colors={["#4169E1", "#031273"]}
-          logoUrl="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
-          accentColor="#4169E1"
-        />
-      </div>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/overview" element={<Overview />} />
-        <Route path="/projects" element={<AllReports />} />
-        <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-        <Route
-          path="/project/:projectId/report/:reportId"
-          element={<ReportDetailPage />}
-        />
+    <>
+      <Header />
+      <div style={{ paddingTop: "100px" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100vh",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        >
+          <StaggeredMenu
+            position="right"
+            items={menuItems}
+            displaySocials={false}
+            displayItemNumbering={false}
+            menuButtonColor="#000"
+            openMenuButtonColor="#000"
+            changeMenuColorOnOpen={true}
+            colors={["#4169E1", "#031273"]}
+            logoUrl="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
+            accentColor="#4169E1"
+          />
+        </div>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/overview" element={<Overview />} />
+          <Route path="/projects" element={<AllReports />} />
+          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route
+            path="/project/:projectId/report/:reportId"
+            element={<ReportDetailPage />}
+          />
 
-        <Route
-          path="/projects/new"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <NewProject />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/project/:projectId/edit"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <EditProject />
-            </RequireRole>
-          }
-        />
-        {/* Vendor Dashboard */}
-        <Route
-          path="/vendor/dashboard"
-          element={
-            <RequireRole allowedRoles={["vendor"]}>
-              <VendorDashboard />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/add-report/:projectId"
-          element={
-            <RequireRole allowedRoles={["vendor"]}>
-              <ReportForm />
-            </RequireRole>
-          }
-        />
-        {/* ETS Dashboard */}
-        <Route
-          path="/ets/dashboard"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <ETSDashboard />
-            </RequireRole>
-          }
-        />
-      </Routes>
-      <Footer />
-    </div>
+          <Route
+            path="/projects/new"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <NewProject />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/project/:projectId/edit"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <EditProject />
+              </RequireRole>
+            }
+          />
+          {/* Vendor Dashboard */}
+          <Route
+            path="/vendor/dashboard"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <VendorDashboard />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/add-report/:projectId"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <ReportForm />
+              </RequireRole>
+            }
+          />
+          {/* ETS Dashboard */}
+          <Route
+            path="/ets/dashboard"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <ETSDashboard />
+              </RequireRole>
+            }
+          />
+        </Routes>
+        <Footer />
+      </div>
+    </>
   );
 }
 

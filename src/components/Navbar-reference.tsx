@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import "./Navbar.css";
+import "./Navbar-reference.css";
 import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
@@ -9,11 +9,11 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
-      alert('Successfully signed out!');
-      navigate('/');
+      alert("Successfully signed out!");
+      navigate("/");
     } catch (error) {
-      console.error('Error signing out:', error);
-      alert('Error signing out. Please try again.');
+      console.error("Error signing out:", error);
+      alert("Error signing out. Please try again.");
     }
   };
 
@@ -21,13 +21,13 @@ const Header = () => {
     <header>
       <nav className="header-nav">
         <div className="header-container">
-          <a href="/" className="header-logo">
+          <Link to="/projects" className="header-logo">
             <img
               src="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
               alt="ETS logo"
             />
             <span>State of Hawaii</span>
-          </a>
+          </Link>
 
           {/* Nav menu and login grouped together */}
           <div className="header-right">
@@ -47,8 +47,8 @@ const Header = () => {
 
             <div className="header-login-container">
               {currentUser ? (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="header-login-btn"
                   onClick={handleSignOut}
                 >

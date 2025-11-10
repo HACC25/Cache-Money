@@ -76,11 +76,15 @@ const VendorDashboard = () => {
 
       {activeTab === "assigned" && (
         <>
-          <h2 className="mb-3">Projects assigned to you</h2>
+          <h2 className="mb-3" style={{ paddingBottom: "40px" }}>
+            Projects assigned to you
+          </h2>
 
           {assignedProjects.length === 0 ? (
-            <div className="alert alert-info">
-              No projects have been assigned to your vendor account yet.
+            <div style={{ paddingBottom: "80px" }}>
+              <div className="alert alert-info">
+                No projects have been assigned to your vendor account yet.
+              </div>
             </div>
           ) : (
             assignedProjects.map((project) => (
