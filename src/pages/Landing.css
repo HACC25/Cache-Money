@@ -19,7 +19,7 @@ h4,
 h5,
 h6 {
   font-family: "Geist", monospace;
-  color: #18828c;
+  color: #18828c !important;
 }
 
 p {
@@ -27,9 +27,8 @@ p {
   color: black;
 }
 
-/* Override for glassmorphism box - make text white */
-.backdrop-blur-lg p,
-[class*="backdrop-blur"] p {
+/* Override for glassmorphism box in hero section only - make text white */
+section .backdrop-blur-lg p {
   color: white !important;
 }
 
@@ -56,6 +55,13 @@ li a {
 
 li a:hover {
   color: #18828c;
+}
+
+.project-card,
+.project-card:hover,
+.view-all-btn,
+.view-all-btn:hover {
+  text-decoration: none !important;
 }
 
 a[class*="bg-slate"],
