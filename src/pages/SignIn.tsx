@@ -3,7 +3,6 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/aut
 import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import { FirebaseError } from "firebase/app";
 import './SignIn.css'
 
@@ -14,7 +13,6 @@ const SignIn = () => {
   const [isSendingReset, setIsSendingReset] = useState(false);
   
   const navigate = useNavigate();
-  const { refreshUserRole } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,21 +26,16 @@ const SignIn = () => {
         password
       );
       const user = userCredential.user;
-      console.log("User signed in:", user.uid);
 
       // 2. Directly fetch role from Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userDocRef);
 
-      // 3. Refresh role in AuthContext to ensure consistency
-      await refreshUserRole();
-
       if (userSnap.exists()) {
         const userData = userSnap.data();
         const userRole = userData.role;
-        console.log("User role fetched:", userRole);
 
-        // 4. Navigate based on role
+        // 3. Navigate based on role immediately (don't wait for AuthContext)
         if (userRole === "vendor") {
           navigate("/vendor/dashboard");
         } else if (userRole === "ets") {
@@ -53,8 +46,6 @@ const SignIn = () => {
       } else {
         navigate("/");
       }
-
-  console.log("Sign in successful!");
     } catch (error: FirebaseError | unknown) {
       console.error("Error signing in:", error);
       alert(`Error: ${(error as FirebaseError).message}`);
