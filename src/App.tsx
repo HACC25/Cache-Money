@@ -18,7 +18,7 @@ import Navbar from "./components/Navbar";
 
 // Vendor components
 import VendorDashboard from "./pages/vendor/VendorDashboard";
-// Add : import CreateReport from "./pages/vendor/VendorDashboard";
+import ReportForm from "./components/forms/ReportForm";
 
 // ETS components
 import ETSDashboard from "./pages/ets/ETSDashboard";
@@ -74,7 +74,7 @@ function AppContent() {
               {
                 label: "Create Report",
                 ariaLabel: "Vendor Report",
-                link: "/vendor/create-report",
+                link: "/vendor/dashboard",
               },
             ]
           : []),
@@ -147,6 +147,15 @@ function AppContent() {
             element={
               <RequireRole allowedRoles={["ets"]}>
                 <EditProject />
+              </RequireRole>
+            }
+          />
+          {/* Report Form - New Report */}
+          <Route
+            path="/project/:projectId/report/new"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <ReportForm />
               </RequireRole>
             }
           />

@@ -1,65 +1,39 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ProjectCard from "../../components/VendorProjectCard";
-import { sampleProjects, ProjectData } from "../../components/SampleData";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../../services/firebase-config";
+import { ProjectData } from "../../components/SampleData";
+import { fetchProjectsByVendor } from "../../services/firebaseDataService";
 
 const VendorDashboard = () => {
   const [activeTab] = useState("assigned"); // "assigned" or "reports"
   const [assignedProjects, setAssignedProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { currentUser } = useAuth();
 
+  // TODO: Replace with actual vendor ID from auth system
+  const currentVendorId = currentUser?.uid || "";
   useEffect(() => {
-    if (!currentUser) return;
+    const fetchAssignedProjects = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    // Firestore query: only projects where vendorId == currentUser.uid
-    const projectsQuery = query(
-      collection(db, "projects"),
-      where("vendorId", "==", currentUser.uid)
-    );
-
-    const unsubscribe = onSnapshot(
-      projectsQuery,
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            description: data.description || "",
-            status: data.status || "Active",
-            statusColor: data.statusColor || "#28a745",
-            metric1: data.metric1 || "",
-            metric2: data.metric2 || "",
-            startDate: data.startDate || "",
-            department: data.department || "",
-            budget: data.budget || "",
-            spent: data.spent || "",
-            vendor: data.vendor || "",
-            vendorId: data.vendorId || "",
-            reports: data.reports || [],
-          } as ProjectData;
-        });
-
-        setAssignedProjects(firestoreProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching assigned projects:", error);
-
-        // Fallback to sample projects if Firestore fails
-        const filteredProjects = sampleProjects.filter(
-          (project) => project.vendorId === currentUser.uid
+        // Fetch projects assigned to this vendor from Firebase
+        const vendorProjects = await fetchProjectsByVendor(currentVendorId);
+        setAssignedProjects(vendorProjects);
+      } catch (err) {
+        console.error("Error fetching vendor projects:", err);
+        setError(
+          "Failed to load your assigned projects. Please try again later."
         );
-        setAssignedProjects(filteredProjects);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe();
-  }, [currentUser]);
+    fetchAssignedProjects();
+  }, [currentVendorId]);
 
   if (loading) {
     return (
@@ -68,6 +42,24 @@ const VendorDashboard = () => {
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error Loading Projects</h4>
+          <p>{error}</p>
+          <hr />
+          <button
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -82,11 +74,15 @@ const VendorDashboard = () => {
 
       {activeTab === "assigned" && (
         <>
-          <h2 className="mb-3">Projects assigned to you</h2>
+          <h2 className="mb-3" style={{ paddingBottom: "40px" }}>
+            Projects assigned to you
+          </h2>
 
           {assignedProjects.length === 0 ? (
-            <div className="alert alert-info">
-              No projects have been assigned to your vendor account yet.
+            <div style={{ paddingBottom: "80px" }}>
+              <div className="alert alert-info">
+                No projects have been assigned to your vendor account yet.
+              </div>
             </div>
           ) : (
             assignedProjects.map((project) => (

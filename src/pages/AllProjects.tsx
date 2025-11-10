@@ -1,91 +1,32 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
-import { sampleProjects, ProjectData } from "../components/SampleData";
-import { collection, onSnapshot, query, where, getDoc, doc } from "firebase/firestore";
-import { db } from "../services/firebase-config";
-import { useAuth } from "../contexts/AuthContext";
+import { ProjectData } from "../components/SampleData";
+import { fetchAllProjects } from "../services/firebaseDataService";
 
 const AllProjects = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null>(null);
-  const { currentUser } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!currentUser) {
-      // If not logged in, treat as public user
-      setRole('public');
-      return;
-    }
+    const loadProjects = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    // Step 1: fetch the current user's role from Firestore
-    const fetchRole = async () => {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      if (userDoc.exists()) {
-        setRole(userDoc.data().role);
-      } else {
-        setRole('public');
+        // Fetch all projects from Firebase with their reports
+        const fetchedProjects = await fetchAllProjects();
+        setProjects(fetchedProjects);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+        setError("Failed to load projects. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchRole();
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (!role) return;
-
-    let projectsQuery;
-
-    if (role === "ets" || role === "public") {
-      // ETS employees and public users see all projects
-      projectsQuery = collection(db, "projects");
-    } else if (role === "vendor" && currentUser) {
-      // Vendors only see projects assigned to them
-      projectsQuery = query(
-        collection(db, "projects"),
-        where("vendorId", "==", currentUser.uid)
-      );
-    } else {
-      // Fallback: show all projects
-      projectsQuery = collection(db, "projects");
-    }
-
-    const unsubscribe = onSnapshot(
-      projectsQuery,
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          console.log(snapshot.docs.map(doc => doc.data()));
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            description: data.description || "",
-            status: data.status || "Active",
-            statusColor: data.statusColor || "#28a745",
-            metric1: data.metric1 || "",
-            metric2: data.metric2 || "",
-            startDate: data.startDate || "",
-            department: data.department || "",
-            budget: data.budget || "",
-            spent: data.spent || "",
-            vendor: data.vendor || "",
-            reports: data.reports || [],
-          } as ProjectData;
-        });
-
-        const allProjects = [...firestoreProjects, ...sampleProjects];
-        setProjects(allProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        setProjects(sampleProjects);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [currentUser, role]);
+    loadProjects();
+  }, []);
 
   if (loading) {
     return (
@@ -94,6 +35,24 @@ const AllProjects = () => {
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error Loading Projects</h4>
+          <p>{error}</p>
+          <hr />
+          <button
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -113,7 +72,11 @@ const AllProjects = () => {
       ) : (
         <div className="row">
           {projects.map((project) => (
-            <div key={project.id} className="col-md-6 mb-4" style={{ paddingTop: "10px" }}>
+            <div
+              key={project.id}
+              className="col-md-6 mb-4"
+              style={{ paddingTop: "10px" }}
+            >
               <ProjectCard project={project} />
             </div>
           ))}

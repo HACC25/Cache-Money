@@ -76,10 +76,7 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
             <div className="mt-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h5 className="mb-0">RECENT REPORTS</h5>
-                <Link
-                  to={`/project/${id}/report/new`}
-                  className="btn btn-dark btn-sm"
-                >
+                <Link to={`/add-report/${id}`} className="btn btn-dark btn-sm">
                   ADD REPORT +
                 </Link>
               </div>
