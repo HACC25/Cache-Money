@@ -3,6 +3,7 @@ import { sampleProjects, ProjectData } from "../../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";
+import Metrics from "../../components/Metrics";
 
 const ETSStatistics = () => {
   // @ts-ignore -- will use projects later
@@ -65,16 +66,74 @@ const ETSStatistics = () => {
   return (
     <div className="container mt-5">
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
-      <h1 className="" style={{ fontWeight: "800" }}>
-        ETS DASHBOARD ETS DASHBOARD
-      </h1>
-      <div className="row">
-        <ButtonGroup
-          content={[
-            { name: "Projects", link: "/ets/dashboard" },
-            { name: "Statistics", link: "/ets/statistics" },
-          ]}
-        ></ButtonGroup>
+      <h1 style={{ fontWeight: "800" }}>ETS DASHBOARD</h1>
+      <ButtonGroup
+        content={[
+          { name: "Projects", link: "/ets/dashboard" },
+          { name: "Statistics", link: "/ets/statistics" },
+        ]}
+      ></ButtonGroup>
+
+      <h1 className="py-1 pb-md-3 pb-lg-4">Project Statistics</h1>
+      <div className="container">
+        <div className="row justify-content-center gx-3 gx-md-4 gx-lg-5">
+          <div className="col-4">
+            <Metrics
+              type="primary"
+              value={25}
+              metric="Active Projects"
+            ></Metrics>
+          </div>
+          <div className="col-4">
+            <Metrics
+              type="primary"
+              value={200}
+              metric="Completed Projects"
+            ></Metrics>
+          </div>
+        </div>
+      </div>
+
+      <div className="container">
+        <div className="row row justify-content-center gx-3 gx-md-4 gx-lg-5">
+          <div className="col-4 gy-0 gy-md-2 gy-lg-4">
+            <Metrics type="primary" value={0} metric="Total Reports"></Metrics>
+          </div>
+          <div className="col-4 gy-0 gy-md-2 gy-lg-4">
+            <Metrics
+              type="primary"
+              value={5}
+              metric="Missing Reports"
+            ></Metrics>
+          </div>
+        </div>
+      </div>
+
+      <h1 className="py-1 pt-md-4 pb-md-3 py-lg-4">Projects By Status</h1>
+      <div className="container">
+        <div className="row pb-4 pb-md-5 pb-lg-5">
+          <div className="col">
+            <Metrics
+              type="success"
+              value={20}
+              metric="Status: On Track"
+            ></Metrics>
+          </div>
+          <div className="col">
+            <Metrics
+              type="warning"
+              value={4}
+              metric="Status: At Risk"
+            ></Metrics>
+          </div>
+          <div className="col">
+            <Metrics
+              type="danger"
+              value={1}
+              metric="Status: Critical"
+            ></Metrics>
+          </div>
+        </div>
       </div>
     </div>
   );
