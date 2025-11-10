@@ -1,48 +1,31 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
-import { sampleProjects, ProjectData } from "../components/SampleData";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase-config";
+import { ProjectData } from "../components/SampleData";
+import { fetchAllProjects } from "../services/firebaseDataService";
 
 const AllProjects = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load from Firestore with real-time updates
-    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
-      const firestoreProjects = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name || 'Unnamed Project',
-          description: data.description || '',
-          status: data.status || 'Active',
-          statusColor: data.statusColor || '#28a745',
-          metric1: data.metric1 || '',
-          metric2: data.metric2 || '',
-          startDate: data.startDate || '',
-          department: data.department || '',
-          budget: data.budget || '',
-          spent: data.spent || '',
-          vendor: data.vendor || '',
-          reports: data.reports || [],
-        } as ProjectData;
-      });
+    const loadProjects = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Combine Firestore projects with sample projects
-      // Firestore projects first, then sample projects
-      const allProjects = [...firestoreProjects, ...sampleProjects];
-      setProjects(allProjects);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching projects:", error);
-      // Fallback to sample projects if Firestore fails
-      setProjects(sampleProjects);
-      setLoading(false);
-    });
+        // Fetch all projects from Firebase with their reports
+        const fetchedProjects = await fetchAllProjects();
+        setProjects(fetchedProjects);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+        setError("Failed to load projects. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => unsubscribe();
+    loadProjects();
   }, []);
 
   if (loading) {
@@ -57,13 +40,31 @@ const AllProjects = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error Loading Projects</h4>
+          <p>{error}</p>
+          <hr />
+          <button
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-5">
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
       <h1 className="mb-4" style={{ fontWeight: "800" }}>
         CURRENT ETS PROJECTS
       </h1>
-      
+
       {projects.length === 0 ? (
         <div className="alert alert-info">
           No projects available yet. ETS employees can create new projects.

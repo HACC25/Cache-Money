@@ -1,29 +1,37 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ProjectCard from "../../components/VendorProjectCard";
-import { sampleProjects, ProjectData } from "../../components/SampleData";
+import { ProjectData } from "../../components/SampleData";
+import { fetchProjectsByVendor } from "../../services/firebaseDataService";
 
 const VendorDashboard = () => {
   const [activeTab] = useState("assigned"); // "assigned" or "reports"
   const [assignedProjects, setAssignedProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
-  const {
-    /*currentUser */
-  } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const { currentUser } = useAuth();
 
-  // Mock the current vendor ID - in a real app, this would come from auth system
+  // TODO: Replace with actual vendor ID from auth system
+  // This should come from currentUser.vendorId or similar
   const currentVendorId = "vendor1";
 
   useEffect(() => {
-    // Simulate fetching data from backend
-    const fetchAssignedProjects = () => {
-      // Filter projects assigned to the current vendor
-      const filteredProjects = sampleProjects.filter(
-        (project) => project.vendorId === currentVendorId
-      );
+    const fetchAssignedProjects = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      setAssignedProjects(filteredProjects);
-      setLoading(false);
+        // Fetch projects assigned to this vendor from Firebase
+        const vendorProjects = await fetchProjectsByVendor(currentVendorId);
+        setAssignedProjects(vendorProjects);
+      } catch (err) {
+        console.error("Error fetching vendor projects:", err);
+        setError(
+          "Failed to load your assigned projects. Please try again later."
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchAssignedProjects();
@@ -36,6 +44,24 @@ const VendorDashboard = () => {
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error Loading Projects</h4>
+          <p>{error}</p>
+          <hr />
+          <button
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
