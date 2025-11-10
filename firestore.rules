@@ -8,9 +8,9 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Get the current user's role from Firestore
+    // Get the current user's role from Firestore (safely)
     function getUserRole() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+      return isSignedIn() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role : null;
     }
     
     // Check if user is ETS employee
@@ -21,6 +21,11 @@ service cloud.firestore {
     // Check if user is vendor
     function isVendor() {
       return isSignedIn() && getUserRole() == 'vendor';
+    }
+    
+    // Check if user is public
+    function isPublic() {
+      return isSignedIn() && getUserRole() == 'public';
     }
     
     // Check if user owns the resource

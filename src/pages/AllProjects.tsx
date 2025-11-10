@@ -12,7 +12,11 @@ const AllProjects = () => {
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      // If not logged in, treat as public user
+      setRole('public');
+      return;
+    }
 
     // Step 1: fetch the current user's role from Firestore
     const fetchRole = async () => {
@@ -20,7 +24,7 @@ const AllProjects = () => {
       if (userDoc.exists()) {
         setRole(userDoc.data().role);
       } else {
-        setRole(null);
+        setRole('public');
       }
     };
 
@@ -28,23 +32,22 @@ const AllProjects = () => {
   }, [currentUser]);
 
   useEffect(() => {
-    if (!currentUser || !role) return;
+    if (!role) return;
 
     let projectsQuery;
 
-    if (role === "ets") {
-      // ETS employees see all projects
+    if (role === "ets" || role === "public") {
+      // ETS employees and public users see all projects
       projectsQuery = collection(db, "projects");
-    } else if (role === "vendor") {
+    } else if (role === "vendor" && currentUser) {
       // Vendors only see projects assigned to them
       projectsQuery = query(
         collection(db, "projects"),
         where("vendorId", "==", currentUser.uid)
       );
     } else {
-      setProjects([]);
-      setLoading(false);
-      return;
+      // Fallback: show all projects
+      projectsQuery = collection(db, "projects");
     }
 
     const unsubscribe = onSnapshot(
