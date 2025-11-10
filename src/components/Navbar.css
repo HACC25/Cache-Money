@@ -5,7 +5,6 @@
   z-index: 40;
 }
 
-/* Remove the previous rule and add these instead */
 .staggered-menu-header,
 .staggered-menu-panel,
 .sm-toggle,
@@ -39,7 +38,7 @@
   justify-content: space-between;
   padding: 2em;
   background: white;
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
   pointer-events: none;
   z-index: 20;
 }

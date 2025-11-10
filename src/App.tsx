@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 // Public components
-import Header from "./components/Navbar-reference";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Overview from "./pages/Overview";
@@ -11,11 +10,11 @@ import SignUp from "./pages/SignUp";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import ReportDetailPage from "./pages/ReportDetailPage";
 import RequireRole from "./components/RequireRole";
-import NewProject from "./pages/NewProject";
+import NewProject from "./pages/CreateNewProject";
 import EditProject from "./pages/EditProject";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import StaggeredMenu from "./components/StaggeredMenu";
+import Navbar from "./components/Navbar";
 
 // Vendor components
 import VendorDashboard from "./pages/vendor/VendorDashboard";
@@ -31,7 +30,7 @@ function AppContent() {
   const handleLogout = async () => {
     try {
       await signOut();
-      alert("Successfully logged out!");
+      console.log("Successfully logged out!");
       navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -39,32 +38,8 @@ function AppContent() {
     }
   };
 
-  const getRoleLabel = () => {
-    if (!userRole) return "";
-    switch (userRole) {
-      case "ets":
-        return "ETS Employee";
-      case "vendor":
-        return "IV&V Vendor";
-      case "public":
-        return "Public User";
-      default:
-        return "User";
-    }
-  };
-
   const menuItems = currentUser
     ? [
-        {
-          label: "Logged in as: " + getRoleLabel(),
-          ariaLabel: "User Role",
-        },
-        {
-          label: "Log Out",
-          ariaLabel: "Log Out",
-          onClick: handleLogout,
-        },
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -105,7 +80,6 @@ function AppContent() {
           : []),
       ]
     : [
-        { label: "Our ETS Project", ariaLabel: "Home Page", link: "/" },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -119,33 +93,36 @@ function AppContent() {
       ];
 
   return (
-    <>
-      <Header />
-      <div style={{ paddingTop: "100px" }}>
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100vh",
-            pointerEvents: "none",
-            zIndex: 9999,
-          }}
-        >
-          <StaggeredMenu
-            position="right"
-            items={menuItems}
-            displaySocials={false}
-            displayItemNumbering={false}
-            menuButtonColor="#000"
-            openMenuButtonColor="#000"
-            changeMenuColorOnOpen={true}
-            colors={["#4169E1", "#031273"]}
-            logoUrl="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
-            accentColor="#4169E1"
-          />
-        </div>
+    <div className="app-root">
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100vh",
+          pointerEvents: "none",
+          zIndex: 9999,
+        }}
+      >
+        <Navbar
+          position="right"
+          items={menuItems}
+          authAction={handleLogout}
+          currentUser={currentUser}
+          userRole={userRole || undefined}
+          isETSEmployee={isETSEmployee}
+          displaySocials={false}
+          displayItemNumbering={false}
+          menuButtonColor="#000"
+          openMenuButtonColor="#000"
+          changeMenuColorOnOpen={true}
+          colors={["#4169E1", "#3171e0ff"]}
+          logoUrl="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
+          accentColor="#4169E1"
+        />
+      </div>
+      <main className="app-main" style={{ paddingTop: "100px" }}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/signup" element={<SignUp />} />
@@ -157,7 +134,6 @@ function AppContent() {
             path="/project/:projectId/report/:reportId"
             element={<ReportDetailPage />}
           />
-
           <Route
             path="/projects/new"
             element={
@@ -183,14 +159,6 @@ function AppContent() {
               </RequireRole>
             }
           />
-          <Route
-            path="/add-report/:projectId"
-            element={
-              <RequireRole allowedRoles={["vendor"]}>
-                <ReportForm />
-              </RequireRole>
-            }
-          />
           {/* ETS Dashboard */}
           <Route
             path="/ets/dashboard"
@@ -201,9 +169,9 @@ function AppContent() {
             }
           />
         </Routes>
-        <Footer />
-      </div>
-    </>
+      </main>
+      <Footer />
+    </div>
   );
 }
 

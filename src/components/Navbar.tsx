@@ -1,8 +1,43 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import './StaggeredMenu.css';
+import { useNavigate } from 'react-router-dom';
+import './Navbar.css';
 
-export const StaggeredMenu = ({
+interface MenuItem {
+  label: string;
+  ariaLabel: string;
+  link?: string;
+  onClick?: () => void;
+}
+
+interface SocialItem {
+  label: string;
+  link: string;
+}
+
+interface NavbarProps {
+  position?: 'left' | 'right';
+  colors?: string[];
+  items?: MenuItem[];
+  socialItems?: SocialItem[];
+  displaySocials?: boolean;
+  displayItemNumbering?: boolean;
+  className?: string;
+  logoUrl?: string;
+  menuButtonColor?: string;
+  openMenuButtonColor?: string;
+  accentColor?: string;
+  changeMenuColorOnOpen?: boolean;
+  isFixed?: boolean;
+  onMenuOpen?: () => void;
+  onMenuClose?: () => void;
+  authAction?: () => Promise<void>;
+  currentUser?: { email: string | null } | null;
+  userRole?: string | null;
+  isETSEmployee?: boolean;
+}
+
+export const Navbar = ({
   position = 'right',
   colors = ['#B19EEF', '#5227FF'],
   items = [],
@@ -10,35 +45,38 @@ export const StaggeredMenu = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
+  logoUrl = 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
   changeMenuColorOnOpen = true,
   isFixed = false,
   onMenuOpen,
-  onMenuClose
-}) => {
+  onMenuClose,
+  authAction,
+  currentUser: injectedCurrentUser = null,
+  userRole: injectedUserRole = undefined,
+}: NavbarProps) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
-  const panelRef = useRef(null);
-  const preLayersRef = useRef(null);
-  const preLayerElsRef = useRef([]);
-  const plusHRef = useRef(null);
-  const plusVRef = useRef(null);
-  const iconRef = useRef(null);
-  const textInnerRef = useRef(null);
-  const textWrapRef = useRef(null);
+  const panelRef = useRef<HTMLElement | null>(null);
+  const preLayersRef = useRef<HTMLDivElement | null>(null);
+  const preLayerElsRef = useRef<Element[]>([]);
+  const plusHRef = useRef<HTMLSpanElement | null>(null);
+  const plusVRef = useRef<HTMLSpanElement | null>(null);
+  const iconRef = useRef<HTMLSpanElement | null>(null);
+  const textInnerRef = useRef<HTMLSpanElement | null>(null);
+  const textWrapRef = useRef<HTMLSpanElement | null>(null);
   const [textLines, setTextLines] = useState(['Menu', 'Close']);
 
-  const openTlRef = useRef(null);
-  const closeTweenRef = useRef(null);
-  const spinTweenRef = useRef(null);
-  const textCycleAnimRef = useRef(null);
-  const colorTweenRef = useRef(null);
-  const toggleBtnRef = useRef(null);
+  const openTlRef = useRef<gsap.core.Timeline | null>(null);
+  const closeTweenRef = useRef<gsap.core.Tween | null>(null);
+  const spinTweenRef = useRef<gsap.core.Tween | null>(null);
+  const textCycleAnimRef = useRef<gsap.core.Tween | null>(null);
+  const colorTweenRef = useRef<gsap.core.Tween | null>(null);
+  const toggleBtnRef = useRef<HTMLButtonElement | null>(null);
   const busyRef = useRef(false);
-  const itemEntranceTweenRef = useRef(null);
+  const itemEntranceTweenRef = useRef<gsap.core.Tween | null>(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -50,7 +88,7 @@ export const StaggeredMenu = ({
       const textInner = textInnerRef.current;
       if (!panel || !plusH || !plusV || !icon || !textInner) return;
 
-      let preLayers = [];
+      let preLayers: Element[] = [];
       if (preContainer) {
         preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
       }
@@ -227,7 +265,7 @@ export const StaggeredMenu = ({
     });
   }, [position]);
 
-  const animateIcon = useCallback(opening => {
+  const animateIcon = useCallback((opening: boolean) => {
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
@@ -239,7 +277,7 @@ export const StaggeredMenu = ({
   }, []);
 
   const animateColor = useCallback(
-    opening => {
+    (opening: boolean) => {
       const btn = toggleBtnRef.current;
       if (!btn) return;
       colorTweenRef.current?.kill();
@@ -269,7 +307,7 @@ export const StaggeredMenu = ({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
-  const animateText = useCallback(opening => {
+  const animateText = useCallback((opening: boolean) => {
     const inner = textInnerRef.current;
     if (!inner) return;
     textCycleAnimRef.current?.kill();
@@ -313,17 +351,56 @@ export const StaggeredMenu = ({
     animateText(target);
   }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
 
+  // navigation hook for header auth button
+  const navigate = useNavigate();
+
+  const getRoleLabel = (role: string | null | undefined) => {
+    if (!role) return '';
+    switch (role) {
+      case 'ets':
+        return 'ETS Employee';
+      case 'vendor':
+        return 'IV&V Vendor';
+      case 'public':
+        return 'Public User';
+      default:
+        return 'User';
+    }
+  };
+
+  const handleAuthHeaderClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
+    const user = injectedCurrentUser;
+    if (user) {
+      // call the parent-provided authAction (e.g. handleLogout) when available
+      if (typeof authAction === 'function') {
+        try {
+          await authAction();
+        } catch (err) {
+          console.error('Error calling authAction:', err);
+        }
+      } else {
+        // fallback: navigate home
+        navigate('/');
+      }
+      if (open) toggleMenu();
+    } else {
+      navigate('/login');
+      if (open) toggleMenu();
+    }
+  };
+
   return (
     <div
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
-      style={accentColor ? { ['--sm-accent']: accentColor } : undefined}
+      style={accentColor ? { '--sm-accent': accentColor } as React.CSSProperties : undefined}
       data-position={position}
       data-open={open || undefined}
     >
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
         {(() => {
           const raw = colors && colors.length ? colors.slice(0, 4) : ['#1e1e22', '#35353c'];
-          let arr = [...raw];
+          const arr = [...raw];
           if (arr.length >= 3) {
             const mid = Math.floor(arr.length / 2);
             arr.splice(mid, 1);
@@ -333,26 +410,79 @@ export const StaggeredMenu = ({
       </div>
       <header className="staggered-menu-header" aria-label="Main navigation header">
         <div className="sm-logo" aria-label="Logo">
-          <img
-            src={logoUrl || '/src/assets/logos/reactbits-gh-white.svg'}
-            alt="Logo"
-            className="sm-logo-img"
-            draggable={false}
-            width={110}
-            height={24}
-          />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <a 
-            href="/login" 
-            className="sm-login-btn"
-            style={{
-              color: menuButtonColor,
-              textDecoration: 'none'
+            href="/" 
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/');
+              if (open) toggleMenu();
             }}
+            aria-label="Go to home page"
+            style={{ cursor: 'pointer', display: 'block' }}
           >
-            Login
+            <img
+              src={logoUrl || 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png'}
+              alt="Logo"
+              className="sm-logo-img"
+              draggable={false}
+              width={110}
+              height={24}
+            />
           </a>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {injectedCurrentUser ? (
+            <>
+              <span
+                style={{
+                  color: menuButtonColor
+                }}
+              >
+                {getRoleLabel(injectedUserRole) || 'User'} ({injectedCurrentUser.email})
+              </span>
+              <button
+                className="sm-login-btn"
+                onClick={handleAuthHeaderClick}
+                style={{
+                  color: menuButtonColor,
+                  background: 'transparent',
+                  border: `1px solid ${menuButtonColor}`,
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  padding: '0.375rem 0.75rem',
+                  transition: 'all 0.1s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = menuButtonColor;
+                  e.currentTarget.style.color = '#FFFF';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = menuButtonColor;
+                }}
+                aria-label="Sign out"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <button
+              className="sm-login-btn"
+              onClick={handleAuthHeaderClick}
+              style={{
+                color: menuButtonColor,
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+                fontWeight: 600
+              }}
+              aria-label="Sign In"
+            >
+              Sign In
+            </button>
+          )}
+
           <button
             ref={toggleBtnRef}
             className="sm-toggle"
@@ -430,4 +560,4 @@ export const StaggeredMenu = ({
   );
 };
 
-export default StaggeredMenu;
+export default Navbar;

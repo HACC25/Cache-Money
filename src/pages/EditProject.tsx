@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../services/firebase-config';
 
 interface ProjectData {
@@ -9,6 +9,7 @@ interface ProjectData {
   description: string;
   status: string;
   statusColor?: string;
+  vendorId?: string;
 }
 
 const EditProject: React.FC = () => {
@@ -18,8 +19,24 @@ const EditProject: React.FC = () => {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
+  const [vendorId, setVendorId] = useState('');
 
   useEffect(() => {
+    const loadVendors = async () => {
+      try {
+        const q = query(collection(db, 'users'), where('role', '==', 'vendor'));
+        const querySnapshot = await getDocs(q);
+        const vendorList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().displayName || doc.data().email || 'Unnamed Vendor',
+        }));
+        setVendors(vendorList);
+      } catch (err) {
+        console.error('Error loading vendors:', err);
+      }
+    };
+
     const loadProject = async () => {
       if (!projectId) return;
       
@@ -28,7 +45,10 @@ const EditProject: React.FC = () => {
         const snap = await getDoc(docRef);
         
         if (snap.exists()) {
-          setProject({ id: snap.id, ...snap.data() } as ProjectData);
+          const projectData = { id: snap.id, ...snap.data() } as ProjectData;
+          setProject(projectData);
+          // Set the current vendor ID if it exists
+          setVendorId(projectData.vendorId || '');
         } else {
           alert('This is a sample project and cannot be edited. Only Firestore projects can be edited.');
           navigate(`/project/${projectId}`);
@@ -41,6 +61,7 @@ const EditProject: React.FC = () => {
       }
     };
     
+    loadVendors();
     loadProject();
   }, [projectId, navigate]);
 
@@ -55,6 +76,7 @@ const EditProject: React.FC = () => {
         description: project.description,
         status: project.status,
         statusColor: project.status === 'Active' ? '#28a745' : '#6c757d',
+        vendorId: vendorId || null,
         updatedAt: new Date(),
       });
       
@@ -96,7 +118,7 @@ const EditProject: React.FC = () => {
   if (!project) return null;
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h2>Edit Project</h2>
       <p className="text-muted">Project ID: {projectId}</p>
       
@@ -120,6 +142,22 @@ const EditProject: React.FC = () => {
               onChange={(e) => setProject({ ...project, description: e.target.value })} 
               rows={4}
             />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Assign to Vendor</label>
+            <select 
+              className="form-control" 
+              value={vendorId} 
+              onChange={(e) => setVendorId(e.target.value)}
+            >
+              <option value="">Select a Vendor</option>
+              {vendors.map((vendor) => (
+                <option key={vendor.id} value={vendor.id}>
+                  {vendor.name}
+                </option>
+              ))}
+            </select>
           </div>
           
           <div className="mb-3">

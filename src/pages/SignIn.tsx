@@ -1,16 +1,18 @@
 import { auth, db } from "../services/firebase-config";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { FirebaseError } from "firebase/app";
+import './SignIn.css'
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
+  
   const navigate = useNavigate();
-  const { refreshUserRole } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,47 +26,60 @@ const SignIn = () => {
         password
       );
       const user = userCredential.user;
-      console.log("User signed in:", user.uid);
 
       // 2. Directly fetch role from Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userDocRef);
 
-      // 3. Refresh role in AuthContext to ensure consistency
-      await refreshUserRole();
-
       if (userSnap.exists()) {
         const userData = userSnap.data();
         const userRole = userData.role;
-        console.log("User role fetched:", userRole);
 
-        // 4. Navigate based on role
+        // 3. Navigate based on role immediately (don't wait for AuthContext)
         if (userRole === "vendor") {
-          console.log("Navigating to vendor dashboard");
           navigate("/vendor/dashboard");
         } else if (userRole === "ets") {
-          console.log("Navigating to vendor dashboard (for ETS)");
           navigate("/ets/dashboard");
         } else {
-          console.log("Navigating to home");
           navigate("/");
         }
       } else {
-        console.log("No user data found, navigating to home");
         navigate("/");
       }
-
-      alert("Sign in successful!");
-    } catch (error: any) {
+    } catch (error: FirebaseError | unknown) {
       console.error("Error signing in:", error);
-      alert(`Error: ${error.message}`);
+      alert(`Error: ${(error as FirebaseError).message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleForgotPassword = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+
+    // Prevent duplicate sends while a request is in-flight
+    if (isSendingReset) return;
+
+    if (!email) {
+      alert("Please enter your email address above to receive a reset link.");
+      return;
+    }
+
+    setIsSendingReset(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent. Check your inbox.");
+    } catch (err: unknown) {
+      console.error("Reset error:", err);
+      const msg = (err as FirebaseError)?.message ?? "Unable to send reset email.";
+      alert(`Error sending reset email: ${msg}`);
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="signin-root flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           src="/public/favicon.png"
@@ -114,9 +129,15 @@ const SignIn = () => {
               <div className="text-sm">
                 <a
                   href="#"
-                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+                  id="forgotpasswordlink"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleForgotPassword(e as React.MouseEvent);
+                  }}
+                  className={`font-semibold text-indigo-600 hover:text-indigo-500 ${isSendingReset ? 'pointer-events-none opacity-60' : ''}`}
+                  aria-disabled={isSendingReset}
                 >
-                  Forgot password?
+                  {isSendingReset ? 'Sending…' : 'Forgot password?'}
                 </a>
               </div>
             </div>
@@ -148,9 +169,9 @@ const SignIn = () => {
           Don't have an account?
           <a
             href="/signup"
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            className="font-semibold text-indigo-600 hover:text-indigo-500 ml-1"
           >
-            &nbsp;Sign Up
+            Sign Up
           </a>
         </p>
       </div>
