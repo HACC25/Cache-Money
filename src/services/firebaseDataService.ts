@@ -12,11 +12,10 @@ import { db } from "./firebase-config";
 import type {
   ProjectData,
   ProjectReport,
-  ProjectIssue,
-  ProjectDeliverable,
-  ProjectAssessment,
-} from "../components/sampleData"; // Adjust path as needed
-
+  // ProjectIssue,
+  // ProjectDeliverable,
+  // ProjectAssessment,
+} from "../components/SampleData";
 // ============================================
 // HELPER FUNCTIONS
 // ============================================

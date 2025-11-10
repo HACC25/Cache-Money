@@ -19,7 +19,9 @@ const ReportDetailPage: React.FC = () => {
     if (foundProject) {
       setProject(foundProject);
 
-      const foundReport = foundProject.reports.find((r) => r.id === reportId);
+      const foundReport = foundProject.reports.find(
+        (r: ProjectReport) => r.id === reportId
+      );
       if (foundReport) {
         setReport(foundReport);
       }
