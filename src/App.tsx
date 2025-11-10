@@ -15,6 +15,7 @@ import EditProject from "./pages/EditProject";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import StaggeredMenu from "./components/StaggeredMenu";
+import "./App.css";
 
 // Vendor components
 import VendorDashboard from "./pages/vendor/VendorDashboard";

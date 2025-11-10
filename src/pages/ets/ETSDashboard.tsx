@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { sampleProjects, ProjectData } from "../components/SampleData";
+import { sampleProjects, ProjectData } from "../../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";
@@ -125,9 +125,7 @@ const ETSDashboard = () => {
   return (
     <div className="container mt-5">
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
-      <h1 className="" style={{ fontWeight: "800" }}>
-        ETS DASHBOARD ETS DASHBOARD
-      </h1>
+      <h1 style={{ fontWeight: "800" }}>ETS DASHBOARD</h1>
       <div className="row">
         <ButtonGroup
           content={[
@@ -136,9 +134,11 @@ const ETSDashboard = () => {
           ]}
         ></ButtonGroup>
       </div>
-      <h1>Project Management</h1>
+      <h1 className="py-1 pb-md-3 pb-lg-4">Project Management</h1>
       <h5>Create, edit, delete, and assign projects to vendors</h5>
-      <AllProjectsTable vendors={sample_data}></AllProjectsTable>
+      <div className="pb-4 pb-md-5 pb-lg-5">
+        <AllProjectsTable vendors={sample_data}></AllProjectsTable>
+      </div>
     </div>
   );
 };
