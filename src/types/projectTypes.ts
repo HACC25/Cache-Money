@@ -1,7 +1,7 @@
 // ---------------------------------------------
-// Project Status Type (allow known values + any string)
+// Project Status Type
 // ---------------------------------------------
-export type ProjectStatus = "On Track" | "At Risk" | "Critical" | string;
+export type ProjectStatus = "On Track" | "At Risk" | "Critical";
 
 // ---------------------------------------------
 // Project Issue
@@ -9,19 +9,19 @@ export type ProjectStatus = "On Track" | "At Risk" | "Critical" | string;
 export interface ProjectIssue {
   id: string;
   description: string;
-  impact: string;
-  likelihood: string;
+  impact: "High" | "Medium" | "Low";
+  likelihood: "High" | "Medium" | "Low";
   riskRating: number;
   dateRaised: string;
   recommendation: string;
-  status: string;
+  status: "Open" | "Closed";
 }
 
 // ---------------------------------------------
 // Project Assessment Section
 // ---------------------------------------------
 export interface AssessmentItem {
-  rating: string;
+  rating: "Low" | "Medium" | "High";
   description: string;
 }
 
@@ -50,7 +50,7 @@ export interface Financials {
 export interface Deliverable {
   id: string;
   name: string;
-  status: string;
+  status: "Not Started" | "In Progress" | "Completed";
   description: string;
 }
 
@@ -84,8 +84,8 @@ export interface ProjectData {
   name: string;
   status: ProjectStatus;
   statusColor: string;
-  metric1: string; // Example: "Completion: 74%"
-  metric2: string; // Example: "Reports: 5"
+  metric1: string;
+  metric2: string;
   description: string;
   department: string;
   startDate: string;
