@@ -124,16 +124,28 @@ const ProjectDetailPage: React.FC = () => {
   }
 
   // Check if the current vendor is assigned to this project after project is loaded
-  const isVendorAssignedToProject = isVendor && project.vendorId === currentUser?.uid;
+  const isVendorAssignedToProject =
+    isVendor && project.vendorId === currentUser?.uid;
 
   return (
     <div className="container mt-5">
       <div>
         <Link
-          to={isVendor ? "/vendor/dashboard" : "/projects"}
+          to={
+            isVendor
+              ? "/vendor/dashboard"
+              : isETSEmployee
+              ? "/ets/dashboard"
+              : "/projects"
+          }
           className="btn btn-secondary me-8 mb-8"
         >
-          Back to {isVendor ? "Vendor Dashboard" : "All Projects"}
+          Back to{" "}
+          {isVendor
+            ? "Vendor Dashboard"
+            : isETSEmployee
+            ? "ETS Dashboard"
+            : "All Projects"}
         </Link>
       </div>
       <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
