@@ -43,6 +43,11 @@ function AppContent() {
   const menuItems = currentUser
     ? [
         {
+          label: "Home Page",
+          ariaLabel: "Landing Page",
+          link: "/",
+        },
+        {
           label: "Site Overview",
           ariaLabel: "Overview Page",
           link: "/overview",
@@ -82,6 +87,11 @@ function AppContent() {
           : []),
       ]
     : [
+        {
+          label: "Home Page",
+          ariaLabel: "Landing Page",
+          link: "/",
+        },
         {
           label: "Site Overview",
           ariaLabel: "Overview Page",
@@ -124,7 +134,7 @@ function AppContent() {
           accentColor="#4169E1"
         />
       </div>
-      <div style={{ paddingBottom: "50px" }}>
+      <div>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/signup" element={<SignUp />} />
