@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ProjectData, ProjectReport } from "../components/SampleData";
-import { sampleProjects } from "../components/SampleData";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../services/firebase-config";
+import { fetchProjectById } from "../services/firebaseDataService";
+import type { ProjectData, ProjectReport } from "../components/SampleData";
 
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
@@ -11,23 +13,69 @@ const ReportDetailPage: React.FC = () => {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [report, setReport] = useState<ProjectReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Find the project and report from sample data
-    const foundProject = sampleProjects.find((p) => p.id === projectId);
-
-    if (foundProject) {
-      setProject(foundProject);
-
-      const foundReport = foundProject.reports.find(
-        (r: ProjectReport) => r.id === reportId
-      );
-      if (foundReport) {
-        setReport(foundReport);
+    const fetchData = async () => {
+      if (!projectId || !reportId) {
+        setError("Missing project or report ID");
+        setIsLoading(false);
+        return;
       }
-    }
 
-    setIsLoading(false);
+      try {
+        const projectData = await fetchProjectById(projectId);
+
+        if (!projectData) {
+          setError("Project not found");
+          setIsLoading(false);
+          return;
+        }
+
+        setProject(projectData);
+
+        const reportData = projectData.reports.find((r) => r.id === reportId);
+
+        if (!reportData) {
+          const reportRef = doc(db, "projects", projectId, "reports", reportId);
+          const reportSnap = await getDoc(reportRef);
+
+          if (!reportSnap.exists()) {
+            setError("Report not found");
+            setIsLoading(false);
+            return;
+          }
+
+          const data = reportSnap.data();
+          const fetchedReport: ProjectReport = {
+            id: reportSnap.id,
+            projectId: projectId,
+            month: data.month,
+            date: data.date,
+            background: data.background,
+            assessment: data.assessment,
+            issues: data.issues || [],
+            scheduleStatus: data.scheduleStatus,
+            financials: data.financials,
+            scopeStatus: data.scopeStatus,
+          };
+
+          setReport(fetchedReport);
+        } else {
+          setReport(reportData);
+        }
+
+        console.log("Fetched project:", projectData);
+        console.log("Fetched report:", reportData || "Fetched directly");
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load report data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, [projectId, reportId]);
 
   const getCriticalityColor = (rating: string) => {
@@ -74,14 +122,14 @@ const ReportDetailPage: React.FC = () => {
     );
   }
 
-  if (!project || !report) {
+  if (error || !project || !report) {
     return (
       <div className="container mt-5">
         <div className="alert alert-warning">
           <h4>Report Not Found</h4>
-          <p>The report you're looking for was not found.</p>
-          <Link to="/projects" className="btn btn-primary mt-2">
-            Return to Projects List
+          <p>{error || "The report you're looking for was not found."}</p>
+          <Link to="/vendor/dashboard" className="btn btn-primary mt-2">
+            Return to Dashboard
           </Link>
         </div>
       </div>
@@ -90,11 +138,8 @@ const ReportDetailPage: React.FC = () => {
 
   return (
     <div className="container mt-5">
-      <Link
-        to={`/project/${projectId}`}
-        className="btn btn-outline-primary mb-4"
-      >
-        ← Back to Project
+      <Link to="/vendor/dashboard" className="btn btn-outline-primary mb-4">
+        ← Back to Dashboard
       </Link>
 
       <div className="d-flex justify-content-between align-items-start mb-4">
@@ -319,34 +364,6 @@ const ReportDetailPage: React.FC = () => {
             </div>
           </div>
 
-          <h5>Timeline Progress</h5>
-          <div className="progress mb-3" style={{ height: "25px" }}>
-            <div
-              className="progress-bar"
-              role="progressbar"
-              style={{
-                width: `${
-                  ((new Date(report.date).getTime() -
-                    new Date(project.startDate).getTime()) /
-                    (new Date(report.scheduleStatus.currentEndDate).getTime() -
-                      new Date(project.startDate).getTime())) *
-                  100
-                }%`,
-              }}
-              aria-valuenow={
-                ((new Date(report.date).getTime() -
-                  new Date(project.startDate).getTime()) /
-                  (new Date(report.scheduleStatus.currentEndDate).getTime() -
-                    new Date(project.startDate).getTime())) *
-                100
-              }
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              Current Progress
-            </div>
-          </div>
-
           {new Date(report.scheduleStatus.currentEndDate) >
             new Date(report.scheduleStatus.baselineEndDate) && (
             <div className="alert alert-warning">
@@ -420,13 +437,6 @@ const ReportDetailPage: React.FC = () => {
                   100
                 }%`,
               }}
-              aria-valuenow={
-                (report.financials.paidToDate /
-                  report.financials.originalAmount) *
-                100
-              }
-              aria-valuemin={0}
-              aria-valuemax={100}
             >
               {(
                 (report.financials.paidToDate /
@@ -458,13 +468,6 @@ const ReportDetailPage: React.FC = () => {
                     100
                   }%`,
                 }}
-                aria-valuenow={
-                  (report.scopeStatus.completedDeliverables /
-                    report.scopeStatus.totalDeliverables) *
-                  100
-                }
-                aria-valuemin={0}
-                aria-valuemax={100}
               >
                 {report.scopeStatus.completedDeliverables} of{" "}
                 {report.scopeStatus.totalDeliverables} Deliverables (
@@ -492,10 +495,10 @@ const ReportDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Back to Project Button */}
+      {/* Back to Dashboard Button */}
       <div className="d-flex justify-content-center mb-5">
-        <Link to={`/project/${projectId}`} className="btn btn-outline-primary">
-          Back to Project
+        <Link to="/vendor/dashboard" className="btn btn-outline-primary">
+          Back to Dashboard
         </Link>
       </div>
     </div>

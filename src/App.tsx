@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
+import "./App.css";
 // Public components
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
@@ -123,71 +124,73 @@ function AppContent() {
           accentColor="#4169E1"
         />
       </div>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route path="/overview" element={<Overview />} />
-        <Route path="/projects" element={<AllReports />} />
-        <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-        <Route
-          path="/project/:projectId/report/:reportId"
-          element={<ReportDetailPage />}
-        />
+      <div style={{ paddingBottom: "50px" }}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/overview" element={<Overview />} />
+          <Route path="/projects" element={<AllReports />} />
+          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route
+            path="/project/:projectId/report/:reportId"
+            element={<ReportDetailPage />}
+          />
 
-        <Route
-          path="/projects/new"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <NewProject />
-            </RequireRole>
-          }
-        />
-        <Route
-          path="/project/:projectId/edit"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <EditProject />
-            </RequireRole>
-          }
-        />
-        {/* Report Form - New Report */}
-        <Route
-          path="/project/:projectId/report/new"
-          element={
-            <RequireRole allowedRoles={["vendor"]}>
-              <ReportForm />
-            </RequireRole>
-          }
-        />
-        {/* Vendor Dashboard */}
-        <Route
-          path="/vendor/dashboard"
-          element={
-            <RequireRole allowedRoles={["vendor"]}>
-              <VendorDashboard />
-            </RequireRole>
-          }
-        />
-        {/* ETS Dashboard */}
-        <Route
-          path="/ets/dashboard"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <ETSDashboard />
-            </RequireRole>
-          }
-        />
-        {/* ETS Statistics*/}
-        <Route
-          path="/ets/statistics"
-          element={
-            <RequireRole allowedRoles={["ets"]}>
-              <ETSStatistics />
-            </RequireRole>
-          }
-        />
-      </Routes>
+          <Route
+            path="/projects/new"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <NewProject />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/project/:projectId/edit"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <EditProject />
+              </RequireRole>
+            }
+          />
+          {/* Report Form - New Report */}
+          <Route
+            path="/project/:projectId/report/new"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <ReportForm />
+              </RequireRole>
+            }
+          />
+          {/* Vendor Dashboard */}
+          <Route
+            path="/vendor/dashboard"
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <VendorDashboard />
+              </RequireRole>
+            }
+          />
+          {/* ETS Dashboard */}
+          <Route
+            path="/ets/dashboard"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <ETSDashboard />
+              </RequireRole>
+            }
+          />
+          {/* ETS Statistics*/}
+          <Route
+            path="/ets/statistics"
+            element={
+              <RequireRole allowedRoles={["ets"]}>
+                <ETSStatistics />
+              </RequireRole>
+            }
+          />
+        </Routes>
+      </div>
       <Footer />
     </div>
   );
