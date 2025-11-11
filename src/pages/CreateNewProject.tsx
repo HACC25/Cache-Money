@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../services/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
+import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+
 
 const NewProject: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +13,23 @@ const NewProject: React.FC = () => {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('Active');
   const [saving, setSaving] = useState(false);
+  const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
+  const [vendorId, setVendorId] = useState('');
+
+  useEffect(() => {
+    const loadVendors = async () => {
+      const q = query(collection(db, 'users'), where('role', '==', 'vendor'));
+      const querySnapshot = await getDocs(q);
+      const vendorList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().displayName || doc.data().email || 'Unnamed Vendor',
+      }));
+      setVendors(vendorList);
+    };
+
+    loadVendors();
+  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +44,7 @@ const NewProject: React.FC = () => {
         statusColor: status === 'Active' ? '#28a745' : '#6c757d',
         createdBy: currentUser ? currentUser.uid : null,
         createdByEmail: currentUser ? currentUser.email : null,
+        vendorId: vendorId || null,
         createdAt: serverTimestamp(),
       });
       
@@ -40,7 +59,7 @@ const NewProject: React.FC = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h2>Create New Project</h2>
       <p className="text-muted">Add a new State of Hawaii IT project for IV&V tracking</p>
       
@@ -70,7 +89,24 @@ const NewProject: React.FC = () => {
                 required
               />
             </div>
-            
+                        
+            <div className="mb-3">
+              <label className="form-label">Assign to Vendor</label>
+              <select 
+                className="form-control" 
+                value={vendorId} 
+                onChange={(e) => setVendorId(e.target.value)}
+                required
+              >
+                <option value="">Select a Vendor</option>
+                {vendors.map((vendor) => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="mb-3">
               <label className="form-label">Status</label>
               <select 

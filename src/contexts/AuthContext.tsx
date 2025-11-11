@@ -61,7 +61,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const role = data.role as "ets" | "vendor" | "public" | undefined;
 
         if (role === "ets" || role === "vendor" || role === "public") {
-          console.log(`User role loaded from Firestore: ${role}`);
           return role;
         }
       }

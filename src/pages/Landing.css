@@ -19,7 +19,7 @@ h4,
 h5,
 h6 {
   font-family: "Geist", monospace;
-  color: #18828c;
+  color: #197ead !important;
 }
 
 p {
@@ -27,15 +27,14 @@ p {
   color: black;
 }
 
-/* Override for glassmorphism box - make text white */
-.backdrop-blur-lg p,
-[class*="backdrop-blur"] p {
+/* Override for glassmorphism box in hero section only - make text white */
+section .backdrop-blur-lg p {
   color: white !important;
 }
 
 a {
   font-family: "Geist", monospace;
-  color: #18828c;
+  color: #197ead;
 }
 
 div a {
@@ -43,11 +42,11 @@ div a {
 }
 
 a span {
-  color: #18828c;
+  color: #197ead;
 }
 
 a:hover {
-  color: #0f7a7c;
+  color: #0284c7;
 }
 
 li a {
@@ -55,7 +54,14 @@ li a {
 }
 
 li a:hover {
-  color: #18828c;
+  color: #197ead;
+}
+
+.project-card,
+.project-card:hover,
+.view-all-btn,
+.view-all-btn:hover {
+  text-decoration: none !important;
 }
 
 a[class*="bg-slate"],
@@ -70,11 +76,11 @@ a[class*="bg-green"]:hover {
 
 button {
   font-family: "Geist", monospace;
-  color: #18828c;
+  color: #197ead;
 }
 
 button:hover {
-  color: #0f7a7c;
+  color: #0284c7;
 }
 
 @media (min-width: 768px) {

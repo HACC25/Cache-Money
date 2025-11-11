@@ -1,48 +1,100 @@
 import "./Landing.css";
 import { Link } from "react-router-dom";
-import GridDistortion from "../components/GridDistortion";
+import { useEffect, useState } from "react";
+import { collection, query, getDocs, orderBy, limit, Timestamp } from "firebase/firestore";
+import { db } from "../services/firebase-config";
+
+interface RecentProject {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: Timestamp;
+  status?: string;
+}
 
 function Landing() {
+  const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentProjects = async () => {
+      try {
+        // Get the 6 most recent projects
+        const projectsQuery = query(
+          collection(db, "projects"),
+          orderBy("createdAt", "desc"),
+          limit(6)
+        );
+        const projectsSnapshot = await getDocs(projectsQuery);
+        
+        const projects: RecentProject[] = projectsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name || "Unnamed Project",
+          description: doc.data().description || "No description available",
+          createdAt: doc.data().createdAt,
+          status: doc.data().status,
+        }));
+        
+        setRecentProjects(projects);
+      } catch (error) {
+        console.error("Error fetching recent projects:", error);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    fetchRecentProjects();
+  }, []);
+
   return (
     <div className="relative w-full min-h-screen bg-gray-50">
-      <section className="relative w-full h-screen overflow-hidden">
-        <GridDistortion
-          imageSrc="/public/shapes.jpg"
-          grid={10}
-          mouse={0.1}
-          strength={0.15}
-          relaxation={0.9}
-          className="absolute inset-0"
-        />
+      <section className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-gray-50 to-white">
 
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-blue-900/50 to-blue-900/60 z-1 pointer-events-none"
+        {/* Wave Pattern */}
+        <div 
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='1440' height='320' viewBox='0 0 1440 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%2393C5FD' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'bottom',
+            backgroundRepeat: 'no-repeat'
+          }}
           aria-hidden="true"
         />
 
-        <div className="absolute inset-0 z-5 flex items-center justify-center pointer-events-none px-4">
+        <div className="absolute inset-0 z-5 flex items-center justify-center px-4">
           <div className="text-center max-w-6xl">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-white mb-8 leading-tight">
-              <span className="inline-block bg-gradient-to-r from-white via-green-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
-                IV&V
-              </span>
-              <br />
-              <span className="inline-block bg-gradient-to-r from-green-200 via-white to-green-200 bg-clip-text text-transparent drop-shadow-2xl">
-                Project Management
-              </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-8 leading-tight">
+              Independent Verification and Validation Dashboard
             </h1>
 
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-8">
-              <span className="text-sm font-semibold text-white/90 tracking-wide">
+            <div 
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full mb-8"
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(20px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)'
+              }}
+            >
+              <span className="text-sm font-semibold tracking-wide text-gray-900">
                 State of Hawaii • Enterprise Technology Services
               </span>
             </div>
 
-            <div className="max-w-4xl mx-auto mb-12 bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 shadow-2xl">
-              <p className="text-lg sm:text-xl md:text-2xl text-white leading-relaxed font-medium">
-                A comprehensive web application for managing and displaying
-                project review reports and dashboards – provided by the state's
-                Independent Verification and Validation (IV&V) vendors.
+            <div 
+              className="max-w-4xl mx-auto mb-12 rounded-2xl p-8"
+              style={{
+                background: 'rgba(255, 255, 255, 0.7)',
+                backdropFilter: 'blur(30px) saturate(200%)',
+                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+                border: '1px solid rgba(255, 255, 255, 0.4)',
+                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.6)'
+              }}
+            >
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-900 leading-relaxed font-semibold">
+                A comprehensive web application for managing and displaying project review reports and dashboards
               </p>
             </div>
           </div>
@@ -73,14 +125,14 @@ function Landing() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              {/* Feature Card 1 */}
-              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-blue-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-blue-300">
+              {/* Feature Card 3 */}
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-sky-400 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-sky-200">
                 <div
-                  className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-colors"
+                  className="w-14 h-14 bg-sky-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sky-200 transition-colors"
                   aria-hidden="true"
                 >
                   <svg
-                    className="w-7 h-7 text-blue-700"
+                    className="w-7 h-7 text-sky-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -103,13 +155,13 @@ function Landing() {
               </article>
 
               {/* Feature Card 2 */}
-              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-blue-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-blue-300">
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-sky-400 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-sky-200">
                 <div
-                  className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-colors"
+                  className="w-14 h-14 bg-sky-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sky-200 transition-colors"
                   aria-hidden="true"
                 >
                   <svg
-                    className="w-7 h-7 text-blue-700"
+                    className="w-7 h-7 text-sky-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -132,13 +184,13 @@ function Landing() {
               </article>
 
               {/* Feature Card 3 */}
-              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-blue-500 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-blue-300">
+              <article className="group bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-sky-400 hover:shadow-xl transition-all focus-within:ring-4 focus-within:ring-sky-200">
                 <div
-                  className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-200 transition-colors"
+                  className="w-14 h-14 bg-sky-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-sky-200 transition-colors"
                   aria-hidden="true"
                 >
                   <svg
-                    className="w-7 h-7 text-blue-700"
+                    className="w-7 h-7 text-sky-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -162,437 +214,114 @@ function Landing() {
             </div>
           </section>
 
-          {/* Reports Section */}
+          {/* Projects Section */}
           <section
             className="mb-20"
-            id="reports"
-            aria-labelledby="reports-heading"
+            id="projects"
+            aria-labelledby="projects-heading"
           >
             <header className="text-center mb-12">
               <h2
-                id="reports-heading"
+                id="projects-heading"
                 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
               >
-                Recent IV&V Reports
+                Recent Projects
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Browse the latest independent verification and validation
-                reports for ongoing state IT projects
+                Browse the latest state IT projects undergoing independent verification and validation
               </p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Report Card 1 */}
-              <a
-                href="#"
-                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-blue-500 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+            {loadingProjects ? (
+              <div className="flex justify-center py-12">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading projects...</span>
+                </div>
+              </div>
+            ) : recentProjects.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-600 text-lg">No projects available yet.</p>
+              </div>
+            ) : (
+              <div className="max-w-4xl mx-auto space-y-4">
+                {recentProjects.map((project) => (
+                  <Link
+                    key={project.id}
+                    to={`/project/${project.id}`}
+                    className="project-card flex items-center gap-3 px-5 py-4 bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:border-sky-300 transition-all group focus:outline-none focus:ring-2 focus:ring-sky-400 no-underline"
+                    aria-label={`View details for ${project.name}`}
+                  >
+                    {/* Icon */}
+                    <div className="flex-shrink-0 w-10 h-10 bg-sky-100 rounded-lg flex items-center justify-center group-hover:bg-sky-200 transition-colors">
                       <svg
-                        className="w-6 h-6 text-blue-700"
+                        className="w-5 h-5 text-sky-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
+                          d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                        />
                       </svg>
                     </div>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors">
-                  Tax Modernization System - Phase II Review
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Comprehensive review of the second phase implementation of the
-                  state's tax system modernization project, including system
-                  integration and security assessments.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-sky-600 transition-colors truncate">
+                          {project.name}
+                        </h3>
+                        {project.status && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-green-800">
+                            {project.status}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 mb-1" aria-label={`Created on ${project.createdAt?.toDate?.().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) || 'Recent'}`}>
+                        {project.createdAt?.toDate?.().toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        }) || 'Recent'}
+                      </div>
+                      {project.description && (
+                        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                          {project.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Arrow */}
                     <svg
-                      className="w-4 h-4"
+                      className="flex-shrink-0 w-5 h-5 text-gray-400 group-hover:text-sky-500 group-hover:translate-x-1 transition-all"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      ></path>
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
-                    <span>October 15, 2025</span>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </div>
-              </a>
+                  </Link>
+                ))}
+              </div>
+            )}
 
-              {/* Report Card 2 */}
-              <a
-                href="#"
-                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-blue-500 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors">
-                  Healthcare Portal Security Assessment
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Independent security validation of the state healthcare
-                  portal, evaluating compliance with HIPAA standards and
-                  cybersecurity best practices.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                    <span>October 12, 2025</span>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </div>
-              </a>
-
-              {/* Report Card 3 */}
-              <a
-                href="#"
-                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-blue-500 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors">
-                  DMV Digital Transformation Milestone Report
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Progress review of the Department of Motor Vehicles digital
-                  transformation initiative, examining online services rollout
-                  and user adoption metrics.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                    <span>October 8, 2025</span>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </div>
-              </a>
-
-              {/* Report Card 4 */}
-              <a
-                href="#"
-                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-blue-500 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors">
-                  Public Records Management System Update
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Quarterly validation of the statewide public records
-                  management system, assessing data integrity, accessibility
-                  compliance, and storage optimization.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                    <span>October 5, 2025</span>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </div>
-              </a>
-
-              {/* Report Card 5 */}
-              <a
-                href="#"
-                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-blue-500 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors">
-                  E-Permitting System Implementation Review
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Review of the electronic permitting system implementation,
-                  assessing workflow efficiency, user interface design, and
-                  regulatory compliance.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                    <span>September 28, 2025</span>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </div>
-              </a>
-
-              {/* Report Card 6 */}
-              <a
-                href="#"
-                className="group block bg-white rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-200 hover:border-blue-500 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <svg
-                        className="w-6 h-6 text-blue-700"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors">
-                  Disaster Recovery System - Annual Validation
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  Annual validation of the state disaster recovery and business
-                  continuity systems, testing failover procedures and data
-                  backup integrity.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                    <span>September 22, 2025</span>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5l7 7-7 7"
-                    ></path>
-                  </svg>
-                </div>
-              </a>
-            </div>
-
-            {/* View All Reports Button */}
+            {/* View All Projects Button */}
             <div className="text-center mt-12">
               <Link
-                to="/reports"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-blue-700 !text-white font-semibold rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none transition-all hover:scale-105 shadow-lg"
+                to="/projects"
+                className="view-all-btn inline-flex items-center gap-2 px-8 py-4 bg-sky-600 !text-white font-semibold rounded-lg hover:bg-sky-700 focus:ring-4 focus:ring-sky-200 focus:outline-none transition-all hover:scale-105 shadow-lg"
               >
-                View All Reports
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  ></path>
-                </svg>
+                View All Projects
               </Link>
             </div>
           </section>
