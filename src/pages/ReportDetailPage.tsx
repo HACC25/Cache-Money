@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
-import { fetchProjectById } from "../services/FirebaseDataService";
+import { fetchProjectById } from "../services/firebaseDataService";
 import type { ProjectData, ProjectReport } from "../components/SampleData";
 
 const ReportDetailPage: React.FC = () => {
