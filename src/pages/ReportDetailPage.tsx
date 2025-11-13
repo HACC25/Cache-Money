@@ -1,83 +1,103 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
+import type { ProjectReport } from "../components/SampleData";
 import { useAuth } from "../contexts/AuthContext";
-import { fetchProjectById } from "../services/firebaseDataService";
-import type { ProjectData, ProjectReport } from "../components/SampleData";
 
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
     projectId: string;
     reportId: string;
   }>();
-  const [project, setProject] = useState<ProjectData | null>(null);
+  const navigate = useNavigate();
   const [report, setReport] = useState<ProjectReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isETSEmployee, isVendor } = useAuth();
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!projectId || !reportId) {
-        setError("Missing project or report ID");
-        setIsLoading(false);
-        return;
-      }
+    if (!projectId || !reportId) {
+      setError("Missing project or report ID");
+      setIsLoading(false);
+      return;
+    }
 
-      try {
-        const projectData = await fetchProjectById(projectId);
+    const reportRef = doc(db, "projects", projectId, "reports", reportId);
 
-        if (!projectData) {
-          setError("Project not found");
+    const unsubscribe = onSnapshot(
+      reportRef,
+      (reportSnap) => {
+        if (!reportSnap.exists()) {
+          setError("Report not found");
           setIsLoading(false);
           return;
         }
 
-        setProject(projectData);
+        const data = reportSnap.data();
 
-        const reportData = projectData.reports.find((r) => r.id === reportId);
-
-        if (!reportData) {
-          const reportRef = doc(db, "projects", projectId, "reports", reportId);
-          const reportSnap = await getDoc(reportRef);
-
-          if (!reportSnap.exists()) {
-            setError("Report not found");
-            setIsLoading(false);
-            return;
-          }
-
-          const data = reportSnap.data();
-          const fetchedReport: ProjectReport = {
-            id: reportSnap.id,
-            projectId: projectId,
-            month: data.month,
-            date: data.date,
-            background: data.background,
-            assessment: data.assessment,
-            issues: data.issues || [],
-            scheduleStatus: data.scheduleStatus,
-            financials: data.financials,
-            scopeStatus: data.scopeStatus,
-          };
-
-          setReport(fetchedReport);
-        } else {
-          setReport(reportData);
+        if (!data) {
+          setError("Empty report data");
+          setIsLoading(false);
+          return;
         }
 
-        console.log("Fetched project:", projectData);
-        console.log("Fetched report:", reportData || "Fetched directly");
-      } catch (err) {
-        console.error("Error fetching data:", err);
+        // Ensure nested assessment objects have defaults
+        const defaultAssessment = {
+          sprintPlanning: { rating: "N/A", description: "No data" },
+          userStoryValidation: { rating: "N/A", description: "No data" },
+          testPracticeValidation: { rating: "N/A", description: "No data" },
+        };
+
+        const assessment = data.assessment
+          ? {
+              sprintPlanning:
+                data.assessment.sprintPlanning ||
+                defaultAssessment.sprintPlanning,
+              userStoryValidation:
+                data.assessment.userStoryValidation ||
+                defaultAssessment.userStoryValidation,
+              testPracticeValidation:
+                data.assessment.testPracticeValidation ||
+                defaultAssessment.testPracticeValidation,
+            }
+          : defaultAssessment;
+
+        const safeReport: ProjectReport = {
+          id: reportSnap.id,
+          projectId,
+          month: data.month || "Unknown Month",
+          date: data.date || "",
+          background: data.background || "No background available.",
+          assessment,
+          issues: data.issues || [],
+          scheduleStatus: data.scheduleStatus || {
+            baselineEndDate: "",
+            currentEndDate: "",
+          },
+          financials: data.financials || {
+            originalAmount: 0,
+            paidToDate: 0,
+          },
+          scopeStatus: data.scopeStatus || {
+            completedDeliverables: 0,
+            totalDeliverables: 0,
+            deliverables: [],
+          },
+        };
+
+        setReport(safeReport);
+        setIsLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error("Error listening to report:", err);
         setError("Failed to load report data");
-      } finally {
         setIsLoading(false);
       }
-    };
+    );
 
-    fetchData();
+    return () => unsubscribe();
   }, [projectId, reportId]);
 
   const getCriticalityColor = (rating: string) => {
@@ -114,17 +134,13 @@ const ReportDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="container mt-5">
-        <div className="d-flex justify-content-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
+      <div className="container mt-5 text-center">
+        <div className="spinner-border text-primary" role="status" />
       </div>
     );
   }
 
-  if (error || !project || !report) {
+  if (error || !report) {
     return (
       <div className="container mt-5">
         <div className="alert alert-warning">
@@ -165,15 +181,36 @@ const ReportDetailPage: React.FC = () => {
       <div className="d-flex justify-content-between align-items-start mb-4">
         <div>
           <h6>STATE OF HAWAII - Office of Enterprise Technology Services</h6>
-          <h1 className="mb-2">{project.name}</h1>
+          <h1 className="mb-2">Project Report</h1>
           <h3 className="text-muted">{report.month} Report</h3>
         </div>
         <div className="d-flex">
-          <button className="btn btn-primary me-2">
-            <i className="bi bi-file-earmark-pdf me-1"></i> Export as PDF
+          <button
+            onClick={() =>
+              navigate(`/vendor/project/${projectId}/report/${reportId}/edit`)
+            }
+            style={{
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              padding: "10px 20px",
+              fontSize: "16px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "background-color 0.3s ease",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "#0056b3")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "#007bff")
+            }
+          >
+            Edit Report
           </button>
           <button className="btn btn-success me-2">
-            <i className="bi bi-file-earmark-word me-1"></i> Export as Word
+            <i className="bi bi-file-earmark-word me-1"></i> Export Report
           </button>
         </div>
       </div>
@@ -235,42 +272,55 @@ const ReportDetailPage: React.FC = () => {
           <h4 className="mb-0">Project Assessment</h4>
         </div>
         <div className="card-body">
-          <h5>Sprint Planning</h5>
-          <div className="d-flex align-items-center mb-3">
-            <span
-              className={`badge bg-${getCriticalityColor(
-                report.assessment.sprintPlanning.rating
-              )} me-2`}
-            >
-              Criticality Rating: {report.assessment.sprintPlanning.rating}
-            </span>
-          </div>
-          <p>{report.assessment.sprintPlanning.description}</p>
+          {report.assessment?.sprintPlanning && (
+            <>
+              <h5>Sprint Planning</h5>
+              <div className="d-flex align-items-center mb-3">
+                <span
+                  className={`badge bg-${getCriticalityColor(
+                    report.assessment.sprintPlanning.rating
+                  )} me-2`}
+                >
+                  Criticality Rating: {report.assessment.sprintPlanning.rating}
+                </span>
+              </div>
+              <p>{report.assessment.sprintPlanning.description}</p>
+            </>
+          )}
 
-          <h5 className="mt-4">User Story (US) Validation</h5>
-          <div className="d-flex align-items-center mb-3">
-            <span
-              className={`badge bg-${getCriticalityColor(
-                report.assessment.userStoryValidation.rating
-              )} me-2`}
-            >
-              Criticality Rating: {report.assessment.userStoryValidation.rating}
-            </span>
-          </div>
-          <p>{report.assessment.userStoryValidation.description}</p>
+          {report.assessment?.userStoryValidation && (
+            <>
+              <h5 className="mt-4">User Story (US) Validation</h5>
+              <div className="d-flex align-items-center mb-3">
+                <span
+                  className={`badge bg-${getCriticalityColor(
+                    report.assessment.userStoryValidation.rating
+                  )} me-2`}
+                >
+                  Criticality Rating:{" "}
+                  {report.assessment.userStoryValidation.rating}
+                </span>
+              </div>
+              <p>{report.assessment.userStoryValidation.description}</p>
+            </>
+          )}
 
-          <h5 className="mt-4">Test Practice Validation</h5>
-          <div className="d-flex align-items-center mb-3">
-            <span
-              className={`badge bg-${getCriticalityColor(
-                report.assessment.testPracticeValidation.rating
-              )} me-2`}
-            >
-              Criticality Rating:{" "}
-              {report.assessment.testPracticeValidation.rating}
-            </span>
-          </div>
-          <p>{report.assessment.testPracticeValidation.description}</p>
+          {report.assessment?.testPracticeValidation && (
+            <>
+              <h5 className="mt-4">Test Practice Validation</h5>
+              <div className="d-flex align-items-center mb-3">
+                <span
+                  className={`badge bg-${getCriticalityColor(
+                    report.assessment.testPracticeValidation.rating
+                  )} me-2`}
+                >
+                  Criticality Rating:{" "}
+                  {report.assessment.testPracticeValidation.rating}
+                </span>
+              </div>
+              <p>{report.assessment.testPracticeValidation.description}</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -518,7 +568,7 @@ const ReportDetailPage: React.FC = () => {
       {/* Back to Dashboard Button */}
       <div className="d-flex justify-content-center mb-5">
         <Link to="/vendor/dashboard" className="btn btn-outline-primary">
-          Back to Dashboard
+          Back to Project
         </Link>
       </div>
     </div>

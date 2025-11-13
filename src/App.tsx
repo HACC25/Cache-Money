@@ -1,5 +1,9 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
+
+// Bootstrap Icons
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 import "./App.css";
 // Public components
 import Footer from "./components/Footer";
@@ -76,11 +80,6 @@ function AppContent() {
               {
                 label: "Vendor Dashboard",
                 ariaLabel: "Vendor Dashboard",
-                link: "/vendor/dashboard",
-              },
-              {
-                label: "Create Report",
-                ariaLabel: "Vendor Report",
                 link: "/vendor/dashboard",
               },
             ]
@@ -172,6 +171,12 @@ function AppContent() {
               </RequireRole>
             }
           />
+          {/* Report Form - Edit Report */}
+          <Route
+            path="/vendor/project/:projectId/report/:reportId/edit"
+            element={<ReportForm />}
+          />
+
           {/* Vendor Dashboard */}
           <Route
             path="/vendor/dashboard"
