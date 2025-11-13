@@ -57,18 +57,25 @@ export interface ProjectReport {
 export interface ProjectData {
   id: string;
   name: string;
-  status: "On Track" | "At Risk" | "Critical";
+  status: "On Track" | "At Risk" | "Critical" | "Active" | "Completed";
   statusColor: string;
   metric1: string;
   metric2: string;
   description: string;
   department: string;
   startDate: string;
+  //endDate: string;
   budget: number;
   spent: number;
   vendor: string;
   vendorId?: string;
   reports: ProjectReport[];
+}
+
+export interface Vendor {
+  vendor_id: string;
+  vendor_name: string;
+  vendor_projects: ProjectData[];
 }
 
 export const sampleProjects: Array<ProjectData> = [
@@ -630,3 +637,26 @@ export const sampleProjects: Array<ProjectData> = [
     ],
   },
 ];
+
+export const sampleVendors = [
+  {
+    vendor_id: "vendor1",
+    vendor_name: "test1",
+    vendor_projects: sampleProjects,
+  },
+    {
+    vendor_id: "vendor2",
+    vendor_name: "test2",
+    vendor_projects: sampleProjects,
+  },
+    {
+    vendor_id: "vendor3",
+    vendor_name: "test3",
+    vendor_projects: sampleProjects,
+  },
+    {
+    vendor_id: "vendor4",
+    vendor_name: "test4",
+    vendor_projects: sampleProjects,
+  }
+]

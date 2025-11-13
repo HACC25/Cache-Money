@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
+import { useAuth } from "../contexts/AuthContext";
 import { fetchProjectById } from "../services/firebaseDataService";
 import type { ProjectData, ProjectReport } from "../components/SampleData";
 
@@ -14,6 +15,7 @@ const ReportDetailPage: React.FC = () => {
   const [report, setReport] = useState<ProjectReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isETSEmployee, isVendor, currentUser } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,7 +130,16 @@ const ReportDetailPage: React.FC = () => {
         <div className="alert alert-warning">
           <h4>Report Not Found</h4>
           <p>{error || "The report you're looking for was not found."}</p>
-          <Link to="/vendor/dashboard" className="btn btn-primary mt-2">
+          <Link
+            to={
+              isVendor
+                ? "/vendor/dashboard"
+                : isETSEmployee
+                ? "/ets/dashboard"
+                : "/projects"
+            }
+            className="btn btn-primary mt-2"
+          >
             Return to Dashboard
           </Link>
         </div>
@@ -138,7 +149,16 @@ const ReportDetailPage: React.FC = () => {
 
   return (
     <div className="container mt-5">
-      <Link to="/vendor/dashboard" className="btn btn-outline-primary mb-4">
+      <Link
+        to={
+          isVendor
+            ? "/vendor/dashboard"
+            : isETSEmployee
+            ? "/ets/dashboard"
+            : "/projects"
+        }
+        className="btn btn-outline-primary mb-4"
+      >
         ← Back to Dashboard
       </Link>
 
