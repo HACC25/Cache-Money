@@ -116,7 +116,7 @@ const ProjectDetailPage: React.FC = () => {
 
   return (
     <div className="container mt-5">
-      <div>
+      <div style={{ paddingBottom: "20px" }}>
         <Link
           to={
             isVendor
@@ -125,7 +125,7 @@ const ProjectDetailPage: React.FC = () => {
               ? "/ets/dashboard"
               : "/projects"
           }
-          className="btn btn-secondary me-8 mb-8"
+          className="btn btn-secondary me-2 mb-2"
         >
           Back to{" "}
           {isVendor
@@ -175,7 +175,7 @@ const ProjectDetailPage: React.FC = () => {
       <h2 className="mt-5 mb-4">IV&V Monthly Reports</h2>
 
       {reports && reports.length > 0 ? (
-        <div>
+        <div style={{ paddingBottom: "30px" }}>
           {/* Sort reports by date (most recent first) */}
           {[...reports]
             .sort((a, b) => {

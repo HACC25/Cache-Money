@@ -76,7 +76,10 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
             <div className="mt-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h5 className="mb-0">RECENT REPORTS</h5>
-                <Link to={`/add-report/${id}`} className="btn btn-dark btn-sm">
+                <Link
+                  to={`/project/${id}/report/new`}
+                  className="btn btn-dark btn-sm"
+                >
                   ADD REPORT +
                 </Link>
               </div>
@@ -86,14 +89,6 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
                   <div className="card-body py-2 px-3">
                     <div className="d-flex justify-content-between align-items-center">
                       <span>{report.month}</span>
-                      <div>
-                        <button className="btn btn-link p-1 me-1">
-                          <i className="bi bi-pencil"></i>
-                        </button>
-                        <button className="btn btn-link text-danger p-1">
-                          <i className="bi bi-trash"></i>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>

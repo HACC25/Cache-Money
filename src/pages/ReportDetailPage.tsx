@@ -166,16 +166,10 @@ const ReportDetailPage: React.FC = () => {
   return (
     <div className="container mt-5">
       <Link
-        to={
-          isVendor
-            ? "/vendor/dashboard"
-            : isETSEmployee
-            ? "/ets/dashboard"
-            : "/projects"
-        }
+        to={`/project/${projectId}`}
         className="btn btn-outline-primary mb-4"
       >
-        ← Back to Dashboard
+        ← Back to Project
       </Link>
 
       <div className="d-flex justify-content-between align-items-start mb-4">
@@ -567,7 +561,7 @@ const ReportDetailPage: React.FC = () => {
 
       {/* Back to Dashboard Button */}
       <div className="d-flex justify-content-center mb-5">
-        <Link to="/vendor/dashboard" className="btn btn-outline-primary">
+        <Link to={`/project/${projectId}`} className="btn btn-outline-primary">
           Back to Project
         </Link>
       </div>
