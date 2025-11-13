@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../services/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
+import { NEW_PROJECT_STATUSES, getStatusColor } from './NewProjectStatuses';
 
 
 const NewProject: React.FC = () => {
@@ -41,7 +42,7 @@ const NewProject: React.FC = () => {
         name,
         description,
         status,
-        statusColor: status === 'Active' ? '#28a745' : '#6c757d',
+        statusColor: getStatusColor(status),
         createdBy: currentUser ? currentUser.uid : null,
         createdByEmail: currentUser ? currentUser.email : null,
         vendorId: vendorId || null,
@@ -114,10 +115,11 @@ const NewProject: React.FC = () => {
                 value={status} 
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <option value="Active">Active</option>
-                <option value="Planning">Planning</option>
-                <option value="On Hold">On Hold</option>
-                <option value="Completed">Completed</option>
+                {NEW_PROJECT_STATUSES.map((statusOption) => (
+                  <option key={statusOption.value} value={statusOption.value}>
+                    {statusOption.label}
+                  </option>
+                ))}
               </select>
             </div>
             
