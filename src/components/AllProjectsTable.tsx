@@ -166,11 +166,11 @@ const AllProjectsTable = ({ vendors }: Props) => {
                             >
                               <div
                                 className="progress-bar bg-info"
-                                style={{ width: project.schedule + "%" }}
+                                style={{ width: project.metric1 + "%" }}
                               ></div>
                             </div>
                             <div className="progress-text">
-                              {project.schedule}%
+                              {project.metric1}%
                             </div>
                           </div>
 

@@ -64,7 +64,7 @@ export interface ProjectData {
   description: string;
   department: string;
   startDate: string;
-  //endDate: string;
+  endDate: string;
   budget: number;
   spent: number;
   vendor: string;
@@ -78,6 +78,7 @@ export interface Vendor {
   vendor_projects: ProjectData[];
 }
 
+/*
 export const sampleProjects: Array<ProjectData> = [
   {
     id: "1",
@@ -660,3 +661,4 @@ export const sampleVendors = [
     vendor_projects: sampleProjects,
   }
 ]
+*/
