@@ -1,6 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+import {
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { db, auth } from "../../services/firebase-config";
 import "./ReportForm.css";
@@ -27,8 +35,65 @@ interface ProjectDeliverable {
 
 const ReportForm: React.FC = () => {
   // Get projectId from URL parameters
-  const { projectId } = useParams<{ projectId: string }>();
+  const { projectId, reportId } = useParams<{
+    projectId: string;
+    reportId?: string;
+  }>();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Determine if editing
+  const isEditMode = !!reportId;
+
+  // Fetch existing report data if editing
+  useEffect(() => {
+    const fetchReport = async () => {
+      if (!isEditMode || !projectId || !reportId) return;
+
+      setIsLoading(true);
+      try {
+        const reportRef = doc(db, "projects", projectId, "reports", reportId);
+        const reportSnap = await getDoc(reportRef);
+
+        if (reportSnap.exists()) {
+          const data = reportSnap.data();
+
+          // Populate form fields with existing data
+          setMonth(data.month || "");
+          setDate(data.date || "");
+          setBackground(data.background || "");
+
+          // Assessment
+          setSprintPlanningRating(
+            data.assessment?.sprintPlanning?.rating || "Low"
+          );
+          setSprintPlanningDescription(
+            data.assessment?.sprintPlanning?.description || ""
+          );
+
+          // Schedule
+          setScheduleStatus(data.scheduleStatus?.status || "OnTime");
+          setScheduleDescription(data.scheduleStatus?.description || "");
+
+          // Financials
+          setOriginalAmount(data.financials?.originalAmount || 0);
+          setPaidToDate(data.financials?.paidToDate || 0);
+          setFinanceDescription(data.financials?.description || "");
+
+          // Issues and Deliverables
+          setIssues(data.issues || []);
+          setDeliverables(data.scopeStatus?.deliverables || []);
+        }
+      } catch (err) {
+        console.error("Error fetching report:", err);
+        setError("Failed to load report data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReport();
+  }, [isEditMode, projectId, reportId]);
 
   // Form state
   const [month, setMonth] = useState<string>("");
@@ -223,12 +288,10 @@ const ReportForm: React.FC = () => {
     setError(null);
 
     try {
-      // Calculate completed deliverables
       const completedDeliverables = deliverables.filter(
         (d) => d.status === "Completed"
       ).length;
 
-      // Create the report object
       const reportData = {
         projectId,
         month,
@@ -244,28 +307,43 @@ const ReportForm: React.FC = () => {
           },
         },
         issues,
+        scheduleStatus: {
+          status: scheduleStatus,
+          description: scheduleDescription,
+        },
         financials: {
           originalAmount: Number(originalAmount),
           paidToDate: Number(paidToDate),
+          description: financeDescription,
         },
         scopeStatus: {
           completedDeliverables,
           totalDeliverables: deliverables.length,
           deliverables,
         },
-        createdAt: serverTimestamp(),
-        reportId: uuidv4(), // Unique ID for the report
+        updatedAt: serverTimestamp(),
       };
 
-      // Add the report to db
-      const docRef = await addDoc(
-        collection(db, "projects", projectId, "reports"),
-        reportData
-      );
+      if (isEditMode && reportId) {
+        // UPDATE existing report
+        const reportRef = doc(db, "projects", projectId, "reports", reportId);
+        await updateDoc(reportRef, reportData);
+        console.log("Report updated with ID: ", reportId);
+      } else {
+        // CREATE new report
+        const newReportData = {
+          ...reportData,
+          createdAt: serverTimestamp(),
+          reportId: uuidv4(),
+        };
 
-      console.log("Report added with ID: ", docRef.id);
+        const docRef = await addDoc(
+          collection(db, "projects", projectId, "reports"),
+          newReportData
+        );
+        console.log("Report added with ID: ", docRef.id);
+      }
 
-      // Navigate back to the project page or show success message
       navigate(`/vendor/dashboard`);
     } catch (err) {
       console.error("Error submitting report:", err);
@@ -296,7 +374,7 @@ const ReportForm: React.FC = () => {
             ✕
           </button>
         </div>
-        <h2>Add New IV&V Report</h2>
+        <h2>{isEditMode ? "Edit IV&V Report" : "Add New IV&V Report"}</h2>
         {error && <div className="error-message">{error}</div>}
 
         <div className="form-section">
@@ -801,7 +879,13 @@ const ReportForm: React.FC = () => {
               deliverables.length === 0
             }
           >
-            {isSubmitting ? "Submitting..." : "Submit Report"}
+            {isSubmitting
+              ? isEditMode
+                ? "Updating..."
+                : "Submitting..."
+              : isEditMode
+              ? "Update Report"
+              : "Submit Report"}
           </button>
         </div>
       </form>
