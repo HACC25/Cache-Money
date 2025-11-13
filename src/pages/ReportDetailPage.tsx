@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import type { ProjectReport } from "../components/SampleData";
+import { useAuth } from "../contexts/AuthContext";
 
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
