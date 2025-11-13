@@ -1,118 +1,49 @@
 import { useEffect, useState } from "react";
-import { sampleProjects, ProjectData } from "../../components/SampleData";
-import { collection, onSnapshot } from "firebase/firestore";
+import { ProjectData } from "../../components/SampleData";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";
 import AllProjectsTable from "../../components/AllProjectsTable";
 import Button from "../../components/Button";
+import { fetchProjectsByVendor } from "../../services/firebaseDataService";
 
-const sample_data = [
-  {
-    vendor_name: "Health Systems Technology Partners",
-    vendor_projects: [
-      {
-        id: "1",
-        name: "BHA System Modernization",
-        calculated_risk: "Low",
-        schedule: 50,
-        total_reports: 10,
-        description:
-          "Modernization of behavioral health management systems to improve service delivery and patient outcomes across Hawaii.",
-        startDate: "2023-06-15",
-        endDate: "Ongoing",
-        budget: 10000000,
-        spent: 3000000,
-      },
-      {
-        id: "2",
-        name: "Test 2",
-        calculated_risk: "High",
-        schedule: 10,
-        total_reports: 2,
-        description: "blah blah blah blah bleh bleh bleh",
-        startDate: "2023-06-15",
-        endDate: "2024-08-09",
-        budget: 95000000,
-        spent: 83888111,
-      },
-    ],
-  },
-  {
-    vendor_name: "Test Vendor",
-    vendor_projects: [
-      {
-        id: "1",
-        name: "BHA System Modernization",
-        calculated_risk: "Low",
-        schedule: 50,
-        total_reports: 10,
-        description:
-          "Modernization of behavioral health management systems to improve service delivery and patient outcomes across Hawaii.",
-        startDate: "2023-06-15",
-        endDate: "Ongoing",
-        budget: 10000000,
-        spent: 3000000,
-      },
-      {
-        id: "2",
-        name: "Test 2",
-        calculated_risk: "High",
-        schedule: 10,
-        total_reports: 2,
-        description: "blah blah blah blah bleh bleh bleh",
-        startDate: "2023-06-15",
-        endDate: "2024-08-09",
-        budget: 95000000,
-        spent: 238881,
-      },
-    ],
-  },
-];
+interface Vendor {
+  vendor_id: string;
+  vendor_name: string;
+  vendor_projects: ProjectData[];
+}
 
 const ETSDashboard = () => {
-  // @ts-ignore -- will use projects later
-  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load from Firestore with real-time updates
-    const unsubscribe = onSnapshot(
-      collection(db, "projects"),
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            description: data.description || "",
-            status: data.status || "Active",
-            statusColor: data.statusColor || "#28a745",
-            metric1: data.metric1 || "",
-            metric2: data.metric2 || "",
-            startDate: data.startDate || "",
-            department: data.department || "",
-            budget: data.budget || "",
-            spent: data.spent || "",
-            vendor: data.vendor || "",
-            reports: data.reports || [],
-          } as ProjectData;
-        });
+    const loadVendors = async () => {
+      try {
+        const q = query(collection(db, "users"), where("role", "==", "vendor"));
+        const querySnapshot = await getDocs(q);
 
-        // Combine Firestore projects with sample projects
-        // Firestore projects first, then sample projects
-        const allProjects = [...firestoreProjects, ...sampleProjects];
-        setProjects(allProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        // Fallback to sample projects if Firestore fails
-        setProjects(sampleProjects);
+        const vendorList = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const projects = await fetchProjectsByVendor(doc.id);
+            return {
+              vendor_id: doc.id,
+              vendor_name:
+                doc.data().displayName || doc.data().email || "Unnamed Vendor",
+              vendor_projects: projects,
+            };
+          })
+        );
+
+        setVendors(vendorList);
+      } catch (err) {
+        console.error("Error loading vendors:", err);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe();
+    loadVendors();
   }, []);
 
   if (loading) {
@@ -150,7 +81,7 @@ const ETSDashboard = () => {
       <h5>Create, edit, delete, and assign projects to vendors</h5>
 
       <div className="pb-4 pb-md-5 pb-lg-5">
-        <AllProjectsTable vendors={sample_data}></AllProjectsTable>
+        <AllProjectsTable vendors={vendors}></AllProjectsTable>
       </div>
     </div>
   );

@@ -3,24 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { doc, deleteDoc } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import "./AllProjectsTable.css";
-
-interface ProjectData {
-  id: string;
-  name: string;
-  calculated_risk: string;
-  schedule: number;
-  total_reports: number;
-  description: string;
-  startDate: string;
-  endDate: string;
-  budget: number;
-  spent: number;
-}
-
-interface Vendor {
-  vendor_name: string;
-  vendor_projects: ProjectData[];
-}
+import { ProjectData, Vendor } from "./SampleData";
 
 interface Props {
   vendors: Vendor[];
@@ -42,6 +25,7 @@ const AllProjectsTable = ({ vendors }: Props) => {
     navigate(`/project/${project.id}}/edit`);
   };
 
+  // Need to check if this works
   const handleDelete = async (project: ProjectData) => {
     if (!project.id) return;
     if (
@@ -55,7 +39,7 @@ const AllProjectsTable = ({ vendors }: Props) => {
       const docRef = doc(db, "projects", project.id);
       await deleteDoc(docRef);
       alert("Project deleted successfully");
-      navigate("/projects");
+      navigate("/ets/dashboard");
     } catch (err) {
       console.error("Error deleting project:", err);
       alert("Error deleting project");
@@ -103,22 +87,23 @@ const AllProjectsTable = ({ vendors }: Props) => {
                             <strong>End Date:</strong> {project.endDate}
                           </p>
                           <p className="mb-1">
-                            <strong>Overall Risk:</strong>{" "}
+                            <strong>Status:</strong>{" "}
                             <span
                               className={`badge ${
-                                project.calculated_risk === "Low"
+                                project.status === "On Track"
                                   ? "bg-success"
-                                  : project.calculated_risk === "High"
+                                  : project.status === "At Risk"
+                                  ? "bg-warning"
+                                  : project.status === "Critical"
                                   ? "bg-danger"
-                                  : "bg-warning"
+                                  : "bg-primary"
                               }`}
                             >
-                              {project.calculated_risk}
+                              {project.status}
                             </span>
                           </p>
                           <p className="mb-1">
-                            <strong>Total Reports:</strong>{" "}
-                            {project.total_reports}
+                            <strong>{project.metric2}</strong>
                           </p>
                         </div>
                         <div className="col-md-8 position-relative">
@@ -181,11 +166,11 @@ const AllProjectsTable = ({ vendors }: Props) => {
                             >
                               <div
                                 className="progress-bar bg-info"
-                                style={{ width: project.schedule + "%" }}
+                                style={{ width: project.metric1 + "%" }}
                               ></div>
                             </div>
                             <div className="progress-text">
-                              {project.schedule}%
+                              {project.metric1}%
                             </div>
                           </div>
 

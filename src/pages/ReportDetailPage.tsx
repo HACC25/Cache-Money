@@ -13,6 +13,7 @@ const ReportDetailPage: React.FC = () => {
   const [report, setReport] = useState<ProjectReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isETSEmployee, isVendor } = useAuth();
 
   useEffect(() => {
     if (!projectId || !reportId) {
@@ -144,7 +145,16 @@ const ReportDetailPage: React.FC = () => {
         <div className="alert alert-warning">
           <h4>Report Not Found</h4>
           <p>{error || "The report you're looking for was not found."}</p>
-          <Link to="/vendor/dashboard" className="btn btn-primary mt-2">
+          <Link
+            to={
+              isVendor
+                ? "/vendor/dashboard"
+                : isETSEmployee
+                ? "/ets/dashboard"
+                : "/projects"
+            }
+            className="btn btn-primary mt-2"
+          >
             Return to Dashboard
           </Link>
         </div>
@@ -154,8 +164,17 @@ const ReportDetailPage: React.FC = () => {
 
   return (
     <div className="container mt-5">
-      <Link to="/vendor/dashboard" className="btn btn-outline-primary mb-4">
-        ← Back to Project
+      <Link
+        to={
+          isVendor
+            ? "/vendor/dashboard"
+            : isETSEmployee
+            ? "/ets/dashboard"
+            : "/projects"
+        }
+        className="btn btn-outline-primary mb-4"
+      >
+        ← Back to Dashboard
       </Link>
 
       <div className="d-flex justify-content-between align-items-start mb-4">
