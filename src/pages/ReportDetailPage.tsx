@@ -15,7 +15,7 @@ const ReportDetailPage: React.FC = () => {
   const [report, setReport] = useState<ProjectReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { isETSEmployee, isVendor, currentUser } = useAuth();
+  const { isETSEmployee, isVendor } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {

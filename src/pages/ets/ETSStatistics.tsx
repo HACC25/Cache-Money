@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { sampleProjects, ProjectData } from "../../components/SampleData";
+import { ProjectData } from "../../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";
@@ -12,41 +12,32 @@ const ETSStatistics = () => {
 
   useEffect(() => {
     // Load from Firestore with real-time updates
-    const unsubscribe = onSnapshot(
-      collection(db, "projects"),
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            description: data.description || "",
-            status: data.status || "Active",
-            statusColor: data.statusColor || "#28a745",
-            metric1: data.metric1 || "",
-            metric2: data.metric2 || "",
-            startDate: data.startDate || "",
-            department: data.department || "",
-            budget: data.budget || "",
-            spent: data.spent || "",
-            vendor: data.vendor || "",
-            reports: data.reports || [],
-          } as ProjectData;
-        });
+    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
+      const firestoreProjects = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || "Unnamed Project",
+          description: data.description || "",
+          status: data.status || "Active",
+          statusColor: data.statusColor || "#28a745",
+          metric1: data.metric1 || "",
+          metric2: data.metric2 || "",
+          startDate: data.startDate || "",
+          department: data.department || "",
+          budget: data.budget || "",
+          spent: data.spent || "",
+          vendor: data.vendor || "",
+          reports: data.reports || [],
+        } as ProjectData;
+      });
 
-        // Combine Firestore projects with sample projects
-        // Firestore projects first, then sample projects
-        const allProjects = [...firestoreProjects, ...sampleProjects];
-        setProjects(allProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        // Fallback to sample projects if Firestore fails
-        setProjects(sampleProjects);
-        setLoading(false);
-      }
-    );
+      // Combine Firestore projects with sample projects
+      // Firestore projects first, then sample projects
+      const allProjects = [...firestoreProjects];
+      setProjects(allProjects);
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, []);

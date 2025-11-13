@@ -7,7 +7,6 @@ import Follow from "../components/Follow";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
-import { sampleProjects } from "../components/SampleData";
 
 interface ProjectListData {
   id: string;
@@ -21,28 +20,20 @@ const Overview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(db, "projects"),
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            status: data.status || "On Track",
-          } as ProjectListData;
-        });
+    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
+      const firestoreProjects = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || "Unnamed Project",
+          status: data.status || "On Track",
+        } as ProjectListData;
+      });
 
-        const allProjects = [...firestoreProjects];
-        setProjectList(allProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        setProjectList(sampleProjects);
-        setLoading(false);
-      }
-    );
+      const allProjects = [...firestoreProjects];
+      setProjectList(allProjects);
+      setLoading(false);
+    });
     return () => unsubscribe();
   });
 
