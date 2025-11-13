@@ -21,20 +21,64 @@ import type {
 // ============================================
 
 /**
- * Convert Firestore Timestamp to date string (YYYY-MM-DD)
+ * Convert Firestore Timestamp or date string to date string (YYYY-MM-DD)
  */
-const timestampToDateString = (timestamp: Timestamp | undefined): string => {
+const timestampToDateString = (timestamp: Timestamp | string | undefined): string => {
   if (!timestamp) return "";
+  
+  // If it's already a string, try to parse it
+  if (typeof timestamp === 'string') {
+    try {
+      return new Date(timestamp).toISOString().split("T")[0];
+    } catch {
+      return timestamp; // Return as-is if it can't be parsed
+    }
+  }
+  
+  // If it's a Timestamp object
   return timestamp.toDate().toISOString().split("T")[0];
 };
 
 /**
- * Convert Firestore Timestamp to month string (e.g., "October 2025")
+ * Convert Firestore Timestamp or date string to month string (e.g., "October 2025")
  */
-const timestampToMonthString = (timestamp: Timestamp | undefined): string => {
+const timestampToMonthString = (timestamp: Timestamp | string | undefined): string => {
   if (!timestamp) return "";
-  const date = timestamp.toDate();
+  
+  let date: Date;
+  
+  // If it's a string, parse it
+  if (typeof timestamp === 'string') {
+    date = new Date(timestamp);
+  } else {
+    // If it's a Timestamp object
+    date = timestamp.toDate();
+  }
+  
   return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+};
+
+/**
+ * Convert Firestore Timestamp or date string to user-friendly format (e.g., "Nov 13, 2025")
+ */
+const timestampToFriendlyDate = (timestamp: Timestamp | string | undefined): string => {
+  if (!timestamp) return "";
+  
+  let date: Date;
+  
+  // If it's a string, parse it
+  if (typeof timestamp === 'string') {
+    date = new Date(timestamp);
+  } else {
+    // If it's a Timestamp object
+    date = timestamp.toDate();
+  }
+  
+  return date.toLocaleDateString("en-US", { 
+    month: "short", 
+    day: "numeric", 
+    year: "numeric" 
+  });
 };
 
 /**
@@ -204,7 +248,8 @@ export const fetchAllProjects = async (): Promise<ProjectData[]> => {
         metric2: `Reports: ${reports.length}`,
         description: data.description || "",
         department: data.department || "",
-        startDate: timestampToDateString(data.startDate),
+        startDate: timestampToDateString(data.createdAt),
+        endDate: timestampToDateString(data.endDate),
         budget: data.budget || 0,
         spent: data.spent || 0,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
@@ -262,7 +307,8 @@ export const fetchProjectById = async (
       metric2: `Reports: ${reports.length}`,
       description: data.description || "",
       department: data.department || "",
-      startDate: timestampToDateString(data.startDate),
+      startDate: timestampToDateString(data.createdAt),
+      endDate: timestampToDateString(data.endDate) || "TBD",
       budget: data.budget || 0,
       spent: data.spent || 0,
       vendor: data.vendor || data.vendorName || "No Vendor Assigned",
@@ -344,7 +390,8 @@ export const fetchProjectsByVendor = async (
         metric2: `Reports: ${reports.length}`,
         description: data.description || "",
         department: data.department || "",
-        startDate: timestampToDateString(data.startDate),
+        startDate: timestampToFriendlyDate(data.createdAt),
+        endDate: timestampToFriendlyDate(data.endDate) || "TBD",
         budget: data.budget || 0,
         spent: data.spent || 0,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",

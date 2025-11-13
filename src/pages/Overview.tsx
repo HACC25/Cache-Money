@@ -4,20 +4,63 @@ import "./Overview.css";
 import Metrics from "../components/Metrics";
 import ProjectList from "../components/ProjectList";
 import Follow from "../components/Follow";
+import { useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../services/firebase-config";
 
-const data = [
-  {
-    name: "Keiki Replatform Off Mainframe Project",
-    rating: "Low",
-    link: "/projects",
-  },
-  { name: "Business Registration Modernization", rating: "Medium" },
-  { name: "Integrated Case Management System", rating: "High" },
-  { name: "Med-Quest Health Analytics Program", rating: "Completed" },
-];
+interface ProjectListData {
+  id: string;
+  name: string;
+  status: string;
+}
 
 //This page will follow the figma mockup of "Public: landing page displaying: project highlight cart, metrics & more"
 const Overview = () => {
+  const [projectListData, setProjectList] = useState<ProjectListData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
+      const firestoreProjects = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || "Unnamed Project",
+          status: data.status || "On Track",
+        } as ProjectListData;
+      });
+
+      const allProjects = [...firestoreProjects];
+      setProjectList(allProjects);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  });
+
+  const onTrackCount = projectListData.filter(
+    (project) => project.status === "On Track"
+  ).length;
+
+  const activeCount = projectListData.filter(
+    (project) => project.status != "Completed"
+  ).length;
+
+  const completeCount = projectListData.filter(
+    (project) => project.status === "Completed"
+  ).length;
+
+  if (loading) {
+    return (
+      <div className="container mt-5">
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="">
       <div className="container">
@@ -71,17 +114,21 @@ const Overview = () => {
             <div className="row">
               <div className="col">
                 <Metrics
-                  value={20}
+                  value={activeCount}
                   metric="ACTIVE PROJECTS"
                   type="success"
                 ></Metrics>
               </div>
               <div className="col">
-                <Metrics value={15} metric="ON TRACK" type="warning"></Metrics>
+                <Metrics
+                  value={onTrackCount}
+                  metric="ON TRACK"
+                  type="warning"
+                ></Metrics>
               </div>
               <div className="col">
                 <Metrics
-                  value={3}
+                  value={completeCount}
                   metric="COMPLETED PROJECTS"
                   type="primary"
                 ></Metrics>
@@ -106,7 +153,7 @@ const Overview = () => {
       <div className="container">
         <div className="row">
           <div className="pb-1 pb-md-2 pb-lg-4">
-            <ProjectList projects={data} type="light"></ProjectList>
+            <ProjectList projects={projectListData} type="light"></ProjectList>
           </div>
         </div>
       </div>

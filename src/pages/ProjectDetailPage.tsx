@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ProjectDetail from "../components/ProjectDetail";
-import {
-  sampleProjects,
-  ProjectData,
-  ProjectReport,
-} from "../components/SampleData";
+import { ProjectData, ProjectReport } from "../components/SampleData";
 import { useAuth } from "../contexts/AuthContext";
 import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
@@ -49,6 +45,7 @@ const ProjectDetailPage: React.FC = () => {
             metric1: data.metric1 || "",
             metric2: data.metric2 || "",
             startDate: data.startDate || "",
+            endDate: data.endDate || "",
             department: data.department || "",
             budget: data.budget || "",
             spent: data.spent || "",
@@ -77,16 +74,6 @@ const ProjectDetailPage: React.FC = () => {
         }
       } catch (error) {
         console.error("Error loading from Firestore:", error);
-      }
-
-      // Fallback to sample data
-      const foundProject = sampleProjects.find((p) => p.id === projectId);
-      if (foundProject) {
-        console.log("Found project in sample data:", foundProject.name);
-        setProject(foundProject);
-        setReports(foundProject.reports || []);
-      } else {
-        console.error("Project not found");
       }
 
       setIsLoading(false);

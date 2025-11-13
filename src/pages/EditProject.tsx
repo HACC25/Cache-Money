@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc, deleteDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../services/firebase-config';
+import { EDIT_PROJECT_STATUSES, getStatusColor } from './EditProjectStatuses';
 
 interface ProjectData {
   id: string;
@@ -75,7 +76,7 @@ const EditProject: React.FC = () => {
         name: project.name,
         description: project.description,
         status: project.status,
-        statusColor: project.status === 'Active' ? '#28a745' : '#6c757d',
+        statusColor: getStatusColor(project.status),
         vendorId: vendorId || null,
         updatedAt: new Date(),
       });
@@ -167,10 +168,11 @@ const EditProject: React.FC = () => {
               value={project.status || 'Active'} 
               onChange={(e) => setProject({ ...project, status: e.target.value })}
             >
-              <option value="Active">Active</option>
-              <option value="Planning">Planning</option>
-              <option value="On Hold">On Hold</option>
-              <option value="Completed">Completed</option>
+              {EDIT_PROJECT_STATUSES.map((statusOption) => (
+                <option key={statusOption.value} value={statusOption.value}>
+                  {statusOption.label}
+                </option>
+              ))}
             </select>
           </div>
           

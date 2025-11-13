@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { sampleProjects, ProjectData } from "../../components/SampleData";
+import { ProjectData } from "../../components/SampleData";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase-config";
 import ButtonGroup from "../../components/ButtonGroup";
@@ -12,44 +12,59 @@ const ETSStatistics = () => {
 
   useEffect(() => {
     // Load from Firestore with real-time updates
-    const unsubscribe = onSnapshot(
-      collection(db, "projects"),
-      (snapshot) => {
-        const firestoreProjects = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "Unnamed Project",
-            description: data.description || "",
-            status: data.status || "Active",
-            statusColor: data.statusColor || "#28a745",
-            metric1: data.metric1 || "",
-            metric2: data.metric2 || "",
-            startDate: data.startDate || "",
-            department: data.department || "",
-            budget: data.budget || "",
-            spent: data.spent || "",
-            vendor: data.vendor || "",
-            reports: data.reports || [],
-          } as ProjectData;
-        });
+    const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
+      const firestoreProjects = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || "Unnamed Project",
+          description: data.description || "",
+          status: data.status || "Active",
+          statusColor: data.statusColor || "#28a745",
+          metric1: data.metric1 || "",
+          metric2: data.metric2 || "",
+          startDate: data.startDate || "",
+          department: data.department || "",
+          budget: data.budget || "",
+          spent: data.spent || "",
+          vendor: data.vendor || "",
+          reports: data.reports || [],
+        } as ProjectData;
+      });
 
-        // Combine Firestore projects with sample projects
-        // Firestore projects first, then sample projects
-        const allProjects = [...firestoreProjects, ...sampleProjects];
-        setProjects(allProjects);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching projects:", error);
-        // Fallback to sample projects if Firestore fails
-        setProjects(sampleProjects);
-        setLoading(false);
-      }
-    );
+      // Combine Firestore projects with sample projects
+      // Firestore projects first, then sample projects
+      const allProjects = [...firestoreProjects];
+      setProjects(allProjects);
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, []);
+
+  const onTrackCount = projects.filter(
+    (project) => project.status === "On Track"
+  ).length;
+
+  const atRiskCount = projects.filter(
+    (project) => project.status === "At Risk"
+  ).length;
+
+  const criticalCount = projects.filter(
+    (project) => project.status === "Critical"
+  ).length;
+
+  const activeCount = projects.filter(
+    (project) => project.status != "Completed"
+  ).length;
+
+  const completeCount = projects.filter(
+    (project) => project.status === "Completed"
+  ).length;
+
+  // How to count number of missing reports
+
+  const reportCount = projects.filter((project) => project.reports).length;
 
   if (loading) {
     return (
@@ -80,14 +95,14 @@ const ETSStatistics = () => {
           <div className="col-4">
             <Metrics
               type="primary"
-              value={25}
+              value={activeCount}
               metric="Active Projects"
             ></Metrics>
           </div>
           <div className="col-4">
             <Metrics
               type="primary"
-              value={200}
+              value={completeCount}
               metric="Completed Projects"
             ></Metrics>
           </div>
@@ -97,7 +112,11 @@ const ETSStatistics = () => {
       <div className="container">
         <div className="row row justify-content-center gx-3 gx-md-4 gx-lg-5">
           <div className="col-4 gy-0 gy-md-2 gy-lg-4">
-            <Metrics type="primary" value={0} metric="Total Reports"></Metrics>
+            <Metrics
+              type="primary"
+              value={reportCount}
+              metric="Total Reports"
+            ></Metrics>
           </div>
           <div className="col-4 gy-0 gy-md-2 gy-lg-4">
             <Metrics
@@ -115,21 +134,21 @@ const ETSStatistics = () => {
           <div className="col">
             <Metrics
               type="success"
-              value={20}
+              value={onTrackCount}
               metric="Status: On Track"
             ></Metrics>
           </div>
           <div className="col">
             <Metrics
               type="warning"
-              value={4}
+              value={atRiskCount}
               metric="Status: At Risk"
             ></Metrics>
           </div>
           <div className="col">
             <Metrics
               type="danger"
-              value={1}
+              value={criticalCount}
               metric="Status: Critical"
             ></Metrics>
           </div>
