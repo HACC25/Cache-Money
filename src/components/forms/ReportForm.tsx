@@ -4,6 +4,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { db, auth } from "../../services/firebase-config";
 import "./ReportForm.css";
+import { LabeledDropMenu } from "./DropMenu";
 
 // Define interfaces for form data
 interface ProjectIssue {
@@ -42,23 +43,17 @@ const ReportForm: React.FC = () => {
   >("Low");
   const [sprintPlanningDescription, setSprintPlanningDescription] =
     useState<string>("");
-  const [userStoryRating, setUserStoryRating] = useState<
-    "Low" | "Medium" | "High"
-  >("Low");
-  const [userStoryDescription, setUserStoryDescription] = useState<string>("");
-  const [testPracticeRating, setTestPracticeRating] = useState<
-    "Low" | "Medium" | "High"
-  >("Low");
-  const [testPracticeDescription, setTestPracticeDescription] =
-    useState<string>("");
 
   // Schedule state
-  const [baselineEndDate, setBaselineEndDate] = useState<string>("");
-  const [currentEndDate, setCurrentEndDate] = useState<string>("");
+  const [scheduleStatus, setScheduleStatus] = useState<
+    "Ahead" | "OnTime" | "Late"
+  >("OnTime");
+  const [scheduleDescription, setScheduleDescription] = useState("");
 
   // Financials state
   const [originalAmount, setOriginalAmount] = useState<number>(0);
   const [paidToDate, setPaidToDate] = useState<number>(0);
+  const [financeDescription, setFinanceDescription] = useState("");
 
   // Issues state
   const [issues, setIssues] = useState<ProjectIssue[]>([]);
@@ -215,51 +210,6 @@ const ReportForm: React.FC = () => {
     );
   };
 
-  // Generate month options
-  const monthOptions = () => {
-    const months = [];
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-
-    // Generate options for the last 12 months
-    for (let i = 0; i < 12; i++) {
-      let monthIndex = currentMonth - i;
-      let year = currentYear;
-
-      if (monthIndex < 0) {
-        monthIndex += 12;
-        year--;
-      }
-
-      const monthName = monthNames[monthIndex];
-      const value = `${monthName} ${year}`;
-
-      months.push(
-        <option key={value} value={value}>
-          {value}
-        </option>
-      );
-    }
-
-    return months;
-  };
-
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -292,20 +242,8 @@ const ReportForm: React.FC = () => {
             rating: sprintPlanningRating,
             description: sprintPlanningDescription,
           },
-          userStoryValidation: {
-            rating: userStoryRating,
-            description: userStoryDescription,
-          },
-          testPracticeValidation: {
-            rating: testPracticeRating,
-            description: testPracticeDescription,
-          },
         },
         issues,
-        scheduleStatus: {
-          baselineEndDate,
-          currentEndDate,
-        },
         financials: {
           originalAmount: Number(originalAmount),
           paidToDate: Number(paidToDate),
@@ -319,7 +257,7 @@ const ReportForm: React.FC = () => {
         reportId: uuidv4(), // Unique ID for the report
       };
 
-      // Add the report to Firestore
+      // Add the report to db
       const docRef = await addDoc(
         collection(db, "projects", projectId, "reports"),
         reportData
@@ -349,26 +287,63 @@ const ReportForm: React.FC = () => {
   return (
     <div className="form">
       <form onSubmit={handleSubmit} className="report-form">
+        <div className="d-flex justify-content-end mb-3">
+          <button
+            type="button"
+            className="btn fs-1 fw-bold"
+            onClick={handleCancel}
+          >
+            ✕
+          </button>
+        </div>
         <h2>Add New IV&V Report</h2>
-
         {error && <div className="error-message">{error}</div>}
 
         <div className="form-section">
           <h3>Report Information</h3>
-
+          {/* DropMenu component : Report Month  */}
           <div className="form-group">
-            <label htmlFor="month">Reporting Month:</label>
-            <select
-              id="month"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              required
-            >
-              <option value="">Select Month</option>
-              {monthOptions()}
-            </select>
-          </div>
+            <LabeledDropMenu
+              title="Report Month:"
+              items={(() => {
+                const months = [];
+                const monthNames = [
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ];
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth();
 
+                for (let i = 0; i < 12; i++) {
+                  let monthIndex = currentMonth - i;
+                  let year = currentYear;
+                  if (monthIndex < 0) {
+                    monthIndex += 12;
+                    year--;
+                  }
+                  months.push(`${monthNames[monthIndex]} ${year}`);
+                }
+                return months;
+              })()}
+              label="Select Month"
+              onSelect={(item) =>
+                setMonth(typeof item === "string" ? item : item.label)
+              }
+              type="secondary"
+            />
+          </div>
+          {/* NOT A DROPDOWN */}
           <div className="form-group">
             <label htmlFor="date">Report Date:</label>
             <input
@@ -379,7 +354,7 @@ const ReportForm: React.FC = () => {
               required
             />
           </div>
-
+          {/* NOT A DROPDOWN */}
           <div className="form-group">
             <label htmlFor="background">Project Background:</label>
             <textarea
@@ -395,74 +370,41 @@ const ReportForm: React.FC = () => {
 
         <div className="form-section">
           <h3>Project Assessment</h3>
-
+          {/* DropMenu component : Report Month  */}
           <div className="form-group">
-            <label>Sprint Planning:</label>
-            <select
-              value={sprintPlanningRating}
-              onChange={(e) =>
-                setSprintPlanningRating(
-                  e.target.value as "Low" | "Medium" | "High"
-                )
+            <LabeledDropMenu
+              title="Criticality Rating:"
+              items={[
+                { label: "Low Risk", value: "Low" },
+                { label: "Medium Risk", value: "Medium" },
+                { label: "High Risk", value: "High" },
+              ]}
+              selectedIndex={
+                sprintPlanningRating === "Low"
+                  ? 0
+                  : sprintPlanningRating === "Medium"
+                  ? 1
+                  : sprintPlanningRating === "High"
+                  ? 2
+                  : undefined
               }
-              required
-            >
-              <option value="Low">Low Risk</option>
-              <option value="Medium">Medium Risk</option>
-              <option value="High">High Risk</option>
-            </select>
+              onSelect={(item) => {
+                if (typeof item === "object" && item.value) {
+                  setSprintPlanningRating(
+                    item.value as "Low" | "Medium" | "High"
+                  );
+                }
+              }}
+              label="Select Risk Level"
+              type="secondary"
+            />
+            <label>Describe Criticality: </label>
             <textarea
               value={sprintPlanningDescription}
               onChange={(e) => setSprintPlanningDescription(e.target.value)}
               rows={3}
               required
-              placeholder="Describe the sprint planning assessment..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label>User Story Validation:</label>
-            <select
-              value={userStoryRating}
-              onChange={(e) =>
-                setUserStoryRating(e.target.value as "Low" | "Medium" | "High")
-              }
-              required
-            >
-              <option value="Low">Low Risk</option>
-              <option value="Medium">Medium Risk</option>
-              <option value="High">High Risk</option>
-            </select>
-            <textarea
-              value={userStoryDescription}
-              onChange={(e) => setUserStoryDescription(e.target.value)}
-              rows={3}
-              required
-              placeholder="Describe the user story validation assessment..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Test Practice Validation:</label>
-            <select
-              value={testPracticeRating}
-              onChange={(e) =>
-                setTestPracticeRating(
-                  e.target.value as "Low" | "Medium" | "High"
-                )
-              }
-              required
-            >
-              <option value="Low">Low Risk</option>
-              <option value="Medium">Medium Risk</option>
-              <option value="High">High Risk</option>
-            </select>
-            <textarea
-              value={testPracticeDescription}
-              onChange={(e) => setTestPracticeDescription(e.target.value)}
-              rows={3}
-              required
-              placeholder="Describe the test practice validation assessment..."
+              placeholder="Assessment of Project Health"
             />
           </div>
         </div>
@@ -529,41 +471,61 @@ const ReportForm: React.FC = () => {
             </div>
 
             <div className="form-row">
+              {/* DropMenu component : Impact  */}
               <div className="form-group">
-                <label htmlFor="issue-impact">Impact:</label>
-                <select
+                <LabeledDropMenu
+                  title="Impact:"
                   id="issue-impact"
-                  value={currentIssue.impact}
-                  onChange={(e) => handleIssueChange("impact", e.target.value)}
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="issue-likelihood">Likelihood:</label>
-                <select
-                  id="issue-likelihood"
-                  value={currentIssue.likelihood}
-                  onChange={(e) =>
-                    handleIssueChange("likelihood", e.target.value)
+                  items={[
+                    { label: "Low", value: "Low" },
+                    { label: "Medium", value: "Medium" },
+                    { label: "High", value: "High" },
+                  ]}
+                  selectedIndex={
+                    currentIssue.impact === "Low"
+                      ? 0
+                      : currentIssue.impact === "Medium"
+                      ? 1
+                      : currentIssue.impact === "High"
+                      ? 2
+                      : undefined
                   }
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
+                  onSelect={(item) => {
+                    if (typeof item === "object" && item.value) {
+                      handleIssueChange("impact", item.value as string);
+                    }
+                  }}
+                  label="Select Impact"
+                  type="secondary"
+                />
               </div>
 
+              {/* DropMenu component : Likelihood  */}
               <div className="form-group">
-                <label htmlFor="issue-risk-rating">Risk Rating:</label>
-                <input
-                  type="number"
-                  id="issue-risk-rating"
-                  value={currentIssue.riskRating}
-                  readOnly
+                <LabeledDropMenu
+                  title="Likelihood:"
+                  id="issue-likelihood"
+                  items={[
+                    { label: "Low", value: "Low" },
+                    { label: "Medium", value: "Medium" },
+                    { label: "High", value: "High" },
+                  ]}
+                  selectedIndex={
+                    currentIssue.likelihood === "Low"
+                      ? 0
+                      : currentIssue.likelihood === "Medium"
+                      ? 1
+                      : currentIssue.likelihood === "High"
+                      ? 2
+                      : undefined
+                  }
+                  onSelect={(item) => {
+                    if (typeof item === "object" && item.value) {
+                      handleIssueChange("likelihood", item.value as string);
+                    }
+                  }}
+                  label="Select Likelihood"
+                  type="secondary"
                 />
               </div>
             </div>
@@ -595,7 +557,7 @@ const ReportForm: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="issue-recommendation">Recommendation:</label>
+              <label htmlFor="issue-recommendation">Possible Remedy:</label>
               <textarea
                 id="issue-recommendation"
                 value={currentIssue.recommendation}
@@ -603,7 +565,7 @@ const ReportForm: React.FC = () => {
                   handleIssueChange("recommendation", e.target.value)
                 }
                 rows={3}
-                placeholder="Provide recommendations to address the issue..."
+                placeholder="Provide description on how issue is being addressed..."
               />
             </div>
 
@@ -622,29 +584,49 @@ const ReportForm: React.FC = () => {
 
         <div className="form-section">
           <h3>Schedule Status</h3>
+          {/* Schedule Status Criticality Rating */}
+          <div className="form-group">
+            <LabeledDropMenu
+              title="Schedule Criticality Rating:"
+              id="schedule-criticality"
+              items={[
+                { label: "Ahead of Schedule", value: "Ahead" },
+                { label: "On Time", value: "OnTime" },
+                { label: "Late", value: "Late" },
+              ]}
+              selectedIndex={
+                scheduleStatus === "Ahead"
+                  ? 0
+                  : scheduleStatus === "OnTime"
+                  ? 1
+                  : scheduleStatus === "Late"
+                  ? 2
+                  : undefined
+              }
+              onSelect={(item) => {
+                if (typeof item === "object" && item.value) {
+                  setScheduleStatus(item.value as "Ahead" | "OnTime" | "Late");
+                }
+              }}
+              label="Select Schedule Status"
+              type="secondary"
+            />
+          </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="baseline-end-date">Baseline End Date:</label>
-              <input
-                type="date"
-                id="baseline-end-date"
-                value={baselineEndDate}
-                onChange={(e) => setBaselineEndDate(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="current-end-date">Current End Date:</label>
-              <input
-                type="date"
-                id="current-end-date"
-                value={currentEndDate}
-                onChange={(e) => setCurrentEndDate(e.target.value)}
-                required
-              />
-            </div>
+          <div className="form-row"></div>
+          {/* Schedule Status Description */}
+          <div className="form-group">
+            <label htmlFor="schedule-description">
+              Schedule Status Description:
+            </label>
+            <textarea
+              id="schedule-description"
+              value={scheduleDescription}
+              onChange={(e) => setScheduleDescription(e.target.value)}
+              rows={4}
+              required
+              placeholder="Describe the schedule status, any delays, milestones achieved, or upcoming deadlines..."
+            />
           </div>
         </div>
 
@@ -654,7 +636,7 @@ const ReportForm: React.FC = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="original-amount">
-                Original Contract Amount ($):
+                Total Contract Amount ($):
               </label>
               <input
                 type="number"
@@ -667,7 +649,7 @@ const ReportForm: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="paid-to-date">Paid to Date ($):</label>
+              <label htmlFor="paid-to-date">Total Paid Out ($):</label>
               <input
                 type="number"
                 id="paid-to-date"
@@ -677,6 +659,20 @@ const ReportForm: React.FC = () => {
                 required
               />
             </div>
+          </div>
+          {/* Financial Status Description */}
+          <div className="form-group">
+            <label htmlFor="finance-description">
+              Financial Status Description:
+            </label>
+            <textarea
+              id="finance-description"
+              value={financeDescription}
+              onChange={(e) => setFinanceDescription(e.target.value)}
+              rows={4}
+              required
+              placeholder="Description..."
+            />
           </div>
         </div>
 
