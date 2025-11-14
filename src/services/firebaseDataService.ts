@@ -371,6 +371,8 @@ export const fetchProjectsByVendor = async (
     for (const docSnapshot of projectsSnapshot.docs) {
       const data = docSnapshot.data();
       const reports = await fetchReportsForProject(docSnapshot.id);
+      const mostRecentReport = reports.length > 0 ? reports[0] : null;
+
 
       const completionPercentage =
         reports.length > 0
@@ -380,6 +382,11 @@ export const fetchProjectsByVendor = async (
                 100
             )
           : 0;
+
+      const budgetValue =
+        mostRecentReport?.financials?.originalAmount ?? data.budget ?? 0;
+      const spentValue =
+        mostRecentReport?.financials?.paidToDate ?? data.spent ?? 0;
 
       const project: ProjectData = {
         id: docSnapshot.id,
@@ -392,8 +399,8 @@ export const fetchProjectsByVendor = async (
         department: data.department || "",
         startDate: timestampToFriendlyDate(data.createdAt),
         endDate: timestampToFriendlyDate(data.endDate) || "TBD",
-        budget: data.budget || 0,
-        spent: data.spent || 0,
+        budget: budgetValue,
+        spent: spentValue,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
         vendorId: data.vendorId || undefined,
         reports: reports,

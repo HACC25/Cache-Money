@@ -91,7 +91,7 @@ const ETSStatistics = () => {
 
       <h1 className="py-1 pb-md-3 pb-lg-4">Project Statistics</h1>
       <div className="container">
-        <div className="row justify-content-center gx-3 gx-md-4 gx-lg-5">
+        <div className="row justify-content-center">
           <div className="col-4">
             <Metrics
               type="primary"
@@ -106,26 +106,18 @@ const ETSStatistics = () => {
               metric="Completed Projects"
             ></Metrics>
           </div>
-        </div>
-      </div>
-
-      <div className="container">
-        <div className="row row justify-content-center gx-3 gx-md-4 gx-lg-5">
-          <div className="col-4 gy-0 gy-md-2 gy-lg-4">
+          <div className="col-4">
             <Metrics
               type="primary"
               value={reportCount}
               metric="Total Reports"
             ></Metrics>
           </div>
-          <div className="col-4 gy-0 gy-md-2 gy-lg-4">
-            <Metrics
-              type="primary"
-              value={5}
-              metric="Missing Reports"
-            ></Metrics>
-          </div>
         </div>
+      </div>
+
+      <div className="container">
+        <div className="row row justify-content-center gx-3 gx-md-4 gx-lg-5"></div>
       </div>
 
       <h1 className="py-1 pt-md-4 pb-md-3 py-lg-4">Projects By Status</h1>

@@ -14,7 +14,10 @@ import {
   limit,
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
-import { timestampToFriendlyDate } from "../services/firebaseDataService";
+import {
+  timestampToFriendlyDate,
+  fetchReportsForProject,
+} from "../services/firebaseDataService";
 
 interface ProjectListData {
   id: string;
@@ -65,22 +68,46 @@ const Overview = () => {
         const projectsQuery = query(
           collection(db, "projects"),
           orderBy("createdAt", "desc"),
-          limit(6)
+          limit(5)
         );
         const projectsSnapshot = await getDocs(projectsQuery);
 
-        const projects: RecentProject[] = projectsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name || "Unnamed Project",
-          description: doc.data().description || "No description available",
-          status: doc.data().status,
-          metric1: doc.data().metric1 || "Completion: N/A",
-          metric2: doc.data().metric2 || "Reports: N/A",
-          startDate: timestampToFriendlyDate(doc.data().createdAt),
-          endDate: timestampToFriendlyDate(doc.data().endDate) || "TBD",
-          budget: doc.data().budget || 0,
-          spent: doc.data().spent || 0,
-        }));
+        const projectPromises = projectsSnapshot.docs.map(async (doc) => {
+          const data = doc.data();
+
+          const reports = await fetchReportsForProject(doc.id);
+
+          const mostRecentReport = reports.length > 0 ? reports[0] : null;
+
+          const completionPercentage =
+            mostRecentReport && mostRecentReport.scopeStatus
+              ? Math.round(
+                  (mostRecentReport.scopeStatus.completedDeliverables /
+                    mostRecentReport.scopeStatus.totalDeliverables) *
+                    100
+                )
+              : 0;
+
+          const budgetValue =
+            mostRecentReport?.financials?.originalAmount ?? data.budget ?? 0;
+          const spentValue =
+            mostRecentReport?.financials?.paidToDate ?? data.spent ?? 0;
+
+          return {
+            id: doc.id,
+            name: data.name || "Unnamed Project",
+            description: data.description || "No description available",
+            status: data.status,
+            metric1: `Completion: ${completionPercentage}%`,
+            metric2: `Reports: ${reports.length}`,
+            startDate: timestampToFriendlyDate(data.createdAt),
+            endDate: timestampToFriendlyDate(data.endDate) || "TBD",
+            budget: budgetValue.toLocaleString("en-US"),
+            spent: spentValue.toLocaleString("en-US"),
+          };
+        });
+
+        const projects = await Promise.all(projectPromises);
         setRecentProjects(projects);
       } catch (error) {
         console.error("Error fetching recent projects:", error);
