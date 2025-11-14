@@ -9,193 +9,116 @@ const BudgetDonut: React.FC<BudgetDonutProps> = ({
   totalContracted,
   totalPaidOut,
 }) => {
-  // Calculate percentages
   const paidPercent = (totalPaidOut / totalContracted) * 100;
   const remainingPercent = 100 - paidPercent;
   const remainingAmount = totalContracted - totalPaidOut;
 
-  // Calculate SVG arc values
-  // Full circle circumference = 2πr = 2π(40) ≈ 251.33
   const circumference = 251.33;
   const paidDasharray = (paidPercent / 100) * circumference;
   const remainingDasharray = circumference - paidDasharray;
 
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  // Format large numbers with K/M
   const formatCompactCurrency = (value: number) => {
-    if (value >= 1000000) {
-      return `$${(value / 1000000).toFixed(2)}M`;
-    }
-    if (value >= 1000) {
-      return `$${(value / 1000).toFixed(1)}K`;
-    }
+    if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+    if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
     return `$${value}`;
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "40px",
-        padding: "20px",
-        backgroundColor: "#fff",
-      }}
-    >
-      {/* Donut Chart */}
-      <div style={{ width: "200px", height: "200px", flexShrink: 0 }}>
-        <svg viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
-          {/* Paid circle (green) */}
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke="#28a745"
-            strokeWidth="15"
-            strokeDasharray={`${paidDasharray} ${circumference}`}
-            strokeLinecap="round"
-          />
-          {/* Remaining circle (orange) */}
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            stroke="#ffc107"
-            strokeWidth="15"
-            strokeDasharray={`${remainingDasharray} ${circumference}`}
-            strokeDashoffset={-paidDasharray}
-            strokeLinecap="round"
-          />
-        </svg>
-
-        {/* Center text */}
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center",
-            marginTop: "-100px",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "32px",
-              fontWeight: "bold",
-              color: "#28a745",
-            }}
-          >
-            {paidPercent.toFixed(0)}%
-          </div>
-          <div
-            style={{
-              fontSize: "12px",
-              color: "#666",
-            }}
-          >
-            Spent
-          </div>
-        </div>
+    <div className="p-6 rounded-2xl  bg-white max-w-xl font-sans">
+      {/* Header */}
+      <div className="flex flex-col leading-tight mb-4">
+        <span className="text-sm font-semibold text-gray-600">
+          Total Contracted
+        </span>
+        <span className="text-2xl font-extrabold text-gray-900">
+          {formatCompactCurrency(totalContracted)}
+        </span>
       </div>
 
-      {/* Legend */}
-      <div style={{ flex: 1 }}>
-        {/* Paid Out */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "20px",
-          }}
-        >
-          <div
-            style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "4px",
-              background: "#28a745",
-              flexShrink: 0,
-            }}
-          ></div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: "600", color: "#333", fontSize: "14px" }}>
-              Paid Out
+      {/* Donut + Legend container */}
+      <div className="flex gap-10 items-start mb-6">
+        {/* Donut Chart Wrapper */}
+        <div className="relative w-48 h-48">
+          <svg
+            viewBox="0 0 100 100"
+            className="w-full h-full transform -rotate-90"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#e5e7eb"
+              strokeWidth="15"
+            />
+
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#28a745"
+              strokeWidth="15"
+              strokeDasharray={`${paidDasharray} ${circumference}`}
+              strokeLinecap="round"
+            />
+
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#fbbf24"
+              strokeWidth="15"
+              strokeDasharray={`${remainingDasharray} ${circumference}`}
+              strokeDashoffset={-paidDasharray}
+              strokeLinecap="round"
+            />
+          </svg>
+
+          {/* Center Text */}
+          <div className="absolute inset-0 flex flex-col justify-center items-center">
+            <div className="text-3xl font-bold text-green-600">
+              {paidPercent.toFixed(0)}%
             </div>
-            <div
-              style={{ fontSize: "18px", fontWeight: "bold", color: "#333" }}
-            >
-              {formatCompactCurrency(totalPaidOut)}
-            </div>
-            <div style={{ fontSize: "12px", color: "#999", marginTop: "3px" }}>
-              {paidPercent.toFixed(1)}% of budget
-            </div>
+            <div className="text-xs text-gray-500">Spent</div>
           </div>
         </div>
 
-        {/* Remaining */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            marginBottom: "20px",
-          }}
-        >
-          <div
-            style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "4px",
-              background: "#ffc107",
-              flexShrink: 0,
-            }}
-          ></div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: "600", color: "#333", fontSize: "14px" }}>
-              Remaining
-            </div>
+        {/* Legend */}
+        <div className="flex-1 space-y-6">
+          {/* Paid Out */}
+          <div className="flex items-start gap-3">
             <div
-              style={{ fontSize: "18px", fontWeight: "bold", color: "#333" }}
-            >
-              {formatCompactCurrency(remainingAmount)}
-            </div>
-            <div style={{ fontSize: "12px", color: "#999", marginTop: "3px" }}>
-              {remainingPercent.toFixed(1)}% available
+              className="w-5 h-5 rounded"
+              style={{ backgroundColor: "#28a745" }}
+            ></div>
+            <div>
+              <div className="text-sm font-semibold text-gray-800">
+                Paid Out
+              </div>
+              <div className="text-lg font-bold text-gray-900">
+                {formatCompactCurrency(totalPaidOut)}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {paidPercent.toFixed(1)}% of budget
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Total Contracted */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div
-            style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "4px",
-              background: "#007bff",
-              flexShrink: 0,
-            }}
-          ></div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: "600", color: "#333", fontSize: "14px" }}>
-              Total Contracted
-            </div>
-            <div
-              style={{ fontSize: "18px", fontWeight: "bold", color: "#333" }}
-            >
-              {formatCompactCurrency(totalContracted)}
+          {/* Remaining */}
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded bg-yellow-400"></div>
+            <div>
+              <div className="text-sm font-semibold text-gray-800">
+                Remaining
+              </div>
+              <div className="text-lg font-bold text-gray-900">
+                {formatCompactCurrency(remainingAmount)}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {remainingPercent.toFixed(1)}% available
+              </div>
             </div>
           </div>
         </div>

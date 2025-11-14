@@ -20,6 +20,7 @@ import { LabeledDropMenu } from "./DropMenu";
 // Define interfaces for form data
 interface ProjectIssue {
   id: string;
+  name: string;
   description: string;
   impact: "High" | "Medium" | "Low";
   likelihood: "High" | "Medium" | "Low";
@@ -156,6 +157,59 @@ const ReportForm: React.FC = () => {
     fetchReport();
   }, [isEditMode, projectId, reportId]);
 
+  // ============ PRE-FILL FROM PREVIOUS REPORT ============
+  // Fetch previous report to pre-fill background, baseline, and deliverables
+  // ============ PRE-FILL FROM PREVIOUS REPORT ============
+  // Fetch previous report to pre-fill background, baseline, deliverables, and issues
+  useEffect(() => {
+    const prefillFromPreviousReport = async () => {
+      if (!projectId || isEditMode) return;
+
+      try {
+        const reportsRef = collection(db, "projects", projectId, "reports");
+
+        // Get ALL reports ordered by date
+        const q = query(reportsRef, orderBy("date", "asc"));
+        const reportsSnap = await getDocs(q);
+
+        if (reportsSnap.empty) return;
+
+        const allReports = reportsSnap.docs.map((doc) => doc.data());
+
+        // 1. Get BASELINE from FIRST report
+        if (allReports[0]?.scheduleData?.baseline?.expectedDate) {
+          setExpectedBaselineDate(
+            allReports[0].scheduleData.baseline.expectedDate
+          );
+        }
+
+        // 2. If there's a previous report (not creating first report)
+        if (allReports.length > 0) {
+          const previousReport = allReports[allReports.length - 1];
+
+          // Pre-fill BACKGROUND from most recent previous report
+          if (previousReport.background) {
+            setBackground(previousReport.background);
+          }
+
+          // Pre-fill DELIVERABLES from most recent previous report
+          if (previousReport.scopeStatus?.deliverables) {
+            setDeliverables(previousReport.scopeStatus.deliverables);
+          }
+
+          // Pre-fill ISSUES from most recent previous report
+          if (previousReport.issues) {
+            setIssues(previousReport.issues);
+          }
+        }
+      } catch (err) {
+        console.error("Error prefilling from previous report:", err);
+      }
+    };
+
+    prefillFromPreviousReport();
+  }, [projectId, isEditMode]);
+
   // Form state
   const [month, setMonth] = useState<string>("");
   const [date, setDate] = useState<string>(
@@ -185,6 +239,7 @@ const ReportForm: React.FC = () => {
   const [issues, setIssues] = useState<ProjectIssue[]>([]);
   const [currentIssue, setCurrentIssue] = useState<ProjectIssue>({
     id: "",
+    name: "",
     description: "",
     impact: "Medium",
     likelihood: "Medium",
@@ -298,6 +353,7 @@ const ReportForm: React.FC = () => {
     // Reset current issue
     setCurrentIssue({
       id: "",
+      name: "",
       description: "",
       impact: "Medium",
       likelihood: "Medium",
@@ -311,8 +367,13 @@ const ReportForm: React.FC = () => {
   // Edit an issue
   const handleEditIssue = (issue: ProjectIssue): void => {
     setCurrentIssue(issue);
+    setTimeout(() => {
+      const issueForm = document.getElementById("issue-form");
+      if (issueForm) {
+        issueForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
-
   // Delete an issue
   const handleDeleteIssue = (issueId: string): void => {
     setIssues(issues.filter((issue) => issue.id !== issueId));
@@ -364,6 +425,13 @@ const ReportForm: React.FC = () => {
   // Edit a deliverable
   const handleEditDeliverable = (deliverable: ProjectDeliverable): void => {
     setCurrentDeliverable(deliverable);
+    // Scroll to the deliverable form
+    setTimeout(() => {
+      const deliverableForm = document.getElementById("deliverable-form");
+      if (deliverableForm) {
+        deliverableForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
 
   // Delete a deliverable
@@ -632,10 +700,8 @@ const ReportForm: React.FC = () => {
                 <table>
                   <thead>
                     <tr>
-                      <th>Description</th>
-                      <th>Impact</th>
-                      <th>Likelihood</th>
-                      <th>Risk Rating</th>
+                      <th>Name</th>
+                      <th>Date Raised</th>
                       <th>Age (Days)</th>
                       <th>Status</th>
                       <th>Actions</th>
@@ -644,10 +710,10 @@ const ReportForm: React.FC = () => {
                   <tbody>
                     {issues.map((issue) => (
                       <tr key={issue.id}>
-                        <td>{issue.description.substring(0, 50)}...</td>
-                        <td>{issue.impact}</td>
-                        <td>{issue.likelihood}</td>
-                        <td>{issue.riskRating}</td>
+                        <td>{issue.name}</td>
+                        <td>
+                          {new Date(issue.dateRaised).toLocaleDateString()}
+                        </td>
                         <td>
                           {issue.age ||
                             calculateIssueAge(issue.dateRaised, date)}
@@ -676,7 +742,18 @@ const ReportForm: React.FC = () => {
               </div>
             )}
 
-            <div className="issue-form">
+            <div className="issue-form" id="issue-form">
+              <div className="form-group">
+                <label htmlFor="issue-name">Issue Name:</label>
+                <input
+                  type="text"
+                  id="issue-name"
+                  value={currentIssue.name}
+                  onChange={(e) => handleIssueChange("name", e.target.value)}
+                  placeholder="Enter a short name for the issue..."
+                />
+              </div>
+
               <div className="form-group">
                 <label htmlFor="issue-description">Issue Description:</label>
                 <textarea
@@ -796,7 +873,9 @@ const ReportForm: React.FC = () => {
                 onClick={handleAddIssue}
                 className="add-button"
                 disabled={
-                  !currentIssue.description || !currentIssue.recommendation
+                  !currentIssue.name ||
+                  !currentIssue.description ||
+                  !currentIssue.recommendation
                 }
               >
                 {currentIssue.id ? "Update Issue" : "Add Issue"}
@@ -927,8 +1006,8 @@ const ReportForm: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Name</th>
-                      <th>Status</th>
                       <th>Description</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -936,8 +1015,8 @@ const ReportForm: React.FC = () => {
                     {deliverables.map((deliverable) => (
                       <tr key={deliverable.id}>
                         <td>{deliverable.name}</td>
-                        <td>{deliverable.status}</td>
                         <td>{deliverable.description.substring(0, 50)}...</td>
+                        <td>{deliverable.status}</td>
                         <td>
                           <button
                             type="button"
@@ -963,7 +1042,7 @@ const ReportForm: React.FC = () => {
               </div>
             )}
 
-            <div className="deliverable-form">
+            <div className="deliverable-form" id="deliverable-form">
               <div className="form-group">
                 <label htmlFor="deliverable-name">Deliverable Name:</label>
                 <input

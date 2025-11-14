@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 //Visual Component Imports
 import BudgetDonut from "../components/forms/BudgetDonut";
+import ScheduleCompletion from "../components/forms/ScheduleCompletion";
 
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
@@ -15,10 +16,30 @@ const ReportDetailPage: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const [report, setReport] = useState<ProjectReport | null>(null);
+  const [project, setProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isETSEmployee, isVendor } = useAuth();
 
+  useEffect(() => {
+    if (!projectId) return;
+
+    const projectRef = doc(db, "projects", projectId);
+
+    const unsubscribe = onSnapshot(
+      projectRef,
+      (projectSnap) => {
+        if (projectSnap.exists()) {
+          setProject(projectSnap.data());
+        }
+      },
+      (err) => {
+        console.error("Error fetching project:", err);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [projectId]);
   useEffect(() => {
     if (!projectId || !reportId) {
       setError("Missing project or report ID");
@@ -98,6 +119,7 @@ const ReportDetailPage: React.FC = () => {
         setReport(safeReport);
         setIsLoading(false);
         setError(null);
+        console.log("Report date:", safeReport.date); // DEBUGGING
       },
       (err) => {
         console.error("Error listening to report:", err);
@@ -386,7 +408,6 @@ const ReportDetailPage: React.FC = () => {
       </div>
 
       {/* Schedule Status Section */}
-      {/* Schedule Status Section */}
       <div id="schedule-status" className="card mb-4">
         <div className="card-header">
           <h4 className="mb-0">Schedule Status</h4>
@@ -396,7 +417,9 @@ const ReportDetailPage: React.FC = () => {
             <div className="col-md-6">
               <div className="card bg-light">
                 <div className="card-body">
-                  <h5 className="card-title">Expected Baseline Completion</h5>
+                  <h5 className="card-title">
+                    Expected Baseline Completion (Original Expected Date)
+                  </h5>
                   <h4>
                     {report.scheduleData?.baseline?.expectedDate
                       ? new Date(
@@ -422,7 +445,6 @@ const ReportDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
-
           {/* Variance Display */}
           {report.varianceDays !== undefined && (
             <div className="mb-4">
@@ -450,11 +472,26 @@ const ReportDetailPage: React.FC = () => {
               )}
             </div>
           )}
-
+          {/* Schedule Completion Progress */}
+          {report.scheduleData?.baseline?.expectedDate &&
+            report.date &&
+            project?.createdAt && (
+              <ScheduleCompletion
+                projectCreatedAt={
+                  typeof project.createdAt === "string"
+                    ? project.createdAt
+                    : new Date(
+                        project.createdAt.seconds * 1000
+                      ).toLocaleDateString("en-CA") // Returns YYYY-MM-DD in local time
+                }
+                expectedBaselineDate={report.scheduleData.baseline.expectedDate}
+                actualProjectedDate={report.scheduleData.current.projectedDate}
+                reportDate={report.date}
+              />
+            )}
           {/* Schedule Status Description */}
           <div>
             <h5>Schedule Description</h5>
-
             <p className="mt-3">{report.scheduleStatus?.description}</p>
           </div>
         </div>
@@ -466,14 +503,12 @@ const ReportDetailPage: React.FC = () => {
           <h4 className="mb-0">Finance</h4>
         </div>
         <div className="card-body">
-          {/* Donut Chart */}
           <div style={{ marginBottom: "30px" }}>
             <BudgetDonut
               totalContracted={report.financials.originalAmount}
               totalPaidOut={report.financials.paidToDate}
             />
           </div>
-
           {/* Financial Status Description */}
           {report.financials?.description && (
             <div>
@@ -502,6 +537,7 @@ const ReportDetailPage: React.FC = () => {
                       report.scopeStatus.totalDeliverables) *
                     100
                   }%`,
+                  backgroundColor: "#28a745",
                 }}
               >
                 {report.scopeStatus.completedDeliverables} of{" "}
