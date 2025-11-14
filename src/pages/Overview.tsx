@@ -5,8 +5,16 @@ import Metrics from "../components/Metrics";
 import ProjectList from "../components/ProjectList";
 import Follow from "../components/Follow";
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  getDocs,
+  orderBy,
+  limit,
+} from "firebase/firestore";
 import { db } from "../services/firebase-config";
+import { timestampToFriendlyDate } from "../services/firebaseDataService";
 
 interface ProjectListData {
   id: string;
@@ -14,14 +22,28 @@ interface ProjectListData {
   status: string;
 }
 
+interface RecentProject {
+  id: string;
+  name: string;
+  status: "On Track" | "At Risk" | "Critical" | "Active" | "Completed";
+  metric1: string;
+  metric2: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  budget: number;
+  spent: number;
+}
+
 //This page will follow the figma mockup of "Public: landing page displaying: project highlight cart, metrics & more"
 const Overview = () => {
   const [projectListData, setProjectList] = useState<ProjectListData[]>([]);
+  const [recentProjects, setRecentProjects] = useState<RecentProject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "projects"), (snapshot) => {
-      const firestoreProjects = snapshot.docs.map((doc) => {
+      const firestoreProjectList = snapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
@@ -30,12 +52,45 @@ const Overview = () => {
         } as ProjectListData;
       });
 
-      const allProjects = [...firestoreProjects];
-      setProjectList(allProjects);
+      setProjectList(firestoreProjectList);
       setLoading(false);
     });
     return () => unsubscribe();
   });
+
+  useEffect(() => {
+    const fetchRecentProjects = async () => {
+      try {
+        // Get the 6 most recent projects
+        const projectsQuery = query(
+          collection(db, "projects"),
+          orderBy("createdAt", "desc"),
+          limit(6)
+        );
+        const projectsSnapshot = await getDocs(projectsQuery);
+
+        const projects: RecentProject[] = projectsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name || "Unnamed Project",
+          description: doc.data().description || "No description available",
+          status: doc.data().status,
+          metric1: doc.data().metric1 || "Completion: N/A",
+          metric2: doc.data().metric2 || "Reports: N/A",
+          startDate: timestampToFriendlyDate(doc.data().createdAt),
+          endDate: timestampToFriendlyDate(doc.data().endDate) || "TBD",
+          budget: doc.data().budget || 0,
+          spent: doc.data().spent || 0,
+        }));
+        setRecentProjects(projects);
+      } catch (error) {
+        console.error("Error fetching recent projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentProjects();
+  }, []);
 
   const onTrackCount = projectListData.filter(
     (project) => project.status === "On Track"
@@ -76,14 +131,19 @@ const Overview = () => {
 
       <div className="container">
         <div className="row">
-          <h5 style={{ fontSize: "clamp(1rem, 1.5vw, 2rem)" }}>ABOUT US</h5>
+          <h5
+            className="pb-1 pb-md-2 pb-lg-3"
+            style={{ fontSize: "clamp(1rem, 1.5vw, 2rem)" }}
+          >
+            ABOUT US
+          </h5>
         </div>
       </div>
 
       {/* Carousle */}
       <div className="container pb-1 pb-lg-2">
         <div>
-          <Carousel></Carousel>
+          <Carousel allProjects={recentProjects}></Carousel>
         </div>
       </div>
 

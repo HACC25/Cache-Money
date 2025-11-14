@@ -61,7 +61,7 @@ const timestampToMonthString = (timestamp: Timestamp | string | undefined): stri
 /**
  * Convert Firestore Timestamp or date string to user-friendly format (e.g., "Nov 13, 2025")
  */
-const timestampToFriendlyDate = (timestamp: Timestamp | string | undefined): string => {
+export const timestampToFriendlyDate = (timestamp: Timestamp | string | undefined): string => {
   if (!timestamp) return "";
   
   let date: Date;
@@ -248,8 +248,8 @@ export const fetchAllProjects = async (): Promise<ProjectData[]> => {
         metric2: `Reports: ${reports.length}`,
         description: data.description || "",
         department: data.department || "",
-        startDate: timestampToDateString(data.createdAt),
-        endDate: timestampToDateString(data.endDate),
+        startDate: timestampToFriendlyDate(data.createdAt),
+        endDate: timestampToFriendlyDate(data.endDate),
         budget: data.budget || 0,
         spent: data.spent || 0,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
