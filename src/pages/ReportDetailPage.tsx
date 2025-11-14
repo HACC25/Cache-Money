@@ -185,30 +185,34 @@ const ReportDetailPage: React.FC = () => {
           <h3 className="text-muted">{report.month} Report</h3>
         </div>
         <div className="d-flex">
-          <button
-            onClick={() =>
-              navigate(`/vendor/project/${projectId}/report/${reportId}/edit`)
-            }
-            style={{
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              padding: "10px 20px",
-              fontSize: "16px",
-              fontWeight: "600",
-              cursor: "pointer",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.backgroundColor = "#0056b3")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.backgroundColor = "#007bff")
-            }
-          >
-            Edit Report
-          </button>
+          {isVendor ? (
+            <button
+              onClick={() =>
+                navigate(`/vendor/project/${projectId}/report/${reportId}/edit`)
+              }
+              style={{
+                backgroundColor: "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "background-color 0.3s ease",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = "#0056b3")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "#007bff")
+              }
+            >
+              Edit Report
+            </button>
+          ) : (
+            <></>
+          )}
           <button className="btn btn-success me-2">
             <i className="bi bi-file-earmark-word me-1"></i> Export Report
           </button>

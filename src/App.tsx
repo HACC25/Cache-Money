@@ -174,7 +174,11 @@ function AppContent() {
           {/* Report Form - Edit Report */}
           <Route
             path="/vendor/project/:projectId/report/:reportId/edit"
-            element={<ReportForm />}
+            element={
+              <RequireRole allowedRoles={["vendor"]}>
+                <ReportForm />
+              </RequireRole>
+            }
           />
 
           {/* Vendor Dashboard */}

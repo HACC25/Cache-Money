@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ProjectData, ProjectReport } from "./SampleData";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ProjectDetailProps {
   report: ProjectReport;
@@ -32,6 +33,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
     return "Low";
   };
 
+  const { isVendor } = useAuth();
+
   const riskLevel = calculateRiskLevel();
 
   return (
@@ -62,31 +65,44 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
                   className="dropdown-menu dropdown-menu-end"
                   aria-labelledby={`dropdownMenuButton-${index}`}
                 >
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={`/project/${project.id}/report/${report.id}`}
-                    >
-                      View
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={`/vendor/project/${project.id}/report/${report.id}/edit`}
-                    >
-                      Edit
-                    </Link>
-                  </li>
+                  {isVendor ? (
+                    <div>
+                      <li>
+                        <Link
+                          className="dropdown-item"
+                          to={`/project/${project.id}/report/${report.id}`}
+                        >
+                          View
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item"
+                          to={`/vendor/project/${project.id}/report/${report.id}/edit`}
+                        >
+                          Edit
+                        </Link>
+                      </li>
 
-                  <li>
-                    <button
-                      className="dropdown-item"
-                      onClick={() => console.log("Delete clicked")}
-                    >
-                      Delete
-                    </button>
-                  </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => console.log("Delete clicked")}
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    </div>
+                  ) : (
+                    <li>
+                      <Link
+                        className="dropdown-item"
+                        to={`/project/${project.id}/report/${report.id}`}
+                      >
+                        View
+                      </Link>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
