@@ -89,14 +89,6 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
                   <div className="card-body py-2 px-3">
                     <div className="d-flex justify-content-between align-items-center">
                       <span>{report.month}</span>
-                      <div>
-                        <button className="btn btn-link p-1 me-1">
-                          <i className="bi bi-pencil"></i>
-                        </button>
-                        <button className="btn btn-link text-danger p-1">
-                          <i className="bi bi-trash"></i>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
