@@ -24,6 +24,7 @@ interface ProjectIssue {
   dateRaised: string;
   recommendation: string;
   status: "Open" | "Closed";
+  age?: number;
 }
 
 interface ProjectDeliverable {
@@ -75,7 +76,7 @@ const ReportForm: React.FC = () => {
           setScheduleStatus(data.scheduleStatus?.status || "OnTime");
           setScheduleDescription(data.scheduleStatus?.description || "");
 
-          // Financials
+          // Financial
           setOriginalAmount(data.financials?.originalAmount || 0);
           setPaidToDate(data.financials?.paidToDate || 0);
           setFinanceDescription(data.financials?.description || "");
@@ -115,7 +116,7 @@ const ReportForm: React.FC = () => {
   >("OnTime");
   const [scheduleDescription, setScheduleDescription] = useState("");
 
-  // Financials state
+  // Financial state
   const [originalAmount, setOriginalAmount] = useState<number>(0);
   const [paidToDate, setPaidToDate] = useState<number>(0);
   const [financeDescription, setFinanceDescription] = useState("");
@@ -158,6 +159,17 @@ const ReportForm: React.FC = () => {
     return impactScore + likelihoodScore;
   };
 
+  const calculateIssueAge = (
+    dateRaised: string,
+    reportDate: string
+  ): number => {
+    const raised = new Date(dateRaised);
+    const report = new Date(reportDate);
+    const diffTime = Math.abs(report.getTime() - raised.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
   // Handle issue form changes
   const handleIssueChange = (
     field: keyof ProjectIssue,
@@ -183,9 +195,11 @@ const ReportForm: React.FC = () => {
 
   // Add or update an issue
   const handleAddIssue = (): void => {
+    const age = calculateIssueAge(currentIssue.dateRaised, date);
     const issueWithId = {
       ...currentIssue,
       id: currentIssue.id || `issue-${uuidv4()}`,
+      age: age,
     };
 
     if (currentIssue.id) {
@@ -292,6 +306,11 @@ const ReportForm: React.FC = () => {
         (d) => d.status === "Completed"
       ).length;
 
+      const issuesWithAge = issues.map((issue) => ({
+        ...issue,
+        age: calculateIssueAge(issue.dateRaised, date),
+      }));
+
       const reportData = {
         projectId,
         month,
@@ -306,7 +325,7 @@ const ReportForm: React.FC = () => {
             description: sprintPlanningDescription,
           },
         },
-        issues,
+        issues: issuesWithAge,
         scheduleStatus: {
           status: scheduleStatus,
           description: scheduleDescription,
@@ -509,6 +528,7 @@ const ReportForm: React.FC = () => {
                       <th>Impact</th>
                       <th>Likelihood</th>
                       <th>Risk Rating</th>
+                      <th>Age (Days)</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -520,6 +540,10 @@ const ReportForm: React.FC = () => {
                         <td>{issue.impact}</td>
                         <td>{issue.likelihood}</td>
                         <td>{issue.riskRating}</td>
+                        <td>
+                          {issue.age ||
+                            calculateIssueAge(issue.dateRaised, date)}
+                        </td>
                         <td>{issue.status}</td>
                         <td>
                           <button
