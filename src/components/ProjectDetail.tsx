@@ -104,7 +104,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
                   : "N/A"}
               </div>
               <div>
-                <strong>Overall Risk:</strong>{" "}
+                <strong>Criticality Rating:</strong>{" "}
                 <span
                   className={`badge ${
                     riskLevel === "High"
