@@ -22,7 +22,9 @@ const AllProjectsTable = ({ vendors }: Props) => {
   };
 
   const handleEdit = (project: ProjectData) => {
-    navigate(`/project/${project.id}}/edit`);
+    console.log("Editing project with ID:", project.id); // Debug log
+
+    navigate(`/project/${project.id}/edit`);
   };
 
   // Need to check if this works
