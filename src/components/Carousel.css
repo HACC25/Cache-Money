@@ -30,8 +30,8 @@
 }
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 1);
+    border-radius: 60%;
     padding: 10px;
 }
 

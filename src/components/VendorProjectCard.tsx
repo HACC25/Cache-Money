@@ -38,9 +38,16 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
             {name}
           </h2>
           <div
-            className="badge mb-3 px-4 py-2"
+            className={`badge mb-3 px-4 py-2 ${
+              status === "On Track"
+                ? "bg-success"
+                : status === "At Risk"
+                ? "bg-warning"
+                : status === "Critical"
+                ? "bg-critical"
+                : "bg-primary"
+            }`}
             style={{
-              backgroundColor: statusColor,
               color: "white",
               borderRadius: "50px",
               fontSize: "1rem",
@@ -51,9 +58,9 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
 
           <div className="row mt-4">
             <div className="col-md-6">
-              <div className="card border">
+              <div className="card border-primary">
                 <div className="card-body text-center">
-                  <span className="text-info">{metric1}</span>
+                  <span className="text-primary">{metric1}</span>
                 </div>
               </div>
             </div>

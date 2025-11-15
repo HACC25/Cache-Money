@@ -78,7 +78,12 @@ const Footer = () => (
         </span>
 
         <div className="footer-social">
-          <a href="https://www.facebook.com/ETSHawaii" target="_blank" rel="noopener noreferrer" aria-label="Facebook page">
+          <a
+            href="https://www.facebook.com/ETSHawaii"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook page"
+          >
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +98,12 @@ const Footer = () => (
             </svg>
             <span className="sr-only">Facebook page</span>
           </a>
-          <a href="https://x.com/ETSHIgov/" target="_blank" rel="noopener noreferrer" aria-label="Twitter page">
+          <a
+            href="https://x.com/ETSHIgov/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Twitter page"
+          >
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"

@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { createUserWithEmailAndPassword } from "firebase/auth"; 
+import React, { useState, useEffect } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../services/firebase-config";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import './SignUp.css'
-
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import "./SignUp.css";
 
 const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'public' | 'vendor' | 'ets'>('public');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"public" | "vendor" | "ets">("public");
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
   // Redirect if already logged in
   useEffect(() => {
     if (currentUser) {
-      navigate('/');
+      navigate("/");
     }
   }, [currentUser, navigate]);
 
@@ -25,23 +24,29 @@ const SignUp = () => {
     e.preventDefault();
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-      
+
       // Create user document in Firestore with selected role
-      await setDoc(doc(db, 'users', user.uid), {
+      await setDoc(doc(db, "users", user.uid), {
         email: email,
         role: role,
         createdAt: serverTimestamp(),
       });
-      
-      console.log('User created with role:', role);
-      alert(`Sign up successful! You have been assigned the role: ${role.toUpperCase()}`);
-      navigate('/login');
+
+      console.log("User created with role:", role);
+      alert(
+        `Sign up successful! You have been assigned the role: ${role.toUpperCase()}`
+      );
+      navigate("/login");
     } catch (error: unknown) {
       const errorCode = (error as { code: string }).code;
       const errorMessage = (error as { message: string }).message;
-      console.error('Error signing up:', errorCode, errorMessage);
+      console.error("Error signing up:", errorCode, errorMessage);
       alert(`Error: ${errorMessage}`);
     }
   };
@@ -60,9 +65,9 @@ const SignUp = () => {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form 
-          action="#" 
-          method="POST" 
+        <form
+          action="#"
+          method="POST"
           className="space-y-6"
           onSubmit={handleSignUp}
         >
@@ -83,7 +88,7 @@ const SignUp = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                placeholder='example@example.com'
+                placeholder="example@example.com"
               />
             </div>
           </div>
@@ -107,7 +112,7 @@ const SignUp = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
-                placeholder='••••••••'
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -124,11 +129,15 @@ const SignUp = () => {
                 id="role"
                 name="role"
                 value={role}
-                onChange={(e) => setRole(e.target.value as 'public' | 'vendor' | 'ets')}
+                onChange={(e) =>
+                  setRole(e.target.value as "public" | "vendor" | "ets")
+                }
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
               >
                 <option value="public">Public User (Read-only)</option>
-                <option value="vendor">IV&V Vendor (Create/Edit Reports)</option>
+                <option value="vendor">
+                  IV&V Vendor (Create/Edit Reports)
+                </option>
                 <option value="ets">ETS Employee (Manage Projects)</option>
               </select>
             </div>
@@ -140,7 +149,18 @@ const SignUp = () => {
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{
+                borderRadius: "30px",
+                backgroundColor: "#595959",
+                transition: "background-color 0.2s ease",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#212121ff")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#595959")
+              }
             >
               Sign Up
             </button>
@@ -153,7 +173,7 @@ const SignUp = () => {
             href="/login"
             className="font-semibold text-indigo-600 hover:text-indigo-500 ml-1"
           >
-          Sign In
+            Sign In
           </a>
         </p>
       </div>
