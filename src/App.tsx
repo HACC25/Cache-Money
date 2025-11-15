@@ -134,7 +134,7 @@ function AppContent() {
           accentColor="#4169E1"
         />
       </div>
-      <div>
+      <div className="app-content">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/signup" element={<SignUp />} />
