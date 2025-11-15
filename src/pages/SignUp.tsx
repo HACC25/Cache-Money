@@ -32,17 +32,31 @@ const SignUp = () => {
       const user = userCredential.user;
 
       // Create user document in Firestore with selected role
+      // ETS and Vendor users require approval, public users are auto-approved
+      const requiresApproval = role === "ets" || role === "vendor";
+      
       await setDoc(doc(db, "users", user.uid), {
         email: email,
         role: role,
+        approved: !requiresApproval, // Auto-approve public users
+        approvalStatus: requiresApproval ? "pending" : "approved",
         createdAt: serverTimestamp(),
       });
 
       console.log("User created with role:", role);
-      alert(
-        `Sign up successful! You have been assigned the role: ${role.toUpperCase()}`
-      );
-      navigate("/login");
+      
+      if (requiresApproval) {
+        alert(
+          `Sign up successful! Your ${role.toUpperCase()} account is pending approval. You will be notified once an administrator approves your account.`
+        );
+      } else {
+        alert(
+          `Sign up successful! You have been assigned the role: ${role.toUpperCase()}`
+        );
+      }
+      
+      // Navigate to home since user is automatically logged in after signup
+      navigate("/");
     } catch (error: unknown) {
       const errorCode = (error as { code: string }).code;
       const errorMessage = (error as { message: string }).message;
