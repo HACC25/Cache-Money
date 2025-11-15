@@ -5,7 +5,7 @@ const Footer = () => (
     <div className="footer-container">
       <div className="footer-content">
         <div className="footer-brand">
-          <a href="https://ets.hawaii.gov/">
+          <a href="https://ets.hawaii.gov/" target="_blank" rel="noopener noreferrer">
             <img
               src="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
               alt="ETS logo"
@@ -72,7 +72,7 @@ const Footer = () => (
 
       <div className="footer-bottom">
         <span className="footer-copyright">
-          © {new Date().getFullYear()}{" "}
+          Copyright © {new Date().getFullYear()}{", "}
           <a href="http://portal.ehawaii.gov/">State of Hawaii</a>. All Rights
           Reserved.
         </span>
@@ -87,7 +87,7 @@ const Footer = () => (
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
-              className="fill-blue-600"
+              className="fill-gray-600"
               viewBox="0 0 8 19"
             >
               <path
@@ -102,21 +102,61 @@ const Footer = () => (
             href="https://x.com/ETSHIgov/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Twitter page"
+            aria-label="X page"
           >
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
-              className="fill-blue-400"
-              viewBox="0 0 20 17"
+              className="fill-gray-600"
+              viewBox="0 0 24 24"
+            >
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <span className="sr-only">X page</span>
+          </a>
+          <a
+            href="https://www.instagram.com/hawaiiets/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram page"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              className="fill-gray-600"
+              viewBox="0 0 20 20"
             >
               <path
                 fillRule="evenodd"
-                d="M20 1.892a8.178 8.178 0 0 1-2.355.635 4.074 4.074 0 0 0 1.8-2.235 8.344 8.344 0 0 1-2.605.98A4.13 4.13 0 0 0 13.85 0a4.068 4.068 0 0 0-4.1 4.038 4 4 0 0 0 .105.919A11.705 11.705 0 0 1 1.4.734a4.006 4.006 0 0 0 1.268 5.392 4.165 4.165 0 0 1-1.859-.5v.05A4.057 4.057 0 0 0 4.1 9.635a4.19 4.19 0 0 1-1.856.07 4.108 4.108 0 0 0 3.831 2.807A8.36 8.36 0 0 1 0 14.184 11.732 11.732 0 0 0 6.291 16 11.502 11.502 0 0 0 17.964 4.5c0-.177 0-.35-.012-.523A8.143 8.143 0 0 0 20 1.892Z"
+                d="M10 0C7.284 0 6.944.012 5.877.06 4.813.11 4.086.278 3.45.525a4.902 4.902 0 0 0-1.772 1.153A4.902 4.902 0 0 0 .525 3.45C.278 4.086.11 4.813.06 5.877.012 6.944 0 7.284 0 10s.012 3.056.06 4.123c.05 1.064.218 1.791.465 2.427a4.902 4.902 0 0 0 1.153 1.772 4.902 4.902 0 0 0 1.772 1.153c.636.247 1.363.415 2.427.465C6.944 19.988 7.284 20 10 20s3.056-.012 4.123-.06c1.064-.05 1.791-.218 2.427-.465a4.902 4.902 0 0 0 1.772-1.153 4.902 4.902 0 0 0 1.153-1.772c.247-.636.415-1.363.465-2.427.048-1.067.06-1.407.06-4.123s-.012-3.056-.06-4.123c-.05-1.064-.218-1.791-.465-2.427a4.902 4.902 0 0 0-1.153-1.772A4.902 4.902 0 0 0 16.55.525C15.914.278 15.187.11 14.123.06 13.056.012 12.716 0 10 0zm0 1.802c2.67 0 2.986.01 4.04.058.975.045 1.504.207 1.857.344.467.181.8.398 1.15.748.35.35.567.683.748 1.15.137.353.299.882.344 1.857.048 1.054.058 1.37.058 4.04s-.01 2.986-.058 4.04c-.045.975-.207 1.504-.344 1.857-.181.467-.398.8-.748 1.15-.35.35-.683.567-1.15.748-.353.137-.882.299-1.857.344-1.054.048-1.37.058-4.04.058s-2.986-.01-4.04-.058c-.975-.045-1.504-.207-1.857-.344a3.097 3.097 0 0 1-1.15-.748 3.097 3.097 0 0 1-.748-1.15c-.137-.353-.299-.882-.344-1.857-.048-1.054-.058-1.37-.058-4.04s.01-2.986.058-4.04c.045-.975.207-1.504.344-1.857.181-.467.398-.8.748-1.15.35-.35.683-.567 1.15-.748.353-.137.882-.299 1.857-.344 1.054-.048 1.37-.058 4.04-.058z"
+                clipRule="evenodd"
+              />
+              <path
+                fillRule="evenodd"
+                d="M10 13.333a3.333 3.333 0 1 1 0-6.666 3.333 3.333 0 0 1 0 6.666zm0-8.468a5.135 5.135 0 1 0 0 10.27 5.135 5.135 0 0 0 0-10.27zm6.538-.203a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"
                 clipRule="evenodd"
               />
             </svg>
-            <span className="sr-only">Twitter page</span>
+            <span className="sr-only">Instagram page</span>
+          </a>
+          <a
+            href="https://www.youtube.com/oimthigov"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="YouTube page"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="fill-gray-600"
+              viewBox="0 0 20 14"
+            >
+              <path
+                fillRule="evenodd"
+                d="M19.615 3.184c-.23-.86-.905-1.538-1.762-1.769C16.291.998 10 .998 10 .998s-6.291 0-7.853.417c-.857.231-1.533.909-1.762 1.769C.001 4.75.001 8.002.001 8.002s0 3.252.384 4.818c.229.86.905 1.508 1.762 1.739C3.709 15 10 15 10 15s6.291 0 7.853-.441c.857-.231 1.532-.879 1.762-1.739.384-1.566.384-4.818.384-4.818s0-3.252-.384-4.818zM8 11V5l5.196 3L8 11z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="sr-only">YouTube page</span>
           </a>
         </div>
       </div>
