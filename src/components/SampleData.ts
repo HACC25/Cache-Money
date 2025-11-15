@@ -29,6 +29,7 @@ export interface ProjectIssue {
   dateRaised: string;
   recommendation: string;
   status: "Open" | "Closed";
+  age?: number;
 }
 
 export interface ProjectReport {
@@ -37,15 +38,40 @@ export interface ProjectReport {
   month: string;
   date: string;
   background: string;
-  assessment: ProjectAssessment;
+  assessment: {
+    sprintPlanning: {
+      rating: string;
+      description: string;
+    };
+    userStoryValidation?: {
+      rating: string;
+      description: string;
+    };
+    testPracticeValidation?: {
+      rating: string;
+      description: string;
+    };
+  };
+
   issues: ProjectIssue[];
   scheduleStatus: {
-    baselineEndDate: string;
-    currentEndDate: string;
+    status: "Ahead" | "OnTime" | "Late";
+    description: string;
   };
+  scheduleData?: {
+    baseline?: {
+      expectedDate: string;
+    };
+    current: {
+      projectedDate: string;
+    };
+  };
+
+  varianceDays?: number;
   financials: {
     originalAmount: number;
     paidToDate: number;
+    description?: string;
   };
   scopeStatus: {
     completedDeliverables: number;

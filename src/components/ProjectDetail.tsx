@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ProjectData, ProjectReport } from "./SampleData";
 import { useAuth } from "../contexts/AuthContext";
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "../services/firebase-config";
 
 interface ProjectDetailProps {
   report: ProjectReport;
@@ -14,17 +16,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
   project,
   index,
 }) => {
+  const navigate = useNavigate();
+  const { isVendor } = useAuth();
+
   // Calculate overall risk level based on issues
   const calculateRiskLevel = () => {
     if (!report.issues || report.issues.length === 0) return "Low";
 
-    // Count high-risk issues (rating >= 5)
     const highRiskCount = report.issues.filter(
       (issue) => issue.riskRating >= 5
     ).length;
     if (highRiskCount > 0) return "High";
 
-    // Count medium-risk issues (rating 3-4)
     const mediumRiskCount = report.issues.filter(
       (issue) => issue.riskRating >= 3 && issue.riskRating < 5
     ).length;
@@ -33,7 +36,25 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
     return "Low";
   };
 
-  const { isVendor } = useAuth();
+  // Handle delete report
+  const handleDeleteReport = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this report? This action cannot be undone."
+      )
+    ) {
+      try {
+        const reportRef = doc(db, "projects", project.id, "reports", report.id);
+        await deleteDoc(reportRef);
+        console.log("Report deleted successfully");
+        // Optionally refresh the page or navigate back
+        navigate(`/project/${project.id}`);
+      } catch (err) {
+        console.error("Error deleting report:", err);
+        alert("Failed to delete report. Please try again.");
+      }
+    }
+  };
 
   const riskLevel = calculateRiskLevel();
 
@@ -86,8 +107,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
                       <li>
                         <button
-                          className="dropdown-item"
-                          onClick={() => console.log("Delete clicked")}
+                          className="dropdown-item text-danger"
+                          onClick={handleDeleteReport}
                         >
                           Delete
                         </button>
@@ -138,7 +159,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
             <div className="col-md-6">
               {report.scheduleStatus && (
                 <div className="mb-3">
-                  {/*Change to Schedule Status */}
                   <div>
                     <strong>Schedule Status:</strong>{" "}
                     <span
@@ -155,8 +175,6 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
                   </div>
                 </div>
               )}
-
-              {/* Financial status and scope status removed as requested */}
             </div>
           </div>
         </div>

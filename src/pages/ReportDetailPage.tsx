@@ -5,6 +5,11 @@ import { db } from "../services/firebase-config";
 import type { ProjectReport } from "../components/SampleData";
 import { useAuth } from "../contexts/AuthContext";
 
+// Visual Component Imports
+import BudgetDonut from "../components/forms/BudgetDonut";
+import ScheduleCompletion from "../components/forms/ScheduleCompletion";
+import IssuesTimeline from "../components/forms/IssueTimeline";
+
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
     projectId: string;
@@ -12,10 +17,30 @@ const ReportDetailPage: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const [report, setReport] = useState<ProjectReport | null>(null);
+  const [project, setProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isETSEmployee, isVendor } = useAuth();
 
+  useEffect(() => {
+    if (!projectId) return;
+
+    const projectRef = doc(db, "projects", projectId);
+
+    const unsubscribe = onSnapshot(
+      projectRef,
+      (projectSnap) => {
+        if (projectSnap.exists()) {
+          setProject(projectSnap.data());
+        }
+      },
+      (err) => {
+        console.error("Error fetching project:", err);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [projectId]);
   useEffect(() => {
     if (!projectId || !reportId) {
       setError("Missing project or report ID");
@@ -42,7 +67,6 @@ const ReportDetailPage: React.FC = () => {
           return;
         }
 
-        // Ensure nested assessment objects have defaults
         const defaultAssessment = {
           sprintPlanning: { rating: "N/A", description: "No data" },
           userStoryValidation: { rating: "N/A", description: "No data" },
@@ -72,12 +96,18 @@ const ReportDetailPage: React.FC = () => {
           assessment,
           issues: data.issues || [],
           scheduleStatus: data.scheduleStatus || {
-            baselineEndDate: "",
-            currentEndDate: "",
+            status: "OnTime",
+            description: "No description provided",
           },
+          scheduleData: data.scheduleData || {
+            baseline: { expectedDate: "" },
+            current: { projectedDate: "" },
+          },
+          varianceDays: data.varianceDays || 0,
           financials: data.financials || {
             originalAmount: 0,
             paidToDate: 0,
+            description: "",
           },
           scopeStatus: data.scopeStatus || {
             completedDeliverables: 0,
@@ -89,6 +119,7 @@ const ReportDetailPage: React.FC = () => {
         setReport(safeReport);
         setIsLoading(false);
         setError(null);
+        console.log("Report date:", safeReport.date); // DEBUGGING
       },
       (err) => {
         console.error("Error listening to report:", err);
@@ -111,12 +142,6 @@ const ReportDetailPage: React.FC = () => {
       default:
         return "secondary";
     }
-  };
-
-  const getIssueRatingColor = (rating: number) => {
-    if (rating >= 5) return "danger";
-    if (rating >= 3) return "warning";
-    return "success";
   };
 
   const getDeliverableStatusBadge = (status: string) => {
@@ -272,138 +297,29 @@ const ReportDetailPage: React.FC = () => {
         <div className="card-body">
           {report.assessment?.sprintPlanning && (
             <>
-              <h5>Sprint Planning</h5>
+              <h5>Project Criticality Assessment</h5>
               <div className="d-flex align-items-center mb-3">
                 <span
                   className={`badge bg-${getCriticalityColor(
                     report.assessment.sprintPlanning.rating
                   )} me-2`}
                 >
-                  Criticality Rating: {report.assessment.sprintPlanning.rating}
+                  Rating: {report.assessment.sprintPlanning.rating}
                 </span>
               </div>
               <p>{report.assessment.sprintPlanning.description}</p>
             </>
           )}
-
-          {report.assessment?.userStoryValidation && (
-            <>
-              <h5 className="mt-4">User Story (US) Validation</h5>
-              <div className="d-flex align-items-center mb-3">
-                <span
-                  className={`badge bg-${getCriticalityColor(
-                    report.assessment.userStoryValidation.rating
-                  )} me-2`}
-                >
-                  Criticality Rating:{" "}
-                  {report.assessment.userStoryValidation.rating}
-                </span>
-              </div>
-              <p>{report.assessment.userStoryValidation.description}</p>
-            </>
-          )}
-
-          {report.assessment?.testPracticeValidation && (
-            <>
-              <h5 className="mt-4">Test Practice Validation</h5>
-              <div className="d-flex align-items-center mb-3">
-                <span
-                  className={`badge bg-${getCriticalityColor(
-                    report.assessment.testPracticeValidation.rating
-                  )} me-2`}
-                >
-                  Criticality Rating:{" "}
-                  {report.assessment.testPracticeValidation.rating}
-                </span>
-              </div>
-              <p>{report.assessment.testPracticeValidation.description}</p>
-            </>
-          )}
         </div>
       </div>
 
-      {/* Issues Raised Section */}
+      {/* Issues Raised Section - NOW USING TIMELINE COMPONENT */}
       <div id="issues-raised" className="card mb-4">
         <div className="card-header">
           <h4 className="mb-0">Issues Raised</h4>
         </div>
         <div className="card-body">
-          {report.issues && report.issues.length > 0 ? (
-            report.issues.map((issue) => (
-              <div key={issue.id} className="card mb-3">
-                <div className="card-header">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <span className="badge bg-secondary me-2">
-                        Raised:{" "}
-                        {new Date(issue.dateRaised).toLocaleDateString()}
-                      </span>
-                      <span
-                        className={`badge bg-${getIssueRatingColor(
-                          issue.riskRating
-                        )} me-2`}
-                      >
-                        Risk Rating: {issue.riskRating}
-                      </span>
-                      <span
-                        className={`badge ${
-                          issue.status === "Open" ? "bg-danger" : "bg-success"
-                        }`}
-                      >
-                        Status: {issue.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="card-body">
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <strong>Impact:</strong>
-                      <span
-                        className={`badge bg-${
-                          issue.impact === "High"
-                            ? "danger"
-                            : issue.impact === "Medium"
-                            ? "warning"
-                            : "success"
-                        } ms-2`}
-                      >
-                        {issue.impact}
-                      </span>
-                    </div>
-                    <div className="col-md-6">
-                      <strong>Likelihood:</strong>
-                      <span
-                        className={`badge bg-${
-                          issue.likelihood === "High"
-                            ? "danger"
-                            : issue.likelihood === "Medium"
-                            ? "warning"
-                            : "success"
-                        } ms-2`}
-                      >
-                        {issue.likelihood}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <h5>Description:</h5>
-                    <p>{issue.description}</p>
-                  </div>
-
-                  <div>
-                    <h5>Remedy:</h5>
-                    <p>{issue.recommendation}</p>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="alert alert-info">
-              No issues have been raised for this reporting period.
-            </div>
-          )}
+          <IssuesTimeline issues={report.issues} />
         </div>
       </div>
 
@@ -415,36 +331,85 @@ const ReportDetailPage: React.FC = () => {
         <div className="card-body">
           <div className="row mb-4">
             <div className="col-md-6">
-              <h5>Baseline Schedule:</h5>
-              <p>
-                {new Date(
-                  report.scheduleStatus.baselineEndDate
-                ).toLocaleDateString()}
-              </p>
+              <div className="card bg-light">
+                <div className="card-body">
+                  <h5 className="card-title">
+                    Expected Baseline Completion (Original Expected Date)
+                  </h5>
+                  <h4>
+                    {report.scheduleData?.baseline?.expectedDate
+                      ? new Date(
+                          report.scheduleData.baseline.expectedDate
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </h4>
+                </div>
+              </div>
             </div>
             <div className="col-md-6">
-              <h5>Current Schedule:</h5>
-              <p>
-                {new Date(
-                  report.scheduleStatus.currentEndDate
-                ).toLocaleDateString()}
-              </p>
+              <div className="card bg-light">
+                <div className="card-body">
+                  <h5 className="card-title">Actual Projected Completion</h5>
+                  <h4>
+                    {report.scheduleData?.current?.projectedDate
+                      ? new Date(
+                          report.scheduleData.current.projectedDate
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </h4>
+                </div>
+              </div>
             </div>
           </div>
-
-          {new Date(report.scheduleStatus.currentEndDate) >
-            new Date(report.scheduleStatus.baselineEndDate) && (
-            <div className="alert alert-warning">
-              <i className="bi bi-exclamation-triangle me-2"></i>
-              Schedule Delay: The current end date is{" "}
-              {Math.ceil(
-                (new Date(report.scheduleStatus.currentEndDate).getTime() -
-                  new Date(report.scheduleStatus.baselineEndDate).getTime()) /
-                  (1000 * 60 * 60 * 24)
-              )}{" "}
-              days later than the baseline end date.
+          {/* Variance Display */}
+          {report.varianceDays !== undefined && (
+            <div className="mb-4">
+              <h5>Schedule Status Variance</h5>
+              {report.varianceDays === 0 ? (
+                <div className="alert alert-success">
+                  <i className="bi bi-check-circle me-2"></i>
+                  <strong>On Schedule:</strong> Project is tracking to baseline
+                  completion date.
+                </div>
+              ) : report.varianceDays > 0 ? (
+                <div className="alert alert-warning">
+                  <i className="bi bi-exclamation-triangle me-2"></i>
+                  <strong>Behind Schedule:</strong> Project is{" "}
+                  <strong>+{report.varianceDays} days</strong> behind the
+                  baseline completion date.
+                </div>
+              ) : (
+                <div className="alert alert-info">
+                  <i className="bi bi-info-circle me-2"></i>
+                  <strong>Ahead of Schedule:</strong> Project is{" "}
+                  <strong>{report.varianceDays} days</strong> ahead of the
+                  baseline completion date.
+                </div>
+              )}
             </div>
           )}
+          {/* Schedule Completion Progress */}
+          {report.scheduleData?.baseline?.expectedDate &&
+            report.date &&
+            project?.createdAt && (
+              <ScheduleCompletion
+                projectCreatedAt={
+                  typeof project.createdAt === "string"
+                    ? project.createdAt
+                    : new Date(
+                        project.createdAt.seconds * 1000
+                      ).toLocaleDateString("en-US") // 11/14/2025 (MM/DD/YYYY)
+                }
+                expectedBaselineDate={report.scheduleData.baseline.expectedDate}
+                actualProjectedDate={report.scheduleData.current.projectedDate}
+                reportDate={report.date}
+              />
+            )}
+          {/* Schedule Status Description */}
+          <div>
+            <h5>Schedule Description</h5>
+            <p className="mt-3">{report.scheduleStatus?.description}</p>
+          </div>
         </div>
       </div>
 
@@ -454,66 +419,19 @@ const ReportDetailPage: React.FC = () => {
           <h4 className="mb-0">Finance</h4>
         </div>
         <div className="card-body">
-          <div className="row mb-4">
-            <div className="col-md-6">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">Total Contract Awarded</h5>
-                  <h2 className="text-primary">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                      maximumFractionDigits: 0,
-                    }).format(report.financials.originalAmount)}
-                  </h2>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">Total Paid Out</h5>
-                  <h2 className="text-success">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                      maximumFractionDigits: 0,
-                    }).format(report.financials.paidToDate)}
-                  </h2>
-                  <p className="text-muted mb-0">
-                    {(
-                      (report.financials.paidToDate /
-                        report.financials.originalAmount) *
-                      100
-                    ).toFixed(1)}
-                    % of total
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div style={{ marginBottom: "30px" }}>
+            <BudgetDonut
+              totalContracted={report.financials.originalAmount}
+              totalPaidOut={report.financials.paidToDate}
+            />
           </div>
-
-          <h5>Budget Utilization</h5>
-          <div className="progress" style={{ height: "25px" }}>
-            <div
-              className="progress-bar bg-success"
-              role="progressbar"
-              style={{
-                width: `${
-                  (report.financials.paidToDate /
-                    report.financials.originalAmount) *
-                  100
-                }%`,
-              }}
-            >
-              {(
-                (report.financials.paidToDate /
-                  report.financials.originalAmount) *
-                100
-              ).toFixed(1)}
-              %
+          {/* Financial Status Description */}
+          {report.financials?.description && (
+            <div>
+              <h5>Financial Status Description</h5>
+              <p>{report.financials.description}</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -535,6 +453,7 @@ const ReportDetailPage: React.FC = () => {
                       report.scopeStatus.totalDeliverables) *
                     100
                   }%`,
+                  backgroundColor: "#28a745",
                 }}
               >
                 {report.scopeStatus.completedDeliverables} of{" "}

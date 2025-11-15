@@ -8,15 +8,18 @@ import {
   getDoc,
   updateDoc,
   serverTimestamp,
+  getDocs,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 import { db, auth } from "../../services/firebase-config";
 import "./ReportForm.css";
 import { LabeledDropMenu } from "./DropMenu";
 
-// Define interfaces for form data
 interface ProjectIssue {
   id: string;
+  name: string;
   description: string;
   impact: "High" | "Medium" | "Low";
   likelihood: "High" | "Medium" | "Low";
@@ -24,6 +27,7 @@ interface ProjectIssue {
   dateRaised: string;
   recommendation: string;
   status: "Open" | "Closed";
+  age?: number;
 }
 
 interface ProjectDeliverable {
@@ -33,8 +37,16 @@ interface ProjectDeliverable {
   description: string;
 }
 
+interface ScheduleData {
+  baseline?: {
+    expectedDate: string;
+  };
+  current: {
+    projectedDate: string;
+  };
+}
+
 const ReportForm: React.FC = () => {
-  // Get projectId from URL parameters
   const { projectId, reportId } = useParams<{
     projectId: string;
     reportId?: string;
@@ -44,6 +56,41 @@ const ReportForm: React.FC = () => {
 
   // Determine if editing
   const isEditMode = !!reportId;
+
+  // Check if first report and fetch baseline if not
+  const [isFirstReport, setIsFirstReport] = useState<boolean>(true);
+  const [baselineSchedule, setBaselineSchedule] = useState<
+    ScheduleData["baseline"] | null
+  >(null);
+
+  // Fetch first report to check if baseline exists
+  useEffect(() => {
+    const checkFirstReport = async () => {
+      if (!projectId || isEditMode) return;
+
+      try {
+        const reportsQuery = query(
+          collection(db, "projects", projectId, "reports"),
+          orderBy("createdAt", "asc")
+        );
+        const reportsSnap = await getDocs(reportsQuery);
+
+        if (!reportsSnap.empty) {
+          setIsFirstReport(false);
+          const firstReport = reportsSnap.docs[0].data();
+          if (firstReport.scheduleData?.baseline) {
+            setBaselineSchedule(firstReport.scheduleData.baseline);
+          }
+        } else {
+          setIsFirstReport(true);
+        }
+      } catch (err) {
+        console.error("Error checking first report:", err);
+      }
+    };
+
+    checkFirstReport();
+  }, [projectId, isEditMode]);
 
   // Fetch existing report data if editing
   useEffect(() => {
@@ -72,10 +119,23 @@ const ReportForm: React.FC = () => {
           );
 
           // Schedule
-          setScheduleStatus(data.scheduleStatus?.status || "OnTime");
           setScheduleDescription(data.scheduleStatus?.description || "");
 
-          // Financials
+          // Schedule dates
+          if (data.scheduleData) {
+            if (data.scheduleData.baseline) {
+              setExpectedBaselineDate(
+                data.scheduleData.baseline.expectedDate || ""
+              );
+            }
+            if (data.scheduleData.current) {
+              setProjectedCompletionDate(
+                data.scheduleData.current.projectedDate || ""
+              );
+            }
+          }
+
+          // Financial
           setOriginalAmount(data.financials?.originalAmount || 0);
           setPaidToDate(data.financials?.paidToDate || 0);
           setFinanceDescription(data.financials?.description || "");
@@ -95,6 +155,56 @@ const ReportForm: React.FC = () => {
     fetchReport();
   }, [isEditMode, projectId, reportId]);
 
+  // Fetch previous report to pre-fill background, baseline, and deliverables
+  useEffect(() => {
+    const prefillFromPreviousReport = async () => {
+      if (!projectId || isEditMode) return;
+
+      try {
+        const reportsRef = collection(db, "projects", projectId, "reports");
+
+        // Get ALL reports ordered by date
+        const q = query(reportsRef, orderBy("date", "asc"));
+        const reportsSnap = await getDocs(q);
+
+        if (reportsSnap.empty) return;
+
+        const allReports = reportsSnap.docs.map((doc) => doc.data());
+
+        // 1. Get BASELINE from FIRST report
+        if (allReports[0]?.scheduleData?.baseline?.expectedDate) {
+          setExpectedBaselineDate(
+            allReports[0].scheduleData.baseline.expectedDate
+          );
+        }
+
+        // 2. If there's a previous report
+        if (allReports.length > 0) {
+          const previousReport = allReports[allReports.length - 1];
+
+          // Pre-fill from most recent previous report
+          if (previousReport.background) {
+            setBackground(previousReport.background);
+          }
+
+          // Pre-fill from most recent previous report
+          if (previousReport.scopeStatus?.deliverables) {
+            setDeliverables(previousReport.scopeStatus.deliverables);
+          }
+
+          // Pre-fill from most recent previous report
+          if (previousReport.issues) {
+            setIssues(previousReport.issues);
+          }
+        }
+      } catch (err) {
+        console.error("Error prefilling from previous report:", err);
+      }
+    };
+
+    prefillFromPreviousReport();
+  }, [projectId, isEditMode]);
+
   // Form state
   const [month, setMonth] = useState<string>("");
   const [date, setDate] = useState<string>(
@@ -110,12 +220,12 @@ const ReportForm: React.FC = () => {
     useState<string>("");
 
   // Schedule state
-  const [scheduleStatus, setScheduleStatus] = useState<
-    "Ahead" | "OnTime" | "Late"
-  >("OnTime");
   const [scheduleDescription, setScheduleDescription] = useState("");
+  const [expectedBaselineDate, setExpectedBaselineDate] = useState<string>("");
+  const [projectedCompletionDate, setProjectedCompletionDate] =
+    useState<string>("");
 
-  // Financials state
+  // Financial state
   const [originalAmount, setOriginalAmount] = useState<number>(0);
   const [paidToDate, setPaidToDate] = useState<number>(0);
   const [financeDescription, setFinanceDescription] = useState("");
@@ -124,6 +234,7 @@ const ReportForm: React.FC = () => {
   const [issues, setIssues] = useState<ProjectIssue[]>([]);
   const [currentIssue, setCurrentIssue] = useState<ProjectIssue>({
     id: "",
+    name: "",
     description: "",
     impact: "Medium",
     likelihood: "Medium",
@@ -147,7 +258,7 @@ const ReportForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Calculate risk rating when impact or likelihood changes
+  // Calculate risk rating: impact or likelihood changes
   const calculateRiskRating = (
     impact: "High" | "Medium" | "Low",
     likelihood: "High" | "Medium" | "Low"
@@ -158,6 +269,35 @@ const ReportForm: React.FC = () => {
     return impactScore + likelihoodScore;
   };
 
+  const calculateIssueAge = (
+    dateRaised: string,
+    reportDate: string
+  ): number => {
+    const raised = new Date(dateRaised);
+    const report = new Date(reportDate);
+    const diffTime = Math.abs(report.getTime() - raised.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Calculate variance in days between baseline and projected completion dates
+  const calculateVarianceDays = (): number => {
+    if (!expectedBaselineDate || !projectedCompletionDate) return 0;
+    const baseline = new Date(expectedBaselineDate);
+    const projected = new Date(projectedCompletionDate);
+    const diffTime = projected.getTime() - baseline.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Calculate schedule status based on variance
+  const calculateVarianceStatus = (): "Ahead" | "OnTime" | "Late" => {
+    const variance = calculateVarianceDays();
+    if (variance < 0) return "Ahead";
+    if (variance > 0) return "Late";
+    return "OnTime";
+  };
+
   // Handle issue form changes
   const handleIssueChange = (
     field: keyof ProjectIssue,
@@ -165,7 +305,6 @@ const ReportForm: React.FC = () => {
   ): void => {
     const updatedIssue = { ...currentIssue, [field]: value } as ProjectIssue;
 
-    // Auto-calculate risk rating
     if (field === "impact" || field === "likelihood") {
       const impact =
         field === "impact"
@@ -183,9 +322,11 @@ const ReportForm: React.FC = () => {
 
   // Add or update an issue
   const handleAddIssue = (): void => {
+    const age = calculateIssueAge(currentIssue.dateRaised, date);
     const issueWithId = {
       ...currentIssue,
       id: currentIssue.id || `issue-${uuidv4()}`,
+      age: age,
     };
 
     if (currentIssue.id) {
@@ -202,6 +343,7 @@ const ReportForm: React.FC = () => {
     // Reset current issue
     setCurrentIssue({
       id: "",
+      name: "",
       description: "",
       impact: "Medium",
       likelihood: "Medium",
@@ -215,8 +357,13 @@ const ReportForm: React.FC = () => {
   // Edit an issue
   const handleEditIssue = (issue: ProjectIssue): void => {
     setCurrentIssue(issue);
+    setTimeout(() => {
+      const issueForm = document.getElementById("issue-form");
+      if (issueForm) {
+        issueForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
-
   // Delete an issue
   const handleDeleteIssue = (issueId: string): void => {
     setIssues(issues.filter((issue) => issue.id !== issueId));
@@ -266,6 +413,12 @@ const ReportForm: React.FC = () => {
   // Edit a deliverable
   const handleEditDeliverable = (deliverable: ProjectDeliverable): void => {
     setCurrentDeliverable(deliverable);
+    setTimeout(() => {
+      const deliverableForm = document.getElementById("deliverable-form");
+      if (deliverableForm) {
+        deliverableForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
 
   // Delete a deliverable
@@ -292,6 +445,28 @@ const ReportForm: React.FC = () => {
         (d) => d.status === "Completed"
       ).length;
 
+      const issuesWithAge = issues.map((issue) => ({
+        ...issue,
+        age: calculateIssueAge(issue.dateRaised, date),
+      }));
+
+      // Prepare schedule data
+      let scheduleData: ScheduleData = {
+        current: {
+          projectedDate: projectedCompletionDate,
+        },
+      };
+
+      // If first report, set baseline
+      if (isFirstReport) {
+        scheduleData.baseline = {
+          expectedDate: expectedBaselineDate,
+        };
+      } else if (baselineSchedule) {
+        // preserve existing baseline
+        scheduleData.baseline = baselineSchedule;
+      }
+
       const reportData = {
         projectId,
         month,
@@ -306,11 +481,13 @@ const ReportForm: React.FC = () => {
             description: sprintPlanningDescription,
           },
         },
-        issues,
+        issues: issuesWithAge,
         scheduleStatus: {
-          status: scheduleStatus,
+          status: calculateVarianceStatus(),
           description: scheduleDescription,
         },
+        scheduleData: scheduleData,
+        varianceDays: calculateVarianceDays(),
         financials: {
           originalAmount: Number(originalAmount),
           paidToDate: Number(paidToDate),
@@ -323,6 +500,8 @@ const ReportForm: React.FC = () => {
         },
         updatedAt: serverTimestamp(),
       };
+
+      let newReportId = reportId;
 
       if (isEditMode && reportId) {
         // UPDATE existing report
@@ -341,10 +520,11 @@ const ReportForm: React.FC = () => {
           collection(db, "projects", projectId, "reports"),
           newReportData
         );
+        newReportId = docRef.id;
         console.log("Report added with ID: ", docRef.id);
       }
 
-      navigate(`/vendor/dashboard`);
+      navigate(`/project/${projectId}/report/${newReportId}`);
     } catch (err) {
       console.error("Error submitting report:", err);
       setError(
@@ -359,7 +539,7 @@ const ReportForm: React.FC = () => {
 
   // Handle cancellation
   const handleCancel = (): void => {
-    navigate(`/vendor/dashboard`);
+    navigate(`/project/${projectId}`);
   };
 
   return (
@@ -505,10 +685,9 @@ const ReportForm: React.FC = () => {
                 <table>
                   <thead>
                     <tr>
-                      <th>Description</th>
-                      <th>Impact</th>
-                      <th>Likelihood</th>
-                      <th>Risk Rating</th>
+                      <th>Name</th>
+                      <th>Date Raised</th>
+                      <th>Age (Days)</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -516,10 +695,14 @@ const ReportForm: React.FC = () => {
                   <tbody>
                     {issues.map((issue) => (
                       <tr key={issue.id}>
-                        <td>{issue.description.substring(0, 50)}...</td>
-                        <td>{issue.impact}</td>
-                        <td>{issue.likelihood}</td>
-                        <td>{issue.riskRating}</td>
+                        <td>{issue.name}</td>
+                        <td>
+                          {new Date(issue.dateRaised).toLocaleDateString()}
+                        </td>
+                        <td>
+                          {issue.age ||
+                            calculateIssueAge(issue.dateRaised, date)}
+                        </td>
                         <td>{issue.status}</td>
                         <td>
                           <button
@@ -544,7 +727,18 @@ const ReportForm: React.FC = () => {
               </div>
             )}
 
-            <div className="issue-form">
+            <div className="issue-form" id="issue-form">
+              <div className="form-group">
+                <label htmlFor="issue-name">Issue Name:</label>
+                <input
+                  type="text"
+                  id="issue-name"
+                  value={currentIssue.name}
+                  onChange={(e) => handleIssueChange("name", e.target.value)}
+                  placeholder="Enter a short name for the issue..."
+                />
+              </div>
+
               <div className="form-group">
                 <label htmlFor="issue-description">Issue Description:</label>
                 <textarea
@@ -664,7 +858,9 @@ const ReportForm: React.FC = () => {
                 onClick={handleAddIssue}
                 className="add-button"
                 disabled={
-                  !currentIssue.description || !currentIssue.recommendation
+                  !currentIssue.name ||
+                  !currentIssue.description ||
+                  !currentIssue.recommendation
                 }
               >
                 {currentIssue.id ? "Update Issue" : "Add Issue"}
@@ -674,38 +870,56 @@ const ReportForm: React.FC = () => {
 
           <div className="form-section">
             <h3>Schedule Status</h3>
-            {/* Schedule Status Criticality Rating */}
+
+            {/* Expected Baseline Date (read-only for subsequent reports) */}
             <div className="form-group">
-              <LabeledDropMenu
-                title="Schedule Criticality Rating:"
-                id="schedule-criticality"
-                items={[
-                  { label: "Ahead of Schedule", value: "Ahead" },
-                  { label: "On Time", value: "OnTime" },
-                  { label: "Late", value: "Late" },
-                ]}
-                selectedIndex={
-                  scheduleStatus === "Ahead"
-                    ? 0
-                    : scheduleStatus === "OnTime"
-                    ? 1
-                    : scheduleStatus === "Late"
-                    ? 2
-                    : undefined
-                }
-                onSelect={(item) => {
-                  if (typeof item === "object" && item.value) {
-                    setScheduleStatus(
-                      item.value as "Ahead" | "OnTime" | "Late"
-                    );
-                  }
-                }}
-                label="Select Schedule Status"
-                type="secondary"
+              <label htmlFor="expected-baseline-date">
+                Expected Baseline Completion Date:
+              </label>
+              <input
+                type="date"
+                id="expected-baseline-date"
+                value={expectedBaselineDate}
+                onChange={(e) => setExpectedBaselineDate(e.target.value)}
+                disabled={!isFirstReport}
+                style={!isFirstReport ? { backgroundColor: "#f5f5f5" } : {}}
+                required
+              />
+              {!isFirstReport && (
+                <small
+                  style={{ display: "block", marginTop: "5px", color: "#666" }}
+                >
+                  Baseline set in first report - cannot be modified
+                </small>
+              )}
+            </div>
+
+            {/* Projected Completion Date (always editable) */}
+            <div className="form-group">
+              <label htmlFor="projected-completion-date">
+                Actual Projected Completion Date:
+              </label>
+              <input
+                type="date"
+                id="projected-completion-date"
+                value={projectedCompletionDate}
+                onChange={(e) => setProjectedCompletionDate(e.target.value)}
+                required
               />
             </div>
 
-            <div className="form-row"></div>
+            {/* Variance Display */}
+            {expectedBaselineDate && projectedCompletionDate && (
+              <div className="variance-info">
+                <strong>Variance from Baseline:</strong>{" "}
+                {calculateVarianceDays() === 0
+                  ? "On schedule"
+                  : calculateVarianceDays() > 0
+                  ? `+${calculateVarianceDays()} days (Behind schedule)`
+                  : `${calculateVarianceDays()} days (Ahead of schedule)`}
+              </div>
+            )}
+
             {/* Schedule Status Description */}
             <div className="form-group">
               <label htmlFor="schedule-description">
@@ -777,8 +991,8 @@ const ReportForm: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Name</th>
-                      <th>Status</th>
                       <th>Description</th>
+                      <th>Status</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -786,8 +1000,8 @@ const ReportForm: React.FC = () => {
                     {deliverables.map((deliverable) => (
                       <tr key={deliverable.id}>
                         <td>{deliverable.name}</td>
-                        <td>{deliverable.status}</td>
                         <td>{deliverable.description.substring(0, 50)}...</td>
+                        <td>{deliverable.status}</td>
                         <td>
                           <button
                             type="button"
@@ -813,7 +1027,7 @@ const ReportForm: React.FC = () => {
               </div>
             )}
 
-            <div className="deliverable-form">
+            <div className="deliverable-form" id="deliverable-form">
               <div className="form-group">
                 <label htmlFor="deliverable-name">Deliverable Name:</label>
                 <input
@@ -892,7 +1106,9 @@ const ReportForm: React.FC = () => {
                 !month ||
                 !date ||
                 !background ||
-                deliverables.length === 0
+                deliverables.length === 0 ||
+                !expectedBaselineDate ||
+                !projectedCompletionDate
               }
             >
               {isSubmitting
