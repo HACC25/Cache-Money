@@ -157,15 +157,13 @@ const ProjectDetailPage: React.FC = () => {
               Add Monthly Report
             </Link>
           ) : isFirestoreProject && isVendor && !isVendorAssignedToProject ? (
-            <span className="badge bg-warning text-dark">
+            <span
+              className="badge bg-warning text-white py-2 mt-2"
+              style={{ borderRadius: "30px" }}
+            >
               Not Assigned to Your Vendor Account
             </span>
           ) : null}
-          {!isFirestoreProject && (
-            <span className="badge bg-info text-dark">
-              Sample Project (Read-Only)
-            </span>
-          )}
         </div>
       </div>
 

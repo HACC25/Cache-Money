@@ -38,9 +38,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
         {/* Status Badge */}
         <div
-          className="mx-auto mb-4 px-4 py-2 text-white fw-semibold"
+          className={`mx-auto mb-4 px-4 py-2 text-white fw-semibold ${
+            project.status === "On Track"
+              ? "bg-success"
+              : project.status === "At Risk"
+              ? "bg-warning"
+              : project.status === "Critical"
+              ? "bg-critical"
+              : "bg-primary"
+          }`}
           style={{
-            backgroundColor: project.statusColor,
             borderRadius: "50px",
             display: "inline-block",
           }}
