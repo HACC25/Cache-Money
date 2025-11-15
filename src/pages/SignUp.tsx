@@ -53,18 +53,19 @@ const SignUp = () => {
 
   return (
     <div className="signup-root flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          src="/public/favicon.png"
-          alt="Your Company"
-          className="mx-auto h-10 w-auto"
-        />
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Sign Up
-        </h2>
-      </div>
+      <div className="signup-card">
+        <div className="sm:mx-auto sm:w-full">
+          <img
+            src="/favicon.png"
+            alt="Your Company"
+            className="mx-auto h-10 w-auto"
+          />
+          <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            Sign Up
+          </h2>
+        </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-8">
         <form
           action="#"
           method="POST"
@@ -167,7 +168,7 @@ const SignUp = () => {
           </div>
         </form>
 
-        <p className="mt-10 text-center text-sm/6 text-gray-500">
+        <p className="mt-2 text-center text-sm/6 text-gray-500">
           Already have an account?
           <a
             href="/login"
@@ -176,6 +177,7 @@ const SignUp = () => {
             Sign In
           </a>
         </p>
+        </div>
       </div>
     </div>
   );
