@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
-// Bootstrap Icons
+// Bootstrap
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "./CustomBootstrap.css";
 
 import "./App.css";
 // Public components
@@ -17,8 +20,6 @@ import ReportDetailPage from "./pages/ReportDetailPage";
 import RequireRole from "./components/RequireRole";
 import NewProject from "./pages/CreateNewProject";
 import EditProject from "./pages/EditProject";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Navbar from "./components/Navbar";
 
 // Vendor components

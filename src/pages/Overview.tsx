@@ -208,16 +208,16 @@ const Overview = () => {
               </div>
               <div className="col">
                 <Metrics
-                  value={onTrackCount}
-                  metric="ON TRACK"
-                  type="warning"
+                  value={completeCount}
+                  metric="COMPLETED PROJECTS"
+                  type="primary"
                 ></Metrics>
               </div>
               <div className="col">
                 <Metrics
-                  value={completeCount}
-                  metric="COMPLETED PROJECTS"
-                  type="primary"
+                  value={onTrackCount}
+                  metric="ON TRACK"
+                  type="warning"
                 ></Metrics>
               </div>
             </div>
