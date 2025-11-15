@@ -391,14 +391,61 @@ export const fetchProjectsByVendor = async (
       const mostRecentReport = reports.length > 0 ? reports[0] : null;
 
 
-      const completionPercentage =
-        reports.length > 0
-          ? Math.round(
-              (reports[0].scopeStatus.completedDeliverables /
-                reports[0].scopeStatus.totalDeliverables) *
-                100
-            )
-          : 0;
+    // Calculate schedule-based completion percentage
+    let schedulePercentage = 0;
+    if (
+      mostRecentReport && 
+      data.createdAt && 
+      mostRecentReport.scheduleData?.baseline?.expectedDate &&
+      mostRecentReport.scheduleData?.current?.projectedDate &&
+      mostRecentReport.date
+    ) {
+      try {
+        // Format createdAt the same way as ScheduleCompletion receives it
+        let projectCreatedAtStr: string;
+        if (data.createdAt.seconds) {
+          // Firestore timestamp
+          projectCreatedAtStr = new Date(data.createdAt.seconds * 1000).toLocaleDateString("en-US");
+        } else {
+          projectCreatedAtStr = new Date(data.createdAt).toLocaleDateString("en-US");
+        }
+
+        // Now parse dates exactly as ScheduleCompletion does
+        const start = new Date(projectCreatedAtStr);
+        const baselineEnd = new Date(mostRecentReport.scheduleData.baseline.expectedDate);
+        const projectedEnd = new Date(mostRecentReport.scheduleData.current.projectedDate);
+        const today = new Date(mostRecentReport.date);
+
+        console.log("Schedule calculation:", {
+          projectCreatedAtStr,
+          start: start.toString(),
+          baselineEnd: baselineEnd.toString(),
+          projectedEnd: projectedEnd.toString(),
+          today: today.toString(),
+        });
+
+        // Validate dates
+        if (!isNaN(start.getTime()) && !isNaN(baselineEnd.getTime()) && !isNaN(projectedEnd.getTime()) && !isNaN(today.getTime())) {
+          // Use projected date as timeline end (shows full duration including delays)
+          const timelineEnd = projectedEnd > baselineEnd ? projectedEnd : baselineEnd;
+          const totalDuration = timelineEnd.getTime() - start.getTime();
+          const elapsed = today.getTime() - start.getTime();
+          
+          schedulePercentage = Math.round(
+            Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100)
+          );
+
+          console.log("Calculation result:", {
+            totalDuration,
+            elapsed,
+            schedulePercentage,
+          });
+        }
+      } catch (err) {
+        console.error("Error calculating schedule percentage:", err);
+        schedulePercentage = 0;
+      }
+    }
 
       const budgetValue =
         mostRecentReport?.financials?.originalAmount ?? data.budget ?? 0;
@@ -410,7 +457,7 @@ export const fetchProjectsByVendor = async (
         name: data.name || "Untitled Project",
         status: data.status || calculateProjectStatus({ ...data, reports }),
         statusColor: data.statusColor || getStatusColor(data.status),
-        metric1: `Completion: ${completionPercentage}%`,
+        metric1: `Schedule: ${schedulePercentage}%`,
         metric2: `Reports: ${reports.length}`,
         description: data.description || "",
         department: data.department || "",

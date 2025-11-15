@@ -55,11 +55,25 @@ const Overview = () => {
         } as ProjectListData;
       });
 
-      setProjectList(firestoreProjectList);
+      // Sort: Non-completed projects alphabetically first, then completed projects alphabetically
+      const sortedProjects = firestoreProjectList.sort((a, b) => {
+        const aCompleted = a.status === "Completed";
+        const bCompleted = b.status === "Completed";
+
+        // If one is completed and the other isn't, non-completed comes first
+        if (aCompleted !== bCompleted) {
+          return aCompleted ? 1 : -1;
+        }
+
+        // Both have same completion status, sort alphabetically by name
+        return a.name.localeCompare(b.name);
+      });
+
+      setProjectList(sortedProjects);
       setLoading(false);
     });
     return () => unsubscribe();
-  });
+  }, []);
 
   useEffect(() => {
     const fetchRecentProjects = async () => {
@@ -78,15 +92,74 @@ const Overview = () => {
           const reports = await fetchReportsForProject(doc.id);
 
           const mostRecentReport = reports.length > 0 ? reports[0] : null;
+          let schedulePercentage = 0;
+          if (
+            mostRecentReport &&
+            data.createdAt &&
+            mostRecentReport.scheduleData?.baseline?.expectedDate &&
+            mostRecentReport.scheduleData?.current?.projectedDate &&
+            mostRecentReport.date
+          ) {
+            try {
+              // Format createdAt the same way as ScheduleCompletion receives it
+              let projectCreatedAtStr: string;
+              if (data.createdAt.seconds) {
+                // Firestore timestamp
+                projectCreatedAtStr = new Date(
+                  data.createdAt.seconds * 1000
+                ).toLocaleDateString("en-US");
+              } else {
+                projectCreatedAtStr = new Date(
+                  data.createdAt
+                ).toLocaleDateString("en-US");
+              }
 
-          const completionPercentage =
-            mostRecentReport && mostRecentReport.scopeStatus
-              ? Math.round(
-                  (mostRecentReport.scopeStatus.completedDeliverables /
-                    mostRecentReport.scopeStatus.totalDeliverables) *
-                    100
-                )
-              : 0;
+              // Now parse dates exactly as ScheduleCompletion does
+              const start = new Date(projectCreatedAtStr);
+              const baselineEnd = new Date(
+                mostRecentReport.scheduleData.baseline.expectedDate
+              );
+              const projectedEnd = new Date(
+                mostRecentReport.scheduleData.current.projectedDate
+              );
+              const today = new Date(mostRecentReport.date);
+
+              console.log("Schedule calculation:", {
+                projectCreatedAtStr,
+                start: start.toString(),
+                baselineEnd: baselineEnd.toString(),
+                projectedEnd: projectedEnd.toString(),
+                today: today.toString(),
+              });
+
+              // Validate dates
+              if (
+                !isNaN(start.getTime()) &&
+                !isNaN(baselineEnd.getTime()) &&
+                !isNaN(projectedEnd.getTime()) &&
+                !isNaN(today.getTime())
+              ) {
+                // Use projected date as timeline end (shows full duration including delays)
+                const timelineEnd =
+                  projectedEnd > baselineEnd ? projectedEnd : baselineEnd;
+                const totalDuration = timelineEnd.getTime() - start.getTime();
+                const elapsed = today.getTime() - start.getTime();
+
+                schedulePercentage = Math.round(
+                  Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100)
+                );
+
+                console.log("Calculation result:", {
+                  totalDuration,
+                  elapsed,
+                  schedulePercentage,
+                });
+              }
+            } catch (err) {
+              console.error("Error calculating schedule percentage:", err);
+              schedulePercentage = 0;
+            }
+          }
 
           const budgetValue =
             mostRecentReport?.financials?.originalAmount ?? data.budget ?? 0;
@@ -98,7 +171,7 @@ const Overview = () => {
             name: data.name || "Unnamed Project",
             description: data.description || "No description available",
             status: data.status,
-            metric1: `Completion: ${completionPercentage}%`,
+            metric1: `Completion: ${schedulePercentage}%`,
             metric2: `Reports: ${reports.length}`,
             startDate: timestampToFriendlyDate(data.createdAt),
             endDate: timestampToFriendlyDate(data.endDate) || "TBD",
