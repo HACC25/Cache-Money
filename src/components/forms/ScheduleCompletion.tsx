@@ -58,14 +58,6 @@ const ScheduleCompletion: React.FC<ScheduleCompletionProps> = ({
     todayTime: today.getTime(),
   });
 
-  // Calculate days remaining to baseline
-  const daysRemaining = Math.max(
-    Math.ceil(
-      (baselineEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    ),
-    0
-  );
-
   // Format date
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString("en-US", {

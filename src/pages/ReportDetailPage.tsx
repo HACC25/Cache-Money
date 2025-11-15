@@ -5,9 +5,10 @@ import { db } from "../services/firebase-config";
 import type { ProjectReport } from "../components/SampleData";
 import { useAuth } from "../contexts/AuthContext";
 
-//Visual Component Imports
+// Visual Component Imports
 import BudgetDonut from "../components/forms/BudgetDonut";
 import ScheduleCompletion from "../components/forms/ScheduleCompletion";
+import IssuesTimeline from "../components/forms/IssueTimeline";
 
 const ReportDetailPage: React.FC = () => {
   const { projectId, reportId } = useParams<{
@@ -66,7 +67,6 @@ const ReportDetailPage: React.FC = () => {
           return;
         }
 
-        // Ensure nested assessment objects have defaults
         const defaultAssessment = {
           sprintPlanning: { rating: "N/A", description: "No data" },
           userStoryValidation: { rating: "N/A", description: "No data" },
@@ -142,12 +142,6 @@ const ReportDetailPage: React.FC = () => {
       default:
         return "secondary";
     }
-  };
-
-  const getIssueRatingColor = (rating: number) => {
-    if (rating >= 5) return "danger";
-    if (rating >= 3) return "warning";
-    return "success";
   };
 
   const getDeliverableStatusBadge = (status: string) => {
@@ -319,91 +313,13 @@ const ReportDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Issues Raised Section */}
+      {/* Issues Raised Section - NOW USING TIMELINE COMPONENT */}
       <div id="issues-raised" className="card mb-4">
         <div className="card-header">
           <h4 className="mb-0">Issues Raised</h4>
         </div>
         <div className="card-body">
-          {report.issues && report.issues.length > 0 ? (
-            report.issues.map((issue) => (
-              <div key={issue.id} className="card mb-3">
-                <div className="card-header">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <span className="badge bg-secondary me-2">
-                        Raised:{" "}
-                        {new Date(issue.dateRaised).toLocaleDateString()}
-                      </span>
-                      <span className="badge bg-info me-2">
-                        Age: {issue.age || "N/A"} days
-                      </span>
-                      <span
-                        className={`badge bg-${getIssueRatingColor(
-                          issue.riskRating
-                        )} me-2`}
-                      >
-                        Risk Rating: {issue.riskRating}
-                      </span>
-                      <span
-                        className={`badge ${
-                          issue.status === "Open" ? "bg-danger" : "bg-success"
-                        }`}
-                      >
-                        Status: {issue.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="card-body">
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <strong>Impact:</strong>
-                      <span
-                        className={`badge bg-${
-                          issue.impact === "High"
-                            ? "danger"
-                            : issue.impact === "Medium"
-                            ? "warning"
-                            : "success"
-                        } ms-2`}
-                      >
-                        {issue.impact}
-                      </span>
-                    </div>
-                    <div className="col-md-6">
-                      <strong>Likelihood:</strong>
-                      <span
-                        className={`badge bg-${
-                          issue.likelihood === "High"
-                            ? "danger"
-                            : issue.likelihood === "Medium"
-                            ? "warning"
-                            : "success"
-                        } ms-2`}
-                      >
-                        {issue.likelihood}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <h5>Description:</h5>
-                    <p>{issue.description}</p>
-                  </div>
-
-                  <div>
-                    <h5>Remedy:</h5>
-                    <p>{issue.recommendation}</p>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="alert alert-info">
-              No issues have been raised for this reporting period.
-            </div>
-          )}
+          <IssuesTimeline issues={report.issues} />
         </div>
       </div>
 
@@ -482,7 +398,7 @@ const ReportDetailPage: React.FC = () => {
                     ? project.createdAt
                     : new Date(
                         project.createdAt.seconds * 1000
-                      ).toLocaleDateString("en-CA") // Returns YYYY-MM-DD in local time
+                      ).toLocaleDateString("en-US") // 11/14/2025 (MM/DD/YYYY)
                 }
                 expectedBaselineDate={report.scheduleData.baseline.expectedDate}
                 actualProjectedDate={report.scheduleData.current.projectedDate}

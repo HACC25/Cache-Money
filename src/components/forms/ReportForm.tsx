@@ -17,7 +17,6 @@ import { db, auth } from "../../services/firebase-config";
 import "./ReportForm.css";
 import { LabeledDropMenu } from "./DropMenu";
 
-// Define interfaces for form data
 interface ProjectIssue {
   id: string;
   name: string;
@@ -48,7 +47,6 @@ interface ScheduleData {
 }
 
 const ReportForm: React.FC = () => {
-  // Get projectId from URL parameters
   const { projectId, reportId } = useParams<{
     projectId: string;
     reportId?: string;
@@ -157,10 +155,7 @@ const ReportForm: React.FC = () => {
     fetchReport();
   }, [isEditMode, projectId, reportId]);
 
-  // ============ PRE-FILL FROM PREVIOUS REPORT ============
   // Fetch previous report to pre-fill background, baseline, and deliverables
-  // ============ PRE-FILL FROM PREVIOUS REPORT ============
-  // Fetch previous report to pre-fill background, baseline, deliverables, and issues
   useEffect(() => {
     const prefillFromPreviousReport = async () => {
       if (!projectId || isEditMode) return;
@@ -183,21 +178,21 @@ const ReportForm: React.FC = () => {
           );
         }
 
-        // 2. If there's a previous report (not creating first report)
+        // 2. If there's a previous report
         if (allReports.length > 0) {
           const previousReport = allReports[allReports.length - 1];
 
-          // Pre-fill BACKGROUND from most recent previous report
+          // Pre-fill from most recent previous report
           if (previousReport.background) {
             setBackground(previousReport.background);
           }
 
-          // Pre-fill DELIVERABLES from most recent previous report
+          // Pre-fill from most recent previous report
           if (previousReport.scopeStatus?.deliverables) {
             setDeliverables(previousReport.scopeStatus.deliverables);
           }
 
-          // Pre-fill ISSUES from most recent previous report
+          // Pre-fill from most recent previous report
           if (previousReport.issues) {
             setIssues(previousReport.issues);
           }
@@ -263,9 +258,7 @@ const ReportForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ============ UTILITY FUNCTIONS ============
-
-  // Calculate risk rating when impact or likelihood changes
+  // Calculate risk rating: impact or likelihood changes
   const calculateRiskRating = (
     impact: "High" | "Medium" | "Low",
     likelihood: "High" | "Medium" | "Low"
@@ -305,8 +298,6 @@ const ReportForm: React.FC = () => {
     return "OnTime";
   };
 
-  // ============ ISSUE HANDLERS ============
-
   // Handle issue form changes
   const handleIssueChange = (
     field: keyof ProjectIssue,
@@ -314,7 +305,6 @@ const ReportForm: React.FC = () => {
   ): void => {
     const updatedIssue = { ...currentIssue, [field]: value } as ProjectIssue;
 
-    // Auto-calculate risk rating
     if (field === "impact" || field === "likelihood") {
       const impact =
         field === "impact"
@@ -379,8 +369,6 @@ const ReportForm: React.FC = () => {
     setIssues(issues.filter((issue) => issue.id !== issueId));
   };
 
-  // ============ DELIVERABLE HANDLERS ============
-
   // Handle deliverable form changes
   const handleDeliverableChange = (
     field: keyof ProjectDeliverable,
@@ -425,7 +413,6 @@ const ReportForm: React.FC = () => {
   // Edit a deliverable
   const handleEditDeliverable = (deliverable: ProjectDeliverable): void => {
     setCurrentDeliverable(deliverable);
-    // Scroll to the deliverable form
     setTimeout(() => {
       const deliverableForm = document.getElementById("deliverable-form");
       if (deliverableForm) {
@@ -440,8 +427,6 @@ const ReportForm: React.FC = () => {
       deliverables.filter((deliverable) => deliverable.id !== deliverableId)
     );
   };
-
-  // ============ FORM SUBMISSION ============
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -478,7 +463,7 @@ const ReportForm: React.FC = () => {
           expectedDate: expectedBaselineDate,
         };
       } else if (baselineSchedule) {
-        // Otherwise, preserve existing baseline
+        // preserve existing baseline
         scheduleData.baseline = baselineSchedule;
       }
 
