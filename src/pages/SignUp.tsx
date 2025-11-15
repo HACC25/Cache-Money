@@ -93,7 +93,7 @@ const SignUp = () => {
             >
               Email address (required)
             </label>
-            <div className="mt-2">
+            <div>
               <input
                 id="email"
                 type="email"
@@ -117,7 +117,7 @@ const SignUp = () => {
                 Password (required)
               </label>
             </div>
-            <div className="mt-2">
+            <div>
               <input
                 id="password"
                 type="password"
@@ -139,7 +139,7 @@ const SignUp = () => {
             >
               Select Your Role
             </label>
-            <div className="mt-2">
+            <div>
               <select
                 id="role"
                 name="role"
