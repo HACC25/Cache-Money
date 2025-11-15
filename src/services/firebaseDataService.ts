@@ -23,18 +23,20 @@ import type {
 /**
  * Convert Firestore Timestamp or date string to date string (YYYY-MM-DD)
  */
-const timestampToDateString = (timestamp: Timestamp | string | undefined): string => {
+const timestampToDateString = (
+  timestamp: Timestamp | string | undefined
+): string => {
   if (!timestamp) return "";
-  
+
   // If it's already a string, try to parse it
-  if (typeof timestamp === 'string') {
+  if (typeof timestamp === "string") {
     try {
       return new Date(timestamp).toISOString().split("T")[0];
     } catch {
       return timestamp; // Return as-is if it can't be parsed
     }
   }
-  
+
   // If it's a Timestamp object
   return timestamp.toDate().toISOString().split("T")[0];
 };
@@ -42,42 +44,46 @@ const timestampToDateString = (timestamp: Timestamp | string | undefined): strin
 /**
  * Convert Firestore Timestamp or date string to month string (e.g., "October 2025")
  */
-const timestampToMonthString = (timestamp: Timestamp | string | undefined): string => {
+const timestampToMonthString = (
+  timestamp: Timestamp | string | undefined
+): string => {
   if (!timestamp) return "";
-  
+
   let date: Date;
-  
+
   // If it's a string, parse it
-  if (typeof timestamp === 'string') {
+  if (typeof timestamp === "string") {
     date = new Date(timestamp);
   } else {
     // If it's a Timestamp object
     date = timestamp.toDate();
   }
-  
+
   return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 };
 
 /**
  * Convert Firestore Timestamp or date string to user-friendly format (e.g., "Nov 13, 2025")
  */
-export const timestampToFriendlyDate = (timestamp: Timestamp | string | undefined): string => {
+export const timestampToFriendlyDate = (
+  timestamp: Timestamp | string | undefined
+): string => {
   if (!timestamp) return "";
-  
+
   let date: Date;
-  
+
   // If it's a string, parse it
-  if (typeof timestamp === 'string') {
+  if (typeof timestamp === "string") {
     date = new Date(timestamp);
   } else {
     // If it's a Timestamp object
     date = timestamp.toDate();
   }
-  
-  return date.toLocaleDateString("en-US", { 
-    month: "short", 
-    day: "numeric", 
-    year: "numeric" 
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
 };
 
@@ -174,16 +180,27 @@ export const fetchReportsForProject = async (
             status: issue.status || "Open",
           })) || [],
         scheduleStatus: {
-          baselineEndDate: timestampToDateString(
-            data.scheduleStatus?.baselineEndDate
-          ),
-          currentEndDate: timestampToDateString(
-            data.scheduleStatus?.currentEndDate
-          ),
+          status: data.scheduleStatus?.status || "OnTime",
+          description:
+            data.scheduleStatus?.description || "No description provided",
         },
+        scheduleData: {
+          baseline: {
+            expectedDate: timestampToDateString(
+              data.scheduleData?.baseline?.expectedDate
+            ),
+          },
+          current: {
+            projectedDate: timestampToDateString(
+              data.scheduleData?.current?.projectedDate
+            ),
+          },
+        },
+        varianceDays: data.varianceDays || 0,
         financials: {
           originalAmount: data.financials?.originalAmount || 0,
           paidToDate: data.financials?.paidToDate || 0,
+          description: data.financials?.description || "",
         },
         scopeStatus: {
           completedDeliverables: data.scopeStatus?.completedDeliverables || 0,
