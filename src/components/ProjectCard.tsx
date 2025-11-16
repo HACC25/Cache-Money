@@ -68,7 +68,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             style={{
               backgroundColor: "white",
               borderRadius: "20px",
-              border: "2px solid #c95604",
+              border: "1px solid #aaa",
               width: "45%",
               height: "100px",
             }}
