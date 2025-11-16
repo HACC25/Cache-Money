@@ -1,7 +1,14 @@
 import "./Landing.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { collection, query, getDocs, orderBy, limit, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  orderBy,
+  limit,
+  Timestamp,
+} from "firebase/firestore";
 import { db } from "../services/firebase-config";
 
 interface RecentProject {
@@ -26,7 +33,7 @@ function Landing() {
           limit(6)
         );
         const projectsSnapshot = await getDocs(projectsQuery);
-        
+
         const projects: RecentProject[] = projectsSnapshot.docs.map((doc) => ({
           id: doc.id,
           name: doc.data().name || "Unnamed Project",
@@ -34,7 +41,7 @@ function Landing() {
           createdAt: doc.data().createdAt,
           status: doc.data().status,
         }));
-        
+
         setRecentProjects(projects);
       } catch (error) {
         console.error("Error fetching recent projects:", error);
@@ -49,15 +56,14 @@ function Landing() {
   return (
     <div className="relative w-full min-h-screen bg-gray-50">
       <section className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-
         {/* Wave Pattern */}
-        <div 
+        <div
           className="absolute inset-0 opacity-40"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='1440' height='320' viewBox='0 0 1440 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%2393C5FD' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'bottom',
-            backgroundRepeat: 'no-repeat'
+            backgroundSize: "cover",
+            backgroundPosition: "bottom",
+            backgroundRepeat: "no-repeat",
           }}
           aria-hidden="true"
         />
@@ -68,14 +74,15 @@ function Landing() {
               Independent Verification and Validation Dashboard
             </h1>
 
-            <div 
+            <div
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full mb-8"
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(20px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)'
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(20px) saturate(180%)",
+                WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                border: "1px solid rgba(255, 255, 255, 0.3)",
+                boxShadow:
+                  "0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)",
               }}
             >
               <span className="text-sm font-semibold tracking-wide text-gray-900">
@@ -83,18 +90,20 @@ function Landing() {
               </span>
             </div>
 
-            <div 
+            <div
               className="max-w-4xl mx-auto mb-12 rounded-2xl p-8"
               style={{
-                background: 'rgba(255, 255, 255, 0.7)',
-                backdropFilter: 'blur(30px) saturate(200%)',
-                WebkitBackdropFilter: 'blur(30px) saturate(200%)',
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.6)'
+                background: "rgba(255, 255, 255, 0.7)",
+                backdropFilter: "blur(30px) saturate(200%)",
+                WebkitBackdropFilter: "blur(30px) saturate(200%)",
+                border: "1px solid rgba(255, 255, 255, 0.4)",
+                boxShadow:
+                  "0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.6)",
               }}
             >
               <p className="text-lg sm:text-xl md:text-2xl text-gray-900 leading-relaxed font-semibold">
-                A comprehensive web application for managing and displaying project review reports and dashboards
+                A comprehensive web application for managing and displaying
+                project review reports and dashboards
               </p>
             </div>
           </div>
@@ -108,7 +117,6 @@ function Landing() {
         role="main"
       >
         <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 py-16 md:py-20">
-
           {/* Section - Feature Cards */}
           <section className="mb-20" aria-labelledby="features-heading">
             <header className="text-center mb-12">
@@ -178,8 +186,8 @@ function Landing() {
                   Real-time Analytics
                 </h3>
                 <p className="text-base text-gray-700 leading-relaxed mb-6">
-                  Monitor project metrics with interactive dashboards
-                  providing real-time insights.
+                  Monitor project metrics with interactive dashboards providing
+                  real-time insights.
                 </p>
               </article>
 
@@ -228,7 +236,8 @@ function Landing() {
                 Recent Projects
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Browse the latest state IT projects undergoing independent verification and validation
+                Browse the latest state IT projects undergoing independent
+                verification and validation
               </p>
             </header>
 
@@ -240,7 +249,9 @@ function Landing() {
               </div>
             ) : recentProjects.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-600 text-lg">No projects available yet.</p>
+                <p className="text-gray-600 text-lg">
+                  No projects available yet.
+                </p>
               </div>
             ) : (
               <div className="max-w-4xl mx-auto space-y-4">
@@ -271,22 +282,49 @@ function Landing() {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 flex-wrap">
+                      <div className="flex items-center gap-2.5 flex-wrap">
                         <h3 className="text-base font-semibold text-gray-900 group-hover:text-sky-600 transition-colors truncate">
                           {project.name}
                         </h3>
                         {project.status && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-green-800">
+                          <span
+                            className={`badge text-xs font-medium mb-1 px-2 py-1 ${
+                              project.status === "On Track"
+                                ? "bg-success"
+                                : project.status === "At Risk"
+                                ? "bg-warning"
+                                : project.status === "Critical"
+                                ? "bg-critical"
+                                : "bg-primary"
+                            }`}
+                            style={{
+                              color: "white",
+                              borderRadius: "50px",
+                            }}
+                          >
                             {project.status}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-500 mb-1" aria-label={`Created on ${project.createdAt?.toDate?.().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) || 'Recent'}`}>
-                        {project.createdAt?.toDate?.().toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        }) || 'Recent'}
+                      <div
+                        className="text-xs text-gray-500 mb-1"
+                        aria-label={`Created on ${
+                          project.createdAt
+                            ?.toDate?.()
+                            .toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }) || "Recent"
+                        }`}
+                      >
+                        {project.createdAt
+                          ?.toDate?.()
+                          .toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }) || "Recent"}
                       </div>
                       {project.description && (
                         <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">

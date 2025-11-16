@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth, AuthProvider } from "./contexts/AuthContext";
 
-// Bootstrap Icons
+// Bootstrap
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "./CustomBootstrap.css";
 
 import "./App.css";
 // Public components
@@ -17,8 +20,6 @@ import ReportDetailPage from "./pages/ReportDetailPage";
 import RequireRole from "./components/RequireRole";
 import NewProject from "./pages/CreateNewProject";
 import EditProject from "./pages/EditProject";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Navbar from "./components/Navbar";
 
 // Vendor components
@@ -29,8 +30,11 @@ import ReportForm from "./components/forms/ReportForm";
 import ETSDashboard from "./pages/ets/ETSDashboard";
 import ETSStatistics from "./pages/ets/ETSStatistics";
 
+// Admin components
+import AdminApproval from "./pages/AdminApproval";
+
 function AppContent() {
-  const { currentUser, signOut, userRole, isETSEmployee } = useAuth();
+  const { currentUser, signOut, userRole, isETSEmployee, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -72,6 +76,15 @@ function AppContent() {
                 label: "Create New Project",
                 ariaLabel: "Create Project",
                 link: "/projects/new",
+              },
+            ]
+          : []),
+        ...(isAdmin
+          ? [
+              {
+                label: "Admin Approval",
+                ariaLabel: "Admin Approval Dashboard",
+                link: "/admin/approvals",
               },
             ]
           : []),
@@ -133,7 +146,7 @@ function AppContent() {
           accentColor="#4169E1"
         />
       </div>
-      <div>
+      <div className="app-content">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/signup" element={<SignUp />} />
@@ -190,6 +203,13 @@ function AppContent() {
               </RequireRole>
             }
           />
+          
+          {/* Admin Approval Dashboard */}
+          <Route
+            path="/admin/approvals"
+            element={<AdminApproval />}
+          />
+          
           {/* ETS Dashboard */}
           <Route
             path="/ets/dashboard"

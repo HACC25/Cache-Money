@@ -1,17 +1,20 @@
 import { auth, db } from "../services/firebase-config";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
-import './SignIn.css'
+import "./SignIn.css";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingReset, setIsSendingReset] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,7 +74,8 @@ const SignIn = () => {
       alert("Password reset email sent. Check your inbox.");
     } catch (err: unknown) {
       console.error("Reset error:", err);
-      const msg = (err as FirebaseError)?.message ?? "Unable to send reset email.";
+      const msg =
+        (err as FirebaseError)?.message ?? "Unable to send reset email.";
       alert(`Error sending reset email: ${msg}`);
     } finally {
       setIsSendingReset(false);
@@ -80,18 +84,19 @@ const SignIn = () => {
 
   return (
     <div className="signin-root flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          src="/public/favicon.png"
-          alt="Your Company"
-          className="mx-auto h-10 w-auto"
-        />
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
+      <div className="signin-card">
+        <div className="sm:mx-auto sm:w-full">
+          <img
+            src="/favicon.png"
+            alt="Your Company"
+            className="mx-auto h-10 w-auto"
+          />
+          <h2 className="mt-6 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            Sign In
+          </h2>
+        </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-8">
         <form
           action="#"
           method="POST"
@@ -134,10 +139,12 @@ const SignIn = () => {
                     e.preventDefault();
                     handleForgotPassword(e as React.MouseEvent);
                   }}
-                  className={`font-semibold text-indigo-600 hover:text-indigo-500 ${isSendingReset ? 'pointer-events-none opacity-60' : ''}`}
+                  className={`font-semibold text-indigo-600 hover:text-indigo-500 ${
+                    isSendingReset ? "pointer-events-none opacity-60" : ""
+                  }`}
                   aria-disabled={isSendingReset}
                 >
-                  {isSendingReset ? 'Sending…' : 'Forgot password?'}
+                  {isSendingReset ? "Sending…" : "Forgot password?"}
                 </a>
               </div>
             </div>
@@ -158,14 +165,25 @@ const SignIn = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{
+                borderRadius: "30px",
+                backgroundColor: "#595959",
+                transition: "background-color 0.2s ease",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#212121ff")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#595959")
+              }
             >
               {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>
 
-        <p className="mt-10 text-center text-sm/6 text-gray-500">
+        <p className="mt-2 text-center text-sm/6 text-gray-500">
           Don't have an account?
           <a
             href="/signup"
@@ -174,6 +192,7 @@ const SignIn = () => {
             Sign Up
           </a>
         </p>
+        </div>
       </div>
     </div>
   );

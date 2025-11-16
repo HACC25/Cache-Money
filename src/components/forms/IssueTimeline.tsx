@@ -18,7 +18,7 @@ const IssuesTimeline: React.FC<IssuesTimelineProps> = ({ issues }) => {
 
   const getRiskBadgeClass = (riskRating: number): string => {
     if (riskRating >= 5) return "bg-danger";
-    if (riskRating >= 3) return "bg-warning text-dark";
+    if (riskRating >= 3) return "bg-warning text-white";
     return "bg-success";
   };
 
@@ -100,7 +100,7 @@ const IssuesTimeline: React.FC<IssuesTimelineProps> = ({ issues }) => {
                       issue.impact === "High"
                         ? "bg-danger"
                         : issue.impact === "Medium"
-                        ? "bg-warning text-dark"
+                        ? "bg-warning text-white"
                         : "bg-success"
                     }`}
                     style={{ fontSize: "12px", padding: "4px 10px" }}
@@ -115,7 +115,7 @@ const IssuesTimeline: React.FC<IssuesTimelineProps> = ({ issues }) => {
                       issue.likelihood === "High"
                         ? "bg-danger"
                         : issue.likelihood === "Medium"
-                        ? "bg-warning text-dark"
+                        ? "bg-warning text-white"
                         : "bg-success"
                     }`}
                     style={{ fontSize: "12px", padding: "4px 10px" }}

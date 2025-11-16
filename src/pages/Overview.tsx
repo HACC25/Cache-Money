@@ -14,7 +14,10 @@ import {
   limit,
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
-import { timestampToFriendlyDate } from "../services/firebaseDataService";
+import {
+  timestampToFriendlyDate,
+  fetchReportsForProject,
+} from "../services/firebaseDataService";
 
 interface ProjectListData {
   id: string;
@@ -52,11 +55,25 @@ const Overview = () => {
         } as ProjectListData;
       });
 
-      setProjectList(firestoreProjectList);
+      // Sort: Non-completed projects alphabetically first, then completed projects alphabetically
+      const sortedProjects = firestoreProjectList.sort((a, b) => {
+        const aCompleted = a.status === "Completed";
+        const bCompleted = b.status === "Completed";
+
+        // If one is completed and the other isn't, non-completed comes first
+        if (aCompleted !== bCompleted) {
+          return aCompleted ? 1 : -1;
+        }
+
+        // Both have same completion status, sort alphabetically by name
+        return a.name.localeCompare(b.name);
+      });
+
+      setProjectList(sortedProjects);
       setLoading(false);
     });
     return () => unsubscribe();
-  });
+  }, []);
 
   useEffect(() => {
     const fetchRecentProjects = async () => {
@@ -65,22 +82,105 @@ const Overview = () => {
         const projectsQuery = query(
           collection(db, "projects"),
           orderBy("createdAt", "desc"),
-          limit(6)
+          limit(5)
         );
         const projectsSnapshot = await getDocs(projectsQuery);
 
-        const projects: RecentProject[] = projectsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name || "Unnamed Project",
-          description: doc.data().description || "No description available",
-          status: doc.data().status,
-          metric1: doc.data().metric1 || "Completion: N/A",
-          metric2: doc.data().metric2 || "Reports: N/A",
-          startDate: timestampToFriendlyDate(doc.data().createdAt),
-          endDate: timestampToFriendlyDate(doc.data().endDate) || "TBD",
-          budget: doc.data().budget || 0,
-          spent: doc.data().spent || 0,
-        }));
+        const projectPromises = projectsSnapshot.docs.map(async (doc) => {
+          const data = doc.data();
+
+          const reports = await fetchReportsForProject(doc.id);
+
+          const mostRecentReport = reports.length > 0 ? reports[0] : null;
+          let schedulePercentage = 0;
+          if (
+            mostRecentReport &&
+            data.createdAt &&
+            mostRecentReport.scheduleData?.baseline?.expectedDate &&
+            mostRecentReport.scheduleData?.current?.projectedDate &&
+            mostRecentReport.date
+          ) {
+            try {
+              // Format createdAt the same way as ScheduleCompletion receives it
+              let projectCreatedAtStr: string;
+              if (data.createdAt.seconds) {
+                // Firestore timestamp
+                projectCreatedAtStr = new Date(
+                  data.createdAt.seconds * 1000
+                ).toLocaleDateString("en-US");
+              } else {
+                projectCreatedAtStr = new Date(
+                  data.createdAt
+                ).toLocaleDateString("en-US");
+              }
+
+              // Now parse dates exactly as ScheduleCompletion does
+              const start = new Date(projectCreatedAtStr);
+              const baselineEnd = new Date(
+                mostRecentReport.scheduleData.baseline.expectedDate
+              );
+              const projectedEnd = new Date(
+                mostRecentReport.scheduleData.current.projectedDate
+              );
+              const today = new Date(mostRecentReport.date);
+
+              console.log("Schedule calculation:", {
+                projectCreatedAtStr,
+                start: start.toString(),
+                baselineEnd: baselineEnd.toString(),
+                projectedEnd: projectedEnd.toString(),
+                today: today.toString(),
+              });
+
+              // Validate dates
+              if (
+                !isNaN(start.getTime()) &&
+                !isNaN(baselineEnd.getTime()) &&
+                !isNaN(projectedEnd.getTime()) &&
+                !isNaN(today.getTime())
+              ) {
+                // Use projected date as timeline end (shows full duration including delays)
+                const timelineEnd =
+                  projectedEnd > baselineEnd ? projectedEnd : baselineEnd;
+                const totalDuration = timelineEnd.getTime() - start.getTime();
+                const elapsed = today.getTime() - start.getTime();
+
+                schedulePercentage = Math.round(
+                  Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100)
+                );
+
+                console.log("Calculation result:", {
+                  totalDuration,
+                  elapsed,
+                  schedulePercentage,
+                });
+              }
+            } catch (err) {
+              console.error("Error calculating schedule percentage:", err);
+              schedulePercentage = 0;
+            }
+          }
+
+          const budgetValue =
+            mostRecentReport?.financials?.originalAmount ?? data.budget ?? 0;
+          const spentValue =
+            mostRecentReport?.financials?.paidToDate ?? data.spent ?? 0;
+
+          return {
+            id: doc.id,
+            name: data.name || "Unnamed Project",
+            description: data.description || "No description available",
+            status: data.status,
+            metric1: `Completion: ${schedulePercentage}%`,
+            metric2: `Reports: ${reports.length}`,
+            startDate: timestampToFriendlyDate(data.createdAt),
+            endDate: timestampToFriendlyDate(data.endDate) || "TBD",
+            budget: budgetValue.toLocaleString("en-US"),
+            spent: spentValue.toLocaleString("en-US"),
+          };
+        });
+
+        const projects = await Promise.all(projectPromises);
         setRecentProjects(projects);
       } catch (error) {
         console.error("Error fetching recent projects:", error);
@@ -181,16 +281,16 @@ const Overview = () => {
               </div>
               <div className="col">
                 <Metrics
-                  value={onTrackCount}
-                  metric="ON TRACK"
-                  type="warning"
+                  value={completeCount}
+                  metric="COMPLETED PROJECTS"
+                  type="primary"
                 ></Metrics>
               </div>
               <div className="col">
                 <Metrics
-                  value={completeCount}
-                  metric="COMPLETED PROJECTS"
-                  type="primary"
+                  value={onTrackCount}
+                  metric="ON TRACK"
+                  type="warning"
                 ></Metrics>
               </div>
             </div>
