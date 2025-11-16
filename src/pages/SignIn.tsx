@@ -110,7 +110,7 @@ const SignIn = () => {
             >
               Email address
             </label>
-            <div className="mt-2">
+            <div>
               <input
                 id="email"
                 type="email"
@@ -124,7 +124,7 @@ const SignIn = () => {
           </div>
 
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between">
               <label
                 htmlFor="password"
                 className="block text-sm/6 font-medium text-gray-900"
@@ -148,7 +148,7 @@ const SignIn = () => {
                 </a>
               </div>
             </div>
-            <div className="mt-2">
+            <div>
               <input
                 id="password"
                 type="password"

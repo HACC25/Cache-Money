@@ -4,6 +4,7 @@ import { db } from '../services/firebase-config';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
 import { NEW_PROJECT_STATUSES, getStatusColor } from './NewProjectStatuses';
+import './CreateNewProject.css';
 
 
 const NewProject: React.FC = () => {
@@ -62,7 +63,7 @@ const NewProject: React.FC = () => {
   return (
     <div className="container mt-5 mb-5">
       <h2>Create New Project</h2>
-      <p className="text-muted">Add a new State of Hawaii IT project for IV&V tracking</p>
+      <p className="text-muted">Add a new State of Hawaii IT project for IV&V reports</p>
       
       <div className="card mt-4">
         <div className="card-body">
@@ -94,7 +95,7 @@ const NewProject: React.FC = () => {
             <div className="mb-3">
               <label className="form-label">Assign to Vendor</label>
               <select 
-                className="form-control" 
+                className="form-control-vendor" 
                 value={vendorId} 
                 onChange={(e) => setVendorId(e.target.value)}
                 required
@@ -111,7 +112,7 @@ const NewProject: React.FC = () => {
             <div className="mb-3">
               <label className="form-label">Status</label>
               <select 
-                className="form-control" 
+                className="form-control-status" 
                 value={status} 
                 onChange={(e) => setStatus(e.target.value)}
               >

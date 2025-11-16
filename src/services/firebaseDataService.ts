@@ -316,6 +316,7 @@ export const fetchAllProjects = async (): Promise<ProjectData[]> => {
         spent: data.spent || 0,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
         vendorId: data.vendorId || undefined,
+        createdAt: data.createdAt || undefined,
         reports: reports,
       };
 
@@ -560,6 +561,7 @@ export const fetchProjectsByVendor = async (
         spent: spentValue,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
         vendorId: data.vendorId || undefined,
+        createdAt: data.createdAt || undefined,
         reports: reports,
       };
 

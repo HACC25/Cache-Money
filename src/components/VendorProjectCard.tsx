@@ -2,13 +2,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ProjectData } from "./SampleData";
+import ScheduleCompletionBar from "./forms/ScheduleCompletionBar";
 
 interface VendorProjectCardProps {
   project: ProjectData;
 }
 
 const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
-  const { id, name, status, metric1, metric2, description, reports } = project;
+  const { id, name, status, description, reports, createdAt } = project;
 
   // Sort reports by date (most recent first)
   const sortedReports = [...reports].sort(
@@ -17,6 +18,9 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
 
   // Get the two most recent reports
   const recentReports = sortedReports.slice(0, 2);
+
+  // Get the most recent report for schedule data
+  const latestReport = sortedReports[0];
 
   return (
     <div className="card mb-4 w-100 border-darker">
@@ -51,14 +55,46 @@ const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
             <div className="col-md-6">
               <div className="card border-primary">
                 <div className="card-body text-center">
-                  <span className="text-primary">{metric1}</span>
+                  {/* Use ScheduleCompletion component */}
+                  {latestReport?.scheduleData?.baseline?.expectedDate &&
+                  latestReport?.date &&
+                  createdAt ? (
+                    <ScheduleCompletionBar
+                      projectCreatedAt={
+                        typeof createdAt === "string"
+                          ? createdAt
+                          : new Date(
+                              createdAt.seconds * 1000
+                            ).toLocaleDateString("en-US")
+                      }
+                      expectedBaselineDate={
+                        latestReport.scheduleData.baseline.expectedDate
+                      }
+                      actualProjectedDate={
+                        latestReport.scheduleData.current.projectedDate
+                      }
+                      reportDate={latestReport.date}
+                    />
+                  ) : (
+                    <span className="text-muted">
+                      No schedule data available
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
             <div className="col-md-6">
               <div className="card border-primary">
                 <div className="card-body text-center">
-                  <span className="text-primary">{metric2}</span>
+                  <h6 className="text-muted mb-3">Total Reports</h6>
+                  <div style={{ padding: "1px 0" }}>
+                    <span
+                      className="text-primary"
+                      style={{ fontSize: "1rem", fontWeight: "500" }}
+                    >
+                      {reports.length}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

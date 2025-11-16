@@ -1,4 +1,5 @@
 import "./Footer.css";
+import etsLogo from '/ets-logo.png';
 
 const Footer = () => (
   <footer className="footer-main">
@@ -7,7 +8,7 @@ const Footer = () => (
         <div className="footer-brand">
           <a href="https://ets.hawaii.gov/" target="_blank" rel="noopener noreferrer">
             <img
-              src="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
+              src={etsLogo}
               alt="ETS logo"
             />
             <span className="footer-brand-title">State of Hawaii</span>

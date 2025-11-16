@@ -19,23 +19,20 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
   const navigate = useNavigate();
   const { isVendor } = useAuth();
 
-  // Calculate overall risk level based on issues
-  const calculateRiskLevel = () => {
-    if (!report.issues || report.issues.length === 0) return "Low";
-
-    const highRiskCount = report.issues.filter(
-      (issue) => issue.riskRating >= 5
-    ).length;
-    if (highRiskCount > 0) return "High";
-
-    const mediumRiskCount = report.issues.filter(
-      (issue) => issue.riskRating >= 3 && issue.riskRating < 5
-    ).length;
-    if (mediumRiskCount > 0) return "Medium";
-
-    return "Low";
+  // Get criticality rating from assessment
+  const getCriticalityRating = () => {
+    return report.assessment?.sprintPlanning?.rating || "N/A";
   };
 
+  // Get schedule status based on variance days
+  const getScheduleStatus = () => {
+    if (report.varianceDays === undefined || report.varianceDays === null) {
+      return "N/A";
+    }
+    if (report.varianceDays === 0) return "On Time";
+    if (report.varianceDays > 0) return "Behind Schedule";
+    return "Ahead of Schedule";
+  };
   // Handle delete report
   const handleDeleteReport = async () => {
     if (
@@ -56,7 +53,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
     }
   };
 
-  const riskLevel = calculateRiskLevel();
+  const criticalityRating = getCriticalityRating();
+  const scheduleStatus = getScheduleStatus();
 
   return (
     <div className="text-decoration-none">
@@ -64,7 +62,8 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
         <div className="card-body bg-light">
           <div className="row">
             <div className="col-md-3">
-              <h3 className="mb-3">MONTHLY REPORT {index}</h3>
+              <h4 className="mb-3">REPORT: {report.month || "N/A"}</h4>
+              <div className="mb-2"></div>
             </div>
             <div className="col-md-3"></div>
             <div className="col-md-3"></div>
@@ -131,50 +130,42 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
           <div className="row">
             <div className="col-md-6">
-              <div className="mb-2">
-                <strong>Month:</strong> {report.month || "N/A"}
-              </div>
-              <div className="mb-2">
+              <div className="mb-3">
                 <strong>Report Date:</strong>{" "}
                 {report.date
                   ? new Date(report.date).toLocaleDateString()
                   : "N/A"}
               </div>
-              <div>
+              <div className="mb-3">
                 <strong>Criticality Rating:</strong>{" "}
                 <span
                   className={`badge ${
-                    riskLevel === "High"
+                    criticalityRating === "High"
                       ? "bg-danger"
-                      : riskLevel === "Medium"
+                      : criticalityRating === "Medium"
                       ? "bg-warning"
-                      : "bg-success"
+                      : criticalityRating === "Low"
+                      ? "bg-success"
+                      : "bg-secondary"
                   }`}
                 >
-                  {riskLevel}
+                  {criticalityRating}
                 </span>
               </div>
-            </div>
-
-            <div className="col-md-6">
-              {report.scheduleStatus && (
-                <div className="mb-3">
-                  <div>
-                    <strong>Schedule Status:</strong>{" "}
-                    <span
-                      className={`badge ${
-                        riskLevel === "High"
-                          ? "bg-danger"
-                          : riskLevel === "Medium"
-                          ? "bg-warning"
-                          : "bg-success"
-                      }`}
-                    >
-                      {riskLevel}
-                    </span>
-                  </div>
-                </div>
-              )}
+              <div className="mb-3">
+                <strong>Schedule Status:</strong>{" "}
+                <span
+                  className={`badge ${
+                    scheduleStatus === "Behind Schedule"
+                      ? "bg-danger"
+                      : scheduleStatus === "On Time"
+                      ? "bg-success"
+                      : "bg-info"
+                  }`}
+                >
+                  {scheduleStatus}
+                </span>
+              </div>
             </div>
           </div>
         </div>

@@ -30,8 +30,11 @@ import ReportForm from "./components/forms/ReportForm";
 import ETSDashboard from "./pages/ets/ETSDashboard";
 import ETSStatistics from "./pages/ets/ETSStatistics";
 
+// Admin components
+import AdminApproval from "./pages/AdminApproval";
+
 function AppContent() {
-  const { currentUser, signOut, userRole, isETSEmployee } = useAuth();
+  const { currentUser, signOut, userRole, isETSEmployee, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -73,6 +76,15 @@ function AppContent() {
                 label: "Create New Project",
                 ariaLabel: "Create Project",
                 link: "/projects/new",
+              },
+            ]
+          : []),
+        ...(isAdmin
+          ? [
+              {
+                label: "Admin Approval",
+                ariaLabel: "Admin Approval Dashboard",
+                link: "/admin/approvals",
               },
             ]
           : []),
@@ -191,6 +203,13 @@ function AppContent() {
               </RequireRole>
             }
           />
+          
+          {/* Admin Approval Dashboard */}
+          <Route
+            path="/admin/approvals"
+            element={<AdminApproval />}
+          />
+          
           {/* ETS Dashboard */}
           <Route
             path="/ets/dashboard"

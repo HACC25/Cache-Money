@@ -8,22 +8,33 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    // Get the current user's data from Firestore (safely)
+    function getUserData() {
+      return isSignedIn() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data : null;
+    }
+    
     // Get the current user's role from Firestore (safely)
     function getUserRole() {
-      return isSignedIn() ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role : null;
+      return isSignedIn() ? getUserData().role : null;
     }
     
-    // Check if user is ETS employee
+    // Check if user is approved
+    function isApproved() {
+      let userData = getUserData();
+      return isSignedIn() && (!userData.keys().hasAll(['approved']) || userData.approved == true);
+    }
+    
+    // Check if user is ETS employee AND approved
     function isETSEmployee() {
-      return isSignedIn() && getUserRole() == 'ets';
+      return isSignedIn() && getUserRole() == 'ets' && isApproved();
     }
     
-    // Check if user is vendor
+    // Check if user is vendor AND approved
     function isVendor() {
-      return isSignedIn() && getUserRole() == 'vendor';
+      return isSignedIn() && getUserRole() == 'vendor' && isApproved();
     }
     
-    // Check if user is public
+    // Check if user is public (public users don't need approval)
     function isPublic() {
       return isSignedIn() && getUserRole() == 'public';
     }
@@ -33,21 +44,44 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
     
+    // Check if user is in admins collection
+    function isAdminUser() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // Admins collection rules
+    match /admins/{adminId} {
+      // Users can read their own admin document (to check if they're admin)
+      // Admins can read all admin documents
+      allow read: if isSignedIn();
+      
+      // Only existing admins can create new admins
+      allow create: if isAdminUser();
+      
+      // Only existing admins can update admin documents
+      allow update: if isAdminUser();
+      
+      // Only existing admins can remove admin privileges
+      allow delete: if isAdminUser();
+    }
+    
     // Users collection rules
     match /users/{userId} {
       // Users can read their own document
+      // Allow reading any user document (needed for admin approval dashboard to query pending users)
       // ETS employees can read all user documents (to assign vendors)
-      allow read: if isOwner(userId) || isETSEmployee();
+      allow read: if isSignedIn();
       
-      // Only allow user creation during sign-up
-      // The role will be validated by a Cloud Function if needed
+      // Allow user creation during sign-up with approval fields
       allow create: if isOwner(userId) && 
-                      request.resource.data.keys().hasAll(['email', 'role', 'createdAt']) &&
-                      request.resource.data.role in ['public', 'vendor', 'ets'];
+                      request.resource.data.keys().hasAll(['email', 'role', 'createdAt', 'approved', 'approvalStatus']) &&
+                      request.resource.data.role in ['public', 'vendor', 'ets'] &&
+                      // Ensure ETS/vendor users are created as pending
+                      ((request.resource.data.role in ['ets', 'vendor'] && request.resource.data.approved == false && request.resource.data.approvalStatus == 'pending') ||
+                       (request.resource.data.role == 'public' && request.resource.data.approved == true && request.resource.data.approvalStatus == 'approved'));
       
-      // Users cannot update their own role (prevent privilege escalation)
-      // Only admins should update roles via Firebase Admin SDK
-      allow update: if false;
+      // Only admins can update approved and approvalStatus fields
+      allow update: if isAdminUser() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['approved', 'approvalStatus']);
       
       // Users cannot delete their own account via Firestore
       allow delete: if false;

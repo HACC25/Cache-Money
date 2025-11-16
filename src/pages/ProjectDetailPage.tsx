@@ -16,6 +16,9 @@ const ProjectDetailPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<ProjectData | null>(null);
   const [reports, setReports] = useState<ReportData[]>([]);
+  const [mostRecentReport, setMostRecentReport] = useState<ReportData | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isFirestoreProject, setIsFirestoreProject] = useState(false);
   const { isETSEmployee, isVendor, currentUser } = useAuth();
@@ -26,7 +29,6 @@ const ProjectDetailPage: React.FC = () => {
     const loadProject = async () => {
       console.log("Looking for project with ID:", projectId);
 
-      // First, try to load from Firestore
       try {
         const projectRef = doc(db, "projects", projectId);
         const projectSnap = await getDoc(projectRef);
@@ -54,7 +56,6 @@ const ProjectDetailPage: React.FC = () => {
             reports: [],
           } as ProjectData);
 
-          // Set up real-time listener for reports
           const reportsRef = collection(db, "projects", projectId, "reports");
           const unsubscribe = onSnapshot(reportsRef, (snapshot) => {
             const reportsList = snapshot.docs.map(
@@ -66,7 +67,18 @@ const ProjectDetailPage: React.FC = () => {
                 } as ReportData)
             );
             console.log("Loaded reports from Firestore:", reportsList.length);
+
+            const sortedReports = [...reportsList].sort((a, b) => {
+              const dateA = a.date || a.createdAt?.toDate?.() || new Date(0);
+              const dateB = b.date || b.createdAt?.toDate?.() || new Date(0);
+              return new Date(dateB).getTime() - new Date(dateA).getTime();
+            });
+
             setReports(reportsList);
+
+            if (sortedReports.length > 0) {
+              setMostRecentReport(sortedReports[0]);
+            }
           });
 
           setIsLoading(false);
@@ -110,7 +122,6 @@ const ProjectDetailPage: React.FC = () => {
     );
   }
 
-  // Check if the current vendor is assigned to this project after project is loaded
   const isVendorAssignedToProject =
     isVendor && project.vendorId === currentUser?.uid;
 
@@ -167,8 +178,17 @@ const ProjectDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Project info card */}
-      <div className="card mb-4">{/* Project details */}</div>
+      {mostRecentReport && mostRecentReport.background && (
+        <div className="card mb-4">
+          <div className="card-body">
+            <h4 className="mb-3">Project Overview:</h4>
+
+            <p className="mb-0">{mostRecentReport.background}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="card mb-4"></div>
 
       <h2 className="mt-5 mb-4">IV&V Monthly Reports</h2>
 

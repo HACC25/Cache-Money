@@ -45,7 +45,7 @@ export const Navbar = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png',
+  logoUrl = './ets-logo.png',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
@@ -95,11 +95,11 @@ export const Navbar = ({
       preLayerElsRef.current = preLayers;
 
       const offscreen = position === 'left' ? -100 : 100;
-      gsap.set([panel, ...preLayers], { xPercent: offscreen });
-      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
-      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
-      gsap.set(textInner, { yPercent: 0 });
+      gsap.set([panel, ...preLayers], { xPercent: offscreen, force3D: true });
+      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0, force3D: true });
+      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90, force3D: true });
+      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%', force3D: true });
+      gsap.set(textInner, { yPercent: 0, force3D: true });
       if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
     });
     return () => ctx.revert();
@@ -141,15 +141,15 @@ export const Navbar = ({
     const tl = gsap.timeline({ paused: true });
 
     layerStates.forEach((ls, i) => {
-      tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
+      tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: 'power4.out', force3D: true }, i * 0.06);
     });
-    const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0;
-    const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0);
+    const lastTime = layerStates.length ? (layerStates.length - 1) * 0.06 : 0;
+    const panelInsertTime = lastTime + (layerStates.length ? 0.06 : 0);
     const panelDuration = 0.65;
     tl.fromTo(
       panel,
       { xPercent: panelStart },
-      { xPercent: 0, duration: panelDuration, ease: 'power4.out' },
+      { xPercent: 0, duration: panelDuration, ease: 'power4.out', force3D: true },
       panelInsertTime
     );
 
@@ -163,7 +163,8 @@ export const Navbar = ({
           rotate: 0,
           duration: 1,
           ease: 'power4.out',
-          stagger: { each: 0.1, from: 'start' }
+          force3D: true,
+          stagger: { each: 0.06, from: 'start' }
         },
         itemsStart
       );
@@ -174,7 +175,7 @@ export const Navbar = ({
             duration: 0.6,
             ease: 'power2.out',
             '--sm-num-opacity': 1,
-            stagger: { each: 0.08, from: 'start' }
+            stagger: { each: 0.06, from: 'start' }
           },
           itemsStart + 0.1
         );
@@ -202,7 +203,8 @@ export const Navbar = ({
             opacity: 1,
             duration: 0.55,
             ease: 'power3.out',
-            stagger: { each: 0.08, from: 'start' },
+            force3D: true,
+            stagger: { each: 0.06, from: 'start' },
             onComplete: () => {
               gsap.set(socialLinks, { clearProps: 'opacity' });
             }
@@ -247,6 +249,7 @@ export const Navbar = ({
       duration: 0.32,
       ease: 'power3.in',
       overwrite: 'auto',
+      force3D: true,
       onComplete: () => {
         const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
         if (itemEls.length) {
@@ -270,9 +273,9 @@ export const Navbar = ({
     if (!icon) return;
     spinTweenRef.current?.kill();
     if (opening) {
-      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto', force3D: true });
     } else {
-      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto', force3D: true });
     }
   }, []);
 
@@ -325,13 +328,14 @@ export const Navbar = ({
     seq.push(targetLabel);
     setTextLines(seq);
 
-    gsap.set(inner, { yPercent: 0 });
+    gsap.set(inner, { yPercent: 0, force3D: true });
     const lineCount = seq.length;
     const finalShift = ((lineCount - 1) / lineCount) * 100;
     textCycleAnimRef.current = gsap.to(inner, {
       yPercent: -finalShift,
       duration: 0.5 + lineCount * 0.07,
-      ease: 'power4.out'
+      ease: 'power4.out',
+      force3D: true
     });
   }, []);
 
@@ -421,7 +425,7 @@ export const Navbar = ({
             style={{ cursor: 'pointer', display: 'block' }}
           >
             <img
-              src={logoUrl || 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png'}
+              src={logoUrl}
               alt="Logo"
               className="sm-logo-img"
               draggable={false}

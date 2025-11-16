@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import { EDIT_PROJECT_STATUSES, getStatusColor } from "./EditProjectStatuses";
+import './EditProject.css';
 
 interface ProjectData {
   id: string;
@@ -166,7 +167,7 @@ const EditProject: React.FC = () => {
           <div className="mb-3">
             <label className="form-label">Assign to Vendor</label>
             <select
-              className="form-control"
+              className="form-control-vendor"
               value={vendorId}
               onChange={(e) => setVendorId(e.target.value)}
             >
@@ -182,7 +183,7 @@ const EditProject: React.FC = () => {
           <div className="mb-3">
             <label className="form-label">Status</label>
             <select
-              className="form-control"
+              className="form-control-status"
               value={project.status || "Active"}
               onChange={(e) =>
                 setProject({ ...project, status: e.target.value })
