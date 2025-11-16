@@ -95,6 +95,7 @@ export interface ProjectData {
   spent: number;
   vendor: string;
   vendorId?: string;
+  createdAt?: string | { seconds: number };
   reports: ProjectReport[];
 }
 

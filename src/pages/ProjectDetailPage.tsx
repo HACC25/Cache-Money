@@ -26,7 +26,6 @@ const ProjectDetailPage: React.FC = () => {
     const loadProject = async () => {
       console.log("Looking for project with ID:", projectId);
 
-      // First, try to load from Firestore
       try {
         const projectRef = doc(db, "projects", projectId);
         const projectSnap = await getDoc(projectRef);
@@ -54,7 +53,6 @@ const ProjectDetailPage: React.FC = () => {
             reports: [],
           } as ProjectData);
 
-          // Set up real-time listener for reports
           const reportsRef = collection(db, "projects", projectId, "reports");
           const unsubscribe = onSnapshot(reportsRef, (snapshot) => {
             const reportsList = snapshot.docs.map(
