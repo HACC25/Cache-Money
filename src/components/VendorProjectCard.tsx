@@ -9,16 +9,7 @@ interface VendorProjectCardProps {
 }
 
 const VendorProjectCard: React.FC<VendorProjectCardProps> = ({ project }) => {
-  const {
-    id,
-    name,
-    status,
-    statusColor,
-    metric2,
-    description,
-    reports,
-    createdAt,
-  } = project;
+  const { id, name, status, description, reports, createdAt } = project;
 
   // Sort reports by date (most recent first)
   const sortedReports = [...reports].sort(
