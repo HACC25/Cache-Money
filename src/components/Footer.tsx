@@ -7,7 +7,7 @@ const Footer = () => (
         <div className="footer-brand">
           <a href="https://ets.hawaii.gov/" target="_blank" rel="noopener noreferrer">
             <img
-              src="https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png"
+              src="./ets-logo.png"
               alt="ETS logo"
             />
             <span className="footer-brand-title">State of Hawaii</span>

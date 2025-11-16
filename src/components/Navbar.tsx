@@ -45,7 +45,7 @@ export const Navbar = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png',
+  logoUrl = './ets-logo.png',
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
@@ -425,7 +425,7 @@ export const Navbar = ({
             style={{ cursor: 'pointer', display: 'block' }}
           >
             <img
-              src={logoUrl || 'https://ets.hawaii.gov/wp-content/uploads/2020/08/ETS-Logo-B-w-ETS-process4-border-71x71-1.png'}
+              src={logoUrl}
               alt="Logo"
               className="sm-logo-img"
               draggable={false}

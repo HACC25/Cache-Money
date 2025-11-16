@@ -209,6 +209,7 @@ const ReportDetailPage: React.FC = () => {
               onClick={() =>
                 navigate(`/vendor/project/${projectId}/report/${reportId}/edit`)
               }
+              className="me-2"
               style={{
                 backgroundColor: "#007bff",
                 color: "white",

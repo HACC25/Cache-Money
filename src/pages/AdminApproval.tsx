@@ -164,7 +164,7 @@ const AdminApproval = () => {
       <div className="admin-approval-card">
         <div className="header">
           <h1>User Approval Dashboard</h1>
-          <p className="subtitle">Review and approve pending ETS and Vendor accounts</p>
+          <p className="subtitle">Review and approve pending ETS and IV&V Vendor accounts</p>
         </div>
 
         {pendingUsers.length === 0 ? (
