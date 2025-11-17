@@ -91,7 +91,8 @@ export interface ProjectData {
   description: string;
   department: string;
   startDate: string;
-  endDate: string;
+  baselineEnd: string;
+  currentEnd: string;
   budget: number;
   spent: number;
   vendor: string;

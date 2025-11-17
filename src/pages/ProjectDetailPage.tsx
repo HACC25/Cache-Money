@@ -47,7 +47,10 @@ const ProjectDetailPage: React.FC = () => {
             metric1: data.metric1 || "",
             metric2: data.metric2 || "",
             startDate: data.startDate || "",
-            endDate: data.endDate || "",
+            baselineEnd:
+              mostRecentReport?.scheduleData?.baseline?.expectedDate || "",
+            currentEnd:
+              mostRecentReport?.scheduleData?.current?.projectedDate || "",
             department: data.department || "",
             budget: data.budget || "",
             spent: data.spent || "",

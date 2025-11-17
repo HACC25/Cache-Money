@@ -9,7 +9,8 @@ interface RecentProject {
   metric2: string;
   description: string;
   startDate: string;
-  endDate: string;
+  baselineEnd: string;
+  currentEnd: string;
   budget: number;
   spent: number;
 }
@@ -92,8 +93,16 @@ const Carousel = ({ allProjects }: Props) => {
                             <span>{project.startDate}</span>
                           </div>
                           <div className="info-row">
-                            <span className="fw-semibold">End Date:</span>
-                            <span>{project.endDate}</span>
+                            <span className="fw-semibold">
+                              Baseline End Date:
+                            </span>
+                            <span>{project.baselineEnd}</span>
+                          </div>
+                          <div className="info-row">
+                            <span className="fw-semibold">
+                              Current End Date:
+                            </span>
+                            <span>{project.currentEnd}</span>
                           </div>
                         </div>
                       </div>

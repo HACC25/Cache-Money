@@ -86,7 +86,12 @@ const AllProjectsTable = ({ vendors }: Props) => {
                             <strong>Start Date:</strong> {project.startDate}
                           </p>
                           <p className="mb-1">
-                            <strong>End Date:</strong> {project.endDate}
+                            <strong>Baseline End Date:</strong>{" "}
+                            {project.baselineEnd}
+                          </p>
+                          <p className="mb-1">
+                            <strong>Current End Date:</strong>{" "}
+                            {project.currentEnd}
                           </p>
                           <p className="mb-1">
                             <strong>Status:</strong>{" "}

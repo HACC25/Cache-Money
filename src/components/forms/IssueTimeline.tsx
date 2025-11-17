@@ -52,7 +52,7 @@ const IssuesTimeline: React.FC<IssuesTimelineProps> = ({ issues }) => {
                 )
                   ? "#dc3545"
                   : getRiskDotClass(issue.riskRating).includes("warning")
-                  ? "#ffc107"
+                  ? "#7F46F1"
                   : "#28a745",
               }}
             />
@@ -67,9 +67,7 @@ const IssuesTimeline: React.FC<IssuesTimelineProps> = ({ issues }) => {
               {/* Header */}
               <div style={styles.timelineIssueHeader}>
                 <div>
-                  <div style={styles.timelineIssueTitle}>
-                    {issue.description}
-                  </div>
+                  <div style={styles.timelineIssueTitle}>{issue.name}</div>
                   <small style={styles.timelineIssueMeta}>
                     Raised on {new Date(issue.dateRaised).toLocaleDateString()}{" "}
                     • {issue.age || 0} days old
@@ -86,7 +84,7 @@ const IssuesTimeline: React.FC<IssuesTimelineProps> = ({ issues }) => {
                     className={`badge ${getRiskBadgeClass(issue.riskRating)}`}
                     style={{ fontSize: "12px", padding: "6px 12px" }}
                   >
-                    Risk {issue.riskRating}/5
+                    Risk {issue.riskRating}/6
                   </span>
                 </div>
               </div>

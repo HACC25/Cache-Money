@@ -17,6 +17,7 @@ import { db } from "../services/firebase-config";
 import {
   timestampToFriendlyDate,
   fetchReportsForProject,
+  formatFriendlyDate,
 } from "../services/firebaseDataService";
 
 interface ProjectListData {
@@ -33,7 +34,8 @@ interface RecentProject {
   metric2: string;
   description: string;
   startDate: string;
-  endDate: string;
+  baselineEnd: string;
+  currentEnd: string;
   budget: number;
   spent: number;
 }
@@ -174,7 +176,14 @@ const Overview = () => {
             metric1: `Completion: ${schedulePercentage}%`,
             metric2: `Reports: ${reports.length}`,
             startDate: timestampToFriendlyDate(data.createdAt),
-            endDate: timestampToFriendlyDate(data.endDate) || "TBD",
+            baselineEnd:
+              formatFriendlyDate(
+                mostRecentReport?.scheduleData?.baseline?.expectedDate
+              ) || "TBD",
+            currentEnd:
+              formatFriendlyDate(
+                mostRecentReport?.scheduleData?.current?.projectedDate
+              ) || "TBD",
             budget: budgetValue.toLocaleString("en-US"),
             spent: spentValue.toLocaleString("en-US"),
           };

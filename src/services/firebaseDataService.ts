@@ -87,6 +87,20 @@ export const timestampToFriendlyDate = (
   });
 };
 
+
+/**
+ * Turns a string into a more friendly format
+ */
+export function formatFriendlyDate(dateString: string = "") {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 /**
  * Calculate project status based on various factors
  */
@@ -311,8 +325,8 @@ export const fetchAllProjects = async (): Promise<ProjectData[]> => {
         description: data.description || "",
         department: data.department || "",
         startDate: timestampToFriendlyDate(data.createdAt),
-        endDate: timestampToFriendlyDate(data.endDate),
-        budget: data.budget || 0,
+        baselineEnd: mostRecentReport?.scheduleData?.baseline?.expectedDate || "TBD",
+        currentEnd: mostRecentReport?.scheduleData?.current?.projectedDate || "TBD",        budget: data.budget || 0,
         spent: data.spent || 0,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
         vendorId: data.vendorId || undefined,
@@ -419,8 +433,8 @@ export const fetchProjectById = async (
       description: data.description || "",
       department: data.department || "",
       startDate: timestampToDateString(data.createdAt),
-      endDate: timestampToDateString(data.endDate) || "TBD",
-      budget: data.budget || 0,
+      baselineEnd: mostRecentReport?.scheduleData?.baseline?.expectedDate || "TBD",
+      currentEnd: mostRecentReport?.scheduleData?.current?.projectedDate || "TBD",      budget: data.budget || 0,
       spent: data.spent || 0,
       vendor: data.vendor || data.vendorName || "No Vendor Assigned",
       vendorId: data.vendorId || undefined,
@@ -556,7 +570,8 @@ export const fetchProjectsByVendor = async (
         description: data.description || "",
         department: data.department || "",
         startDate: timestampToFriendlyDate(data.createdAt),
-        endDate: timestampToFriendlyDate(data.endDate) || "TBD",
+        baselineEnd: formatFriendlyDate(mostRecentReport?.scheduleData?.baseline?.expectedDate) || "TBD",
+        currentEnd: formatFriendlyDate(mostRecentReport?.scheduleData?.current?.projectedDate) || "TBD",
         budget: budgetValue,
         spent: spentValue,
         vendor: data.vendor || data.vendorName || "No Vendor Assigned",
