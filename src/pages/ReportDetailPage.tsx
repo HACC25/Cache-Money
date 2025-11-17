@@ -138,7 +138,7 @@ const ReportDetailPage: React.FC = () => {
               },
             }),
             new Paragraph({
-              text: `Project Report - ${report.month}`,
+              text: `${project.name} Project Report - ${report.month}`,
               alignment: AlignmentType.CENTER,
               spacing: { after: 400 },
               run: {
@@ -234,7 +234,7 @@ const ReportDetailPage: React.FC = () => {
     });
 
     const blob = await Packer.toBlob(doc);
-    const fileName = `Project Report_${report.month}.docx`;
+    const fileName = `${project.name}_Project Report_${report.month}.docx`;
     saveAs(blob, fileName);
   };
 
