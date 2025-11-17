@@ -885,13 +885,6 @@ const ReportForm: React.FC = () => {
                 style={!isFirstReport ? { backgroundColor: "#f5f5f5" } : {}}
                 required
               />
-              {!isFirstReport && (
-                <small
-                  style={{ display: "block", marginTop: "5px", color: "#666" }}
-                >
-                  Baseline set in first report - cannot be modified
-                </small>
-              )}
             </div>
 
             {/* Projected Completion Date (always editable) */}
