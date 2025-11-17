@@ -4,6 +4,20 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase-config";
 import type { ProjectReport } from "../components/SampleData";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  AlignmentType,
+  BorderStyle,
+} from "docx";
+import { saveAs } from "file-saver";
+import "./ReportDetailPage.css";
 
 // Visual Component Imports
 import BudgetDonut from "../components/forms/BudgetDonut";
@@ -22,6 +36,685 @@ const ReportDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { isETSEmployee, isVendor } = useAuth();
 
+  const ExportToWord = async () => {
+    if (!report || !project) return;
+
+    const doc = new Document({
+      styles: {
+        paragraphStyles: [
+          {
+            id: "customHeading1",
+            name: "Custom Heading 1",
+            basedOn: "Heading1",
+            run: {
+              size: 32,
+              bold: true,
+              color: "5B9BD5",
+            },
+            paragraph: {
+              spacing: {
+                before: 400,
+                after: 300,
+              },
+              border: {
+                bottom: {
+                  color: "5B9BD5",
+                  space: 1,
+                  style: BorderStyle.SINGLE,
+                  size: 18,
+                },
+              },
+            },
+          },
+          {
+            id: "customHeading2",
+            name: "Custom Heading 2",
+            basedOn: "Heading2",
+            run: {
+              size: 28,
+              bold: true,
+              color: "5B9BD5",
+            },
+            paragraph: {
+              spacing: {
+                before: 400,
+                after: 200,
+              },
+              border: {
+                bottom: {
+                  color: "5B9BD5",
+                  space: 1,
+                  style: BorderStyle.SINGLE,
+                  size: 12,
+                },
+              },
+            },
+          },
+          {
+            id: "customHeading3",
+            name: "Custom Heading 3",
+            basedOn: "Heading3",
+            run: {
+              size: 24,
+              bold: true,
+              color: "404040",
+            },
+            paragraph: {
+              spacing: {
+                before: 200,
+                after: 100,
+              },
+            },
+          },
+        ],
+      },
+      sections: [
+        {
+          properties: {
+            page: {
+              margin: {
+                top: 1440,
+                right: 1440,
+                bottom: 1440,
+                left: 1440,
+              },
+            },
+          },
+          children: [
+            // Header Section
+            new Paragraph({
+              text: "STATE OF HAWAII",
+              alignment: AlignmentType.CENTER,
+              style: "customHeading1",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: "Office of Enterprise Technology Services",
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 200 },
+              run: {
+                size: 24,
+                color: "404040",
+              },
+            }),
+            new Paragraph({
+              text: `Project Report - ${report.month}`,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 400 },
+              run: {
+                size: 28,
+                bold: true,
+                color: "5B9BD5",
+              },
+            }),
+
+            // Table of Contents
+            new Paragraph({
+              text: "Table of Contents",
+              style: "customHeading2",
+            }),
+            new Paragraph({
+              text: "1. Background",
+              spacing: { after: 100 },
+              indent: { left: 200 },
+            }),
+            new Paragraph({
+              text: "2. Project Assessment",
+              spacing: { after: 100 },
+              indent: { left: 200 },
+            }),
+            new Paragraph({
+              text: "3. Issues Raised",
+              spacing: { after: 100 },
+              indent: { left: 200 },
+            }),
+            new Paragraph({
+              text: "4. Schedule Status",
+              spacing: { after: 100 },
+              indent: { left: 200 },
+            }),
+            new Paragraph({
+              text: "5. Finance",
+              spacing: { after: 100 },
+              indent: { left: 200 },
+            }),
+            new Paragraph({
+              text: "6. Scope Status",
+              spacing: { after: 400 },
+              indent: { left: 200 },
+            }),
+
+            // Background Section
+            new Paragraph({
+              text: "1. Background",
+              style: "customHeading2",
+            }),
+            new Paragraph({
+              text: report.background || "No background information provided.",
+              spacing: { after: 400 },
+            }),
+
+            // Project Assessment Section
+            new Paragraph({
+              text: "2. Project Criticality Assessment",
+              style: "customHeading2",
+            }),
+            ...createAssessmentSection(report),
+
+            // Issues Raised Section
+            new Paragraph({
+              text: "3. Issues Raised",
+              style: "customHeading2",
+            }),
+            ...createIssuesSection(report),
+
+            // Schedule Status Section
+            new Paragraph({
+              text: "4. Schedule Status",
+              style: "customHeading2",
+            }),
+            ...createScheduleSection(report),
+
+            // Finance Section
+            new Paragraph({
+              text: "5. Finance",
+              style: "customHeading2",
+            }),
+            ...createFinanceSection(report),
+
+            // Scope Status Section
+            new Paragraph({
+              text: "6. Scope Status",
+              style: "customHeading2",
+            }),
+            ...createScopeSection(report),
+          ],
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const fileName = `Project Report_${report.month}.docx`;
+    saveAs(blob, fileName);
+  };
+
+  // Helper function: Assessment Section
+  function createAssessmentSection(report: ProjectReport) {
+    const rating = report.assessment?.sprintPlanning?.rating || "N/A";
+    const description =
+      report.assessment?.sprintPlanning?.description ||
+      "No description provided.";
+
+    return [
+      new Paragraph({
+        children: [
+          new TextRun({ text: "Rating: ", bold: true, size: 24 }),
+          new TextRun({
+            text: rating,
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { after: 200 },
+      }),
+      new Paragraph({
+        text: description,
+        spacing: { after: 400 },
+        shading: {
+          fill: "F8F9FA",
+        },
+        indent: {
+          left: 360,
+          right: 360,
+        },
+        border: {
+          left: {
+            color: "CCCCCC",
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
+      }),
+    ];
+  }
+
+  // Helper function: Issues Section
+  function createIssuesSection(report: ProjectReport) {
+    if (!report.issues || report.issues.length === 0) {
+      return [
+        new Paragraph({
+          text: "No issues raised.",
+          spacing: { after: 400 },
+          run: {
+            italics: true,
+            color: "6C757D",
+          },
+        }),
+      ];
+    }
+
+    return report.issues.flatMap((issue, index) => {
+      return [
+        new Paragraph({
+          text: `Issue ${index + 1}: ${issue.name}`,
+          style: "customHeading3",
+        }),
+
+        // Issue metadata table
+        new Table({
+          width: {
+            size: 100,
+            type: WidthType.PERCENTAGE,
+          },
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Status: ", bold: true }),
+                        new TextRun({
+                          text: issue.status,
+                        }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                    }),
+                  ],
+                  shading: { fill: "F8F9FA" },
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Risk Rating: ", bold: true }),
+                        new TextRun({
+                          text: issue.riskRating.toString(),
+                        }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                    }),
+                  ],
+                  shading: { fill: "F8F9FA" },
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Impact: ", bold: true }),
+                        new TextRun(issue.impact),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Likelihood: ", bold: true }),
+                        new TextRun(issue.likelihood),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Date Raised: ", bold: true }),
+                        new TextRun(
+                          new Date(issue.dateRaised).toLocaleDateString()
+                        ),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: "Age: ", bold: true }),
+                        new TextRun(`${issue.age || 0} days`),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+
+        new Paragraph({
+          text: "Description:",
+          spacing: { before: 200, after: 100 },
+          run: {
+            size: 22,
+            bold: true,
+            allCaps: true,
+            color: "495057",
+          },
+        }),
+        new Paragraph({
+          text: issue.description || "No description provided.",
+          spacing: { after: 200 },
+          shading: { fill: "FFFFFF" },
+          indent: { left: 360, right: 360 },
+          border: {
+            top: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+            bottom: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+            left: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+            right: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+          },
+        }),
+
+        new Paragraph({
+          text: "Recommendation:",
+          spacing: { before: 100, after: 100 },
+          run: {
+            size: 22,
+            bold: true,
+            allCaps: true,
+            color: "495057",
+          },
+        }),
+        new Paragraph({
+          text: issue.recommendation || "No recommendation provided.",
+          spacing: { after: 400 },
+          shading: { fill: "FFFFFF" },
+          indent: { left: 360, right: 360 },
+          border: {
+            top: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+            bottom: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+            left: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+            right: { style: BorderStyle.SINGLE, size: 6, color: "E9ECEF" },
+          },
+        }),
+      ];
+    });
+  }
+
+  // Helper function: Schedule Section
+  function createScheduleSection(report: ProjectReport) {
+    const baseline = report.scheduleData?.baseline?.expectedDate
+      ? new Date(report.scheduleData.baseline.expectedDate)
+      : null;
+    const projected = report.scheduleData?.current?.projectedDate
+      ? new Date(report.scheduleData.current.projectedDate)
+      : null;
+
+    let varianceParagraph;
+    if (baseline && projected) {
+      const diffTime = projected.getTime() - baseline.getTime();
+      const varianceDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      let statusText: string;
+      if (varianceDays === 0) {
+        statusText = "✓ On Schedule";
+      } else if (varianceDays > 0) {
+        statusText = "⚠ Behind Schedule";
+      } else {
+        statusText = "✓ Ahead of Schedule";
+      }
+
+      varianceParagraph = new Paragraph({
+        children: [
+          new TextRun({
+            text: statusText + ": ",
+            bold: true,
+          }),
+          new TextRun({
+            text:
+              varianceDays === 0
+                ? "Project is tracking to baseline completion date."
+                : varianceDays > 0
+                ? `Project is ${varianceDays} days behind the baseline completion date.`
+                : `Project is ${Math.abs(
+                    varianceDays
+                  )} days ahead of the baseline completion date.`,
+          }),
+        ],
+        spacing: { after: 200 },
+        shading: { fill: "F8F9FA" },
+        indent: { left: 360, right: 360 },
+        border: {
+          left: {
+            color: "CCCCCC",
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
+      });
+    } else {
+      varianceParagraph = new Paragraph({
+        text: "Variance information not available.",
+        spacing: { after: 200 },
+        run: {
+          italics: true,
+        },
+      });
+    }
+
+    return [
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: "Expected Baseline Completion",
+                    alignment: AlignmentType.CENTER,
+                    run: {
+                      bold: true,
+                    },
+                  }),
+                  new Paragraph({
+                    text: baseline ? baseline.toLocaleDateString() : "N/A",
+                    alignment: AlignmentType.CENTER,
+                    run: { size: 28, bold: true },
+                  }),
+                ],
+                shading: { fill: "F8F9FA" },
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: "Actual Projected Completion",
+                    alignment: AlignmentType.CENTER,
+                    run: {
+                      bold: true,
+                    },
+                  }),
+                  new Paragraph({
+                    text: projected ? projected.toLocaleDateString() : "N/A",
+                    alignment: AlignmentType.CENTER,
+                    run: { size: 28, bold: true },
+                  }),
+                ],
+                shading: { fill: "F8F9FA" },
+              }),
+            ],
+          }),
+        ],
+      }),
+
+      new Paragraph({
+        text: "Schedule Status Variance",
+        style: "customHeading3",
+      }),
+      varianceParagraph,
+
+      new Paragraph({
+        text: report.scheduleStatus?.description || "No additional notes.",
+        spacing: { after: 400 },
+        run: {
+          italics: true,
+        },
+      }),
+    ];
+  }
+
+  // Helper function: Finance Section
+  function createFinanceSection(report: ProjectReport) {
+    const contracted = report.financials.originalAmount;
+    const paid = report.financials.paidToDate;
+    const remaining = contracted - paid;
+
+    return [
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: "Total Contracted",
+                    alignment: AlignmentType.CENTER,
+                    run: {
+                      size: 20,
+                      bold: true,
+                      allCaps: true,
+                      color: "6C757D",
+                    },
+                  }),
+                  new Paragraph({
+                    text: `$${contracted.toLocaleString()}`,
+                    alignment: AlignmentType.CENTER,
+                    run: { size: 32, bold: true },
+                  }),
+                ],
+                shading: { fill: "F8F9FA" },
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: "Total Paid to Date",
+                    alignment: AlignmentType.CENTER,
+                    run: {
+                      size: 20,
+                      bold: true,
+                      allCaps: true,
+                      color: "6C757D",
+                    },
+                  }),
+                  new Paragraph({
+                    text: `$${paid.toLocaleString()}`,
+                    alignment: AlignmentType.CENTER,
+                    run: { size: 32, bold: true },
+                  }),
+                ],
+                shading: { fill: "F8F9FA" },
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: "Remaining Budget",
+                    alignment: AlignmentType.CENTER,
+                    run: {
+                      size: 20,
+                      bold: true,
+                      allCaps: true,
+                      color: "6C757D",
+                    },
+                  }),
+                  new Paragraph({
+                    text: `$${remaining.toLocaleString()}`,
+                    alignment: AlignmentType.CENTER,
+                    run: {
+                      size: 32,
+                      bold: true,
+                    },
+                  }),
+                ],
+                shading: { fill: "F8F9FA" },
+              }),
+            ],
+          }),
+        ],
+      }),
+
+      new Paragraph({
+        text:
+          report.financials?.description || "No additional financial notes.",
+        spacing: { before: 200, after: 400 },
+        shading: { fill: "F8F9FA" },
+        indent: { left: 360, right: 360 },
+        run: {
+          italics: true,
+        },
+      }),
+    ];
+  }
+
+  // Helper function: Scope Section
+  function createScopeSection(report: ProjectReport) {
+    const completed = report.scopeStatus.completedDeliverables;
+    const total = report.scopeStatus.totalDeliverables;
+    const percentage = total > 0 ? ((completed / total) * 100).toFixed(0) : "0";
+
+    return [
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: "Deliverable Completion: ",
+            bold: true,
+            size: 24,
+          }),
+          new TextRun({
+            text: `${completed} of ${total} (${percentage}%)`,
+            bold: true,
+            size: 24,
+          }),
+        ],
+        spacing: { after: 300 },
+        shading: { fill: "F8F9FA" },
+        indent: { left: 360, right: 360 },
+      }),
+
+      ...report.scopeStatus.deliverables.flatMap((deliverable) => {
+        return [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `${deliverable.name}: `,
+                bold: true,
+                size: 24,
+              }),
+              new TextRun({
+                text: deliverable.status,
+                bold: true,
+              }),
+            ],
+            spacing: { before: 200, after: 100 },
+          }),
+          new Paragraph({
+            text: deliverable.description || "No description provided.",
+            spacing: { after: 200 },
+            indent: { left: 720 },
+            run: {
+              italics: true,
+            },
+          }),
+        ];
+      }),
+    ];
+  }
   useEffect(() => {
     if (!projectId) return;
 
@@ -209,7 +902,6 @@ const ReportDetailPage: React.FC = () => {
               onClick={() =>
                 navigate(`/vendor/project/${projectId}/report/${reportId}/edit`)
               }
-              className="me-2"
               style={{
                 backgroundColor: "#007bff",
                 color: "white",
@@ -233,7 +925,7 @@ const ReportDetailPage: React.FC = () => {
           ) : (
             <></>
           )}
-          <button className="btn btn-success me-2">
+          <button className="btn btn-success me-2 ms-2" onClick={ExportToWord}>
             <i className="bi bi-file-earmark-word me-1"></i> Export Report
           </button>
         </div>

@@ -22,6 +22,7 @@ export interface ProjectAssessment {
 
 export interface ProjectIssue {
   id: string;
+  name: string;
   description: string;
   impact: "High" | "Medium" | "Low";
   likelihood: "High" | "Medium" | "Low";
